@@ -1,0 +1,11 @@
+moduleload syncprov.la
+overlay glue
+overlay syncprov
+<% if !@checkpoint.empty? then -%>
+syncprov-checkpoint <%= @checkpoint %>
+<% end -%>
+<% if !@sessionlog.empty? then -%>
+syncprov-sessionlog <%= @sessionlog %>
+<% end -%>
+syncprov-nopresent <%= @nopresent.to_s.upcase %>
+syncprov-reloadhint <%= @reloadhint.to_s.upcase %>

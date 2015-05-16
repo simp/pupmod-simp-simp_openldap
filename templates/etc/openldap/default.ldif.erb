@@ -1,0 +1,145 @@
+dn: <%= @suffix %>
+dc: <%= @suffix.split(',').first.split('dc=').last %>
+objectClass: top
+objectClass: domain
+
+dn: ou=Hosts,<%= @suffix %>
+ou: Hosts
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Rpc,<%= @suffix %>
+ou: Rpc
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Services,<%= @suffix %>
+ou: Services
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Mounts,<%= @suffix %>
+ou: Mounts
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Networks,<%= @suffix %>
+ou: Networks
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=People,<%= @suffix %>
+ou: People
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Group,<%= @suffix %>
+ou: Group
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Netgroup,<%= @suffix %>
+ou: Netgroup
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Protocols,<%= @suffix %>
+ou: Protocols
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Aliases,<%= @suffix %>
+ou: Aliases
+objectClass: top
+objectClass: organizationalUnit
+
+dn: cn=localhost.localdomain,ou=Hosts,<%= @suffix %>
+objectClass: top
+objectClass: ipHost
+objectClass: device
+ipHostNumber: 127.0.0.1
+cn: localhost.localdomain
+cn: localhost
+
+dn: <%= @rootdn %>
+cn: <%= @rootdn.split(',').first.split('=').last %>
+objectClass: organizationalRole
+
+dn: <%= @syncdn %>
+objectClass: person
+cn: <%= @syncdn.split(',').first.split('=').last %>
+sn: Internal
+userPassword: <%= @syncpw %>
+pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
+
+dn: <%= @binddn %>
+objectClass: person
+cn: <%= @binddn.split(',').first.split('=').last %>
+sn: Internal
+userPassword: <%= @bindpw %>
+pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
+
+dn: cn=users,ou=Group,<%= @suffix %>
+objectClass: posixGroup
+objectClass: top
+cn: users
+gidNumber: 100
+
+dn: cn=administrators,ou=Group,<%= @suffix %>
+objectClass: posixGroup
+objectClass: top
+cn: administrators
+gidNumber: 700
+
+dn: ou=pwpolicies,<%= @suffix %>
+ou: pwpolicies
+objectClass: top
+objectClass: organizationalUnit
+
+# Some sane defaults
+dn: cn=default,ou=pwpolicies,<%= @suffix %>
+objectClass: top
+objectClass: device
+objectClass: pwdPolicy
+objectClass: pwdPolicyChecker
+cn: default
+pwdAttribute: userPassword
+pwdMinAge: 86400
+pwdMaxAge: 15552000
+pwdInHistory: 24
+pwdCheckQuality: 2
+pwdMinLength: 14
+pwdExpireWarning: 1209600
+pwdGraceAuthnLimit: 0
+pwdLockout: TRUE
+pwdLockoutDuration: 900
+pwdMaxFailure: 5
+pwdFailureCountInterval: 900
+pwdMustChange: TRUE
+pwdAllowUserChange: TRUE
+pwdSafeModify: FALSE
+pwdCheckModule: <%= scope.lookupvar('::openldap::slapo::ppolicy::check_pmassword') %>.so
+
+# This is for "special" accounts like hostAuth and LDAPSync
+dn: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
+objectClass: top
+objectClass: device
+objectClass: pwdPolicy
+cn: noExpire_noLockout
+pwdAttribute: userPassword
+objectClass: pwdPolicyChecker
+pwdMinAge: 0
+pwdMaxAge: 0
+pwdInHistory: 24
+pwdCheckQuality: 2
+pwdMinLength: 14
+pwdExpireWarning: 0
+pwdGraceAuthnLimit: 0
+pwdLockout: FALSE
+pwdLockoutDuration: 900
+pwdMaxFailure: 5
+pwdFailureCountInterval: 900
+pwdMustChange: FALSE
+pwdAllowUserChange: FALSE
+pwdSafeModify: FALSE
+pwdCheckModule: <%= scope.lookupvar('::openldap::slapo::ppolicy::check_password') %>.so

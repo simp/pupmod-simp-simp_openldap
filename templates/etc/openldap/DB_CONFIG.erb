@@ -1,0 +1,11 @@
+set_cachesize <%= @db_cachesize %>
+set_data_dir db
+set_lg_regionmax <%= @db_log_region_max_size %>
+set_lg_bsize <%= @db_log_buffer_size %>
+set_lg_dir logs
+set_lk_max_locks <%= @db_max_locks %>
+set_lk_max_objects <%= @db_max_lock_objects %>
+set_lk_max_lockers <%= @db_max_lock_lockers %>
+<% if @db_log_autoremove then -%>
+set_flags DB_LOG_AUTOREMOVE
+<% end -%>

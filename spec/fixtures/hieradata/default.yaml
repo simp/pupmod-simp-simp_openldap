@@ -1,0 +1,20 @@
+---
+client_nets :
+  - 1.2.3.4
+  - 5.6.7.8
+ldap::base_dn : "ou=foo,dc=bar,dc=baz"
+ldap::bind_dn : "cn=hostAuth,ou=Hosts,%{hiera('ldap::base_dn')}"
+ldap::bind_pw : "s00per sekr3t!"
+ldap::bind_hash : '{SSHA}foobarbaz!!!!'
+ldap::sync_dn : "cn=sync,ou=Hosts,%{hiera('ldap::base_dn')}"
+ldap::sync_hash : '{SSHA}foobarbaz!!!!'
+ldap::root_dn : "cn=LDAPAdmin,ou=People,%{hiera('ldap::base_dn')}"
+ldap::root_hash : '{SSHA}foobarbaz!!!!'
+ldap::uri :
+  - "ldap://server1.bar.baz"
+  - "ldap://server2.bar.baz"
+ldap::master : "ldap://server1.bar.baz"
+rsync::server : 'rsync.bar.baz'
+rsync::timeout : '1'
+sssd::domains :
+  - 'LOCAL'

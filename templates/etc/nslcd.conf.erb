@@ -1,0 +1,53 @@
+threads <%= @threads.to_i %>
+uid nslcd
+gid ldap
+<% @uri.each do |uri| -%>
+uri <%= uri %>
+<% end -%>
+ldap_version <%= @ldap_version %>
+<% if not @bindpw.empty? then -%>
+binddn <%= @binddn %>
+bindpw <%= @bindpw %>
+<% end -%>
+<% if not @rootpwmoddn.empty? then -%>
+rootpwmoddn <%= @rootpwmoddn %>
+<% end -%>
+# Not yet implemented
+# krb5_ccname
+base <%= @base %>
+scope <%= @lscope %>
+deref <%= @deref %>
+referrals <%= @referrals ? 'yes' : 'no' %>
+# Not yet implemented
+# filter...
+# map...
+bind_timelimit <%= @bind_timelimit %>
+timelimit <%= @timelimit %>
+idle_timelimit <%= @idle_timelimit %>
+reconnect_sleeptime <%= @reconnect_sleeptime %>
+reconnect_retrytime <%= @reconnect_retrytime %>
+<% if @start_tls then -%>
+ssl start_tls
+<% else -%>
+ssl <%= @ssl %>
+<% end -%>
+tls_reqcert <%= @tls_reqcert %>
+tls_cacertdir <%= @tls_cacertdir %>
+<% if @tls_randfile then -%>
+tls_randfile <%= @tls_randfile %>
+<% end -%>
+tls_ciphers <%= @tls_ciphers.join(':') %>
+<% if @use_certs then -%>
+tls_cert <%= @tls_cert %>
+tls_key <%= @tls_key %>
+<% end -%>
+pagesize <%= @pagesize %>
+<% if Array(@nss_initgroups_ignoreusers).empty? then -%>
+nss_initgroups_ignoreusers ALLLOCAL
+<% else -%>
+nss_initgroups_ignoreusers <%= Array(@nss_initgroups_ignoreusers).join(',') %>
+<% end -%>
+validnames <%= @validnames %>
+<% if not @pam_authz_search.empty? then -%>
+pam_authz_search <%= @pam_authz_search %>
+<% end -%>

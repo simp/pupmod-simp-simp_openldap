@@ -1,0 +1,82 @@
+<%
+  t_bool_xlat = { true => 'yes', false => 'no' }
+-%>
+base <%= @base %>
+uri <%= Array(@uri).join(',').split(/,|\s|;/).join(' ').squeeze(' ').strip %>
+ldap_version <%= @ldap_version %>
+<% if not @bindpw.empty? then -%>
+binddn <%= @binddn %>
+bindpw <%= @bindpw %>
+<% end -%>
+<% if not @host.empty? -%>
+host <%= Array(@host).join(' ') %>
+<% end -%>
+port <%= @port %>
+scope <%= @lscope %>
+deref <%= @deref %>
+timelimit <%= @timelimit %>
+<% if not @timeout.empty? -%>
+timeout = <%= @timeout %>
+<% end -%>
+bind_timelimit <%= @bind_timelimit %>
+<% if not @network_timeout.empty? -%>
+network_timeout <%= @network_timeout %>
+<% end -%>
+bind_policy <%= @bind_policy %>
+referrals <%= t_bool_xlat[@referrals] %>
+restart <%= t_bool_xlat[@restart] %>
+idle_timelimit <%= @idle_timelimit %>
+<% if not @logdir.empty? -%>
+logdir <%= @logdir %>
+<% end -%>
+<% if not @debug.empty? -%>
+debug <%= @debug %>
+<% end -%>
+pam_login_attribute <%= @pam_login_attribute %>
+pam_filter <%= @pam_filter %>
+pam_lookup_policy <%= t_bool_xlat[@pam_lookup_policy] %>
+pam_check_host_attr <%= t_bool_xlat[@pam_check_host_attr] %>
+pam_check_service_attr <%= t_bool_xlat[@pam_check_service_attr] %>
+<% if not @pam_groupdn.empty? then -%>
+pam_groupdn <%= @pam_groupdn %>
+<% end -%>
+<% if not @pam_nsrole.empty? then -%>
+pam_nsrole <%= @pam_nsrole %>
+<% end -%>
+pam_min_uid <%= @pam_min_uid %>
+pam_max_uid <%= @pam_max_uid %>
+<% if not @pam_template_login_attribute.empty? then -%>
+pam_template_login_attribute <%= @pam_template_login_attribute %>
+<% end -%>
+<% if not @pam_template_login.empty? then -%>
+pam_template_login <%= @pam_template_login %>
+<% end -%>
+<% if not @pam_password_prohibit_message.empty? then -%>
+pam_password_prohibit_message <%= @pam_password_prohibit_message %>
+<% end -%>
+<% if not @pam_sasl_mech.empty? then -%>
+pam_sasl_mech <%= @pam_sasl_mech %>
+<% end -%>
+pam_member_attribute <%= @pam_member_attribute %>
+pam_password <%= @pam_password %>
+<% if not @sslpath.empty? -%>
+sslpath <%= @ss_path %>
+<% end -%>
+<% if @ssl then -%>
+<%   if @start_tls then -%>
+ssl start_tls
+<%   else -%>
+ssl on
+<%   end -%>
+tls_checkpeer <%= t_bool_xlat[@tls_checkpeer] %>
+tls_cacertfile <%= @tls_cacertfile %>
+tls_cacertdir <%= @tls_cacertdir %>
+tls_ciphers <%= Array(@tls_ciphers).join(':') %>
+<% if @use_certs then -%>
+tls_cert <%= @tls_cert %>
+tls_key <%= @tls_key %>
+<% end -%>
+<% if @tls_randfile then -%>
+tls_randfile <%= @tls_randfile %>
+<% end -%>
+<% end -%>

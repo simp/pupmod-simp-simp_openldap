@@ -1,0 +1,69 @@
+<%
+if ['RedHat','CentOS'].include?(@operatingsystem) then
+  if ( scope.function_versioncmp([@lsbdistrelease,"5.7"]) < 0 ) then
+-%>
+moduleload syncrepl.la
+<%
+  end
+end
+-%>
+syncrepl rid=<%= @name %>
+  provider=<%= @provider %>
+  type=<%= @syncrepl_type %>
+<% if !@interval.empty? then -%>
+  interval=<%= @interval %>
+<% end -%>
+  retry="<%= @syncrepl_retry %>"
+  searchbase="<%= @searchbase %>"
+<% if !@filter.empty? then -%>
+  filter="<%= @filter %>"
+<% end -%>
+  scope="<%= @syncrepl_scope %>"
+  attrs="<%= @attrs %>"
+<% if !@attrsonly.empty? then -%>
+  attrsonly
+<% end -%>
+  sizelimit=<%= @sizelimit %>
+  timelimit=<%= @timelimit %>
+  schemachecking=<%= @schemachecking %>
+<% if !@starttls.empty? then -%>
+  starttls=critical
+<% end -%>
+<% if !@bindmethod.empty? then -%>
+  bindmethod=<%= @bindmethod %>
+<% end -%>
+<% if !@binddn.empty? then -%>
+  binddn="<%= @binddn %>"
+<% end -%>
+<% if !@saslmech.empty? then -%>
+  saslmech=<%= @saslmech %>
+<% end -%>
+<% if !@authcid.empty? then -%>
+  authcid=<%= @authcid %>
+<% end -%>
+<% if !@authzid.empty? then -%>
+  authzid=<%= @authzid %>
+<% end -%>
+<% if !@credentials.empty? then -%>
+  credentials=<%= @credentials %>
+<% end -%>
+<% if !@realm.empty? then -%>
+  realm=<%= @realm %>
+<% end -%>
+<% if !@secprops.empty? then -%>
+  secprops=<%= @secprops %>
+<% end -%>
+<% if !@logbase.empty? then -%>
+  logbase=<%= @logbase %>
+<% end -%>
+<% if !@logfilter.empty? then -%>
+  logfilter=<%= @logfilter %>
+<% end -%>
+  syncdata=<%= @syncdata %>
+<% if !@updateref.empty? then -%>
+<%   Array(@updateref).flatten.each do |ur| -%>
+updateref <%= ur %>
+<%   end -%>
+<% else -%>
+updateref <%= @provider %>
+<% end -%>

@@ -1,0 +1,21 @@
+<%
+  if @listen_ldap then
+    listen_ldap = 'yes'
+  elsif not ( @listen_ldap and @listen_ldapi and @listen_ldaps ) then
+    listen_ldap = 'yes'
+  else
+    listen_ldap = 'no'
+  end
+
+  slapd_ulimit_settings = "-n #{@ulimit_max_open_files}"
+
+  custom_options = ['-f /etc/openldap/slapd.conf']
+  custom_options += @custom_options
+-%>
+SLAPD_OPTIONS="<%= custom_options.join(' ')%>"
+SLAPD_LDAP=<%= listen_ldap %>
+SLAPD_LDAPI=<%= @listen_ldapi ? 'yes' : 'no' %>
+SLAPD_LDAPS=<%= @listen_ldaps ? 'yes' : 'no' %>
+SLAPD_SHUTDOWN_TIMEOUT=<%= @slapd_shutdown_timeout %>
+# Parameters to ulimit, use to change system limits for slapd
+SLAPD_ULIMIT_SETTINGS="<%= slapd_ulimit_settings %>"

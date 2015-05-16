@@ -1,0 +1,222 @@
+<%
+# Build the sizelimit and timelimit strings
+
+def slapd_conf_erb_checkvars (limit_vars, varname)
+
+  retval = {}
+
+  limit_vars.keys.sort.each do |k|
+    temp_var = "#{varname}_#{k}"
+    if has_variable?(temp_var) and not eval("@#{temp_var}").empty? then
+      if eval("@#{temp_var}") =~ /^#{limit_vars[k].join('|')}$/ then
+        retval[k] = eval("@#{temp_var}")
+      else
+        raise Puppet::ParseError.new("#{varname}_#{k} must be one of #{limit_vars[k].join(', ')}. Got: #{eval("@#{temp_var}")}")
+      end
+    end
+  end
+
+  retval
+end
+
+t_sizelimit_vars = {
+  'soft'       => ['\d+','unlimited'],
+  'hard'       => ['\d+','unlimited'],
+  'unchecked'  => ['\d+','unlimited']
+}
+
+t_timelimit_vars = {
+  'soft'       => ['\d+','unlimited'],
+  'hard'       => ['\d+','unlimited']
+}
+
+t_sizelimit = slapd_conf_erb_checkvars(t_sizelimit_vars,'sizelimit')
+t_timelimit = slapd_conf_erb_checkvars(t_timelimit_vars,'timelimit')
+
+if t_sizelimit.empty? then
+  t_sizelimit = @sizelimit
+else
+  t_sizelimit = t_sizelimit.to_a.sort.map { |x| x = "size.#{x.join('=')}" }.join(' ')
+end
+
+if t_timelimit.empty? then
+  t_timelimit = @timelimit
+else
+  t_timelimit = t_timelimit.to_a.sort.map { |x| x = "time.#{x.join('=')}" }.join(' ')
+end
+
+t_disallow_valid = [
+  'bind_anon',
+  'bind_simple',
+  'tls_2_anon',
+  'tls_authc',
+  'proxy_authz_non_critical',
+  'dontusecopy_non_critical'
+]
+
+if @disallow and not (@disallow - t_disallow_valid).empty? then
+  raise Puppet::ParseError.new("$disallow must be one of #{t_disallow_valid.join(', ')}. Got: #{@disallow.join(',')}")
+end
+
+t_slapd_loglevel_valid = [
+  'trace',
+  'packets',
+  'args',
+  'conns',
+  'ber',
+  'filter',
+  'config',
+  'acl',
+  'stats',
+  'stats2',
+  'shell',
+  'parse',
+  'sync',
+  'none'
+]
+
+if @slapd_logLevel and not (@slapd_logLevel - t_slapd_loglevel_valid).empty? then
+  raise Puppet::ParseError.new("$slapd_logLevel must be one of #{t_slapd_loglevel_valid.join(', ')}. Got: #{@slapd_logLevel.join(',')}")
+end
+-%>
+include   /etc/openldap/schema/core.schema
+include   /etc/openldap/schema/cosine.schema
+include   /etc/openldap/schema/inetorgperson.schema
+include   /etc/openldap/schema/nis.schema
+<% @default_schemas.each do |schema| -%>
+include  /etc/openldap/schema/<%= schema %>.schema
+<% end -%>
+
+<%
+#Dynamically set the number of threads if threads is set to dynamic, logic based on recommendation from http://www.openldap.org/doc/admin24/tuning.html
+  t_threads = @threads
+  p_threads = @processorcount * 4
+
+  if t_threads.to_s == "dynamic" then
+    t_threads = [[p_threads,8].max,16].min
+  end
+-%>
+threads   <%= t_threads %>
+pidfile   <%= @pidfile %>
+argsfile  <%= @argsfile %>
+
+<% if @include_chain_overlay then -%>
+overlay chain
+chain-uri "<%= @ldap_master_uri %>"
+chain-idassert-bind bindmethod="simple"
+  binddn="<%= @ldap_bind_dn %>"
+  credentials="<%= @ldap_bind_pw %>"
+  mode="self"
+chain-tls start
+chain-idassert-authzFrom "*"
+<% end -%>
+
+modulepath <%= Array(@modulepath).join(':') %>
+
+authz-policy <%= @authz_policy %>
+<%
+if not @authz_regexp.empty? then
+  @authz_regexp.each do |authz_reg|
+-%>
+authz-regexp
+    "<%= authz_reg['match'] %>"
+    "<%= authz_reg['replace'] %>"
+
+<%
+  end
+end
+-%>
+
+<% if @use_tls then -%>
+TLSCertificateFile <%= @tlsCertificateFile %>
+TLSCertificateKeyFile <%= @tlsCertificateKeyFile %>
+TLSCipherSuite <%= @tlsCipherSuite %>
+TLSVerifyClient <%= @tlsVerifyClient %>
+TLSCRLCheck <%= @tlsCRLCheck %>
+<%   if not @tlsCRLFile.empty? then -%>
+TLSCRLFile <%= @tlsCRLFile %>
+<%   end -%>
+<%   if not @tlsCACertificatePath.empty? then -%>
+TLSCACertificatePath <%= @tlsCACertificatePath %>
+<%   end -%>
+<% end -%>
+
+security <%= @security %>
+password-hash {<%= @password_hash %>}
+
+<% if not @bind_anon then -%>
+disallow bind_anon
+<% end -%>
+<% if not @concurrency.empty? then -%>
+concurrency <%= @concurrency %>
+<% end -%>
+conn_max_pending <%= @conn_max_pending %>
+conn_max_pending_auth <%= @conn_max_pending_auth %>
+<% if not @default_searchbase.empty? then -%>
+defaultsearchbase <%= @default_searchbase %>
+<% end -%>
+<% if @disallow and not @disallow.empty? -%>
+disallow <%= @disallow.join(' ') %>
+<% end -%>
+<% if not @ditcontentrule.empty? then -%>
+ditcontentrule <%= @ditcontentrule %>
+<% end -%>
+<% if @gentlehup then -%>
+gentlehup on
+<% end -%>
+idletimeout <%= @idletimeout %>
+
+sizelimit   <%= t_sizelimit %>
+timelimit   <%= t_timelimit %>
+writetimeout <%= @writetimeout %>
+
+sockbuf_max_incoming <%= @sockbuf_max_incoming %>
+sockbuf_max_incoming_auth <%= @sockbuf_max_incoming_auth %>
+
+loglevel <%= @slapd_logLevel.join(' ') %>
+
+reverse-lookup <%= @reverse_lookup ? 'on' : 'off' %>
+<% if not @sortvals.empty? then -%>
+sortvals <%= @sortvals.join(' ') -%>
+<% end -%>
+<% if not @tcp_buffer.empty? then -%>
+tcp-buffer <%= @tcp_buffer %>
+<% end -%>
+
+database  <%= @database %>
+suffix    "<%= @suffix %>"
+rootdn    "<%= @rootdn %>"
+
+rootpw    <%= @rootpw %>
+
+directory <%= @directory %>
+<% if @checkpoint then -%>
+checkpoint <%= @checkpoint %>
+<% end -%>
+cachesize <%= @cachesize %>
+<% if @db_add_content_acl -%>
+add_content_acl <%= @db_add_content_acl ? 'on' : 'off' %>
+<% end -%>
+lastmod <%= @db_lastmod ? 'on' : 'off' %>
+maxderefdepth <%= @db_maxderefdepth %>
+<% if @db_mirrormode then -%>
+mirrormode on
+<% end -%>
+monitoring <%= @db_monitoring ? 'on' : 'off' %>
+readonly <%= @db_readonly ? 'on' : 'off' %>
+
+index_substr_any_step <%= @index_substr_any_step %>
+index_substr_any_len <%= @index_substr_any_len %>
+index_substr_if_maxlen <%= @index_substr_if_maxlen %>
+index_substr_if_minlen <%= @index_substr_if_minlen %>
+index_intlen <%= @index_intlen %>
+
+index objectClass                       eq,pres
+index ou,cn,mail,surname,givenname      eq,pres,sub
+index uidNumber,gidNumber,loginShell    eq,pres
+index uid,memberUid                     eq,pres,sub
+index nisMapName,nisMapEntry            eq,pres,sub
+
+include /etc/openldap/slapd.access
+include /etc/openldap/dynamic_includes
+

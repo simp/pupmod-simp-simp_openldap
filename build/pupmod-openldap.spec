@@ -69,7 +69,7 @@ fi
 * Sat May 16 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-1
 - More closely align with the published STIG guidelines.
 
-* Tue Mar 26 2015 Jacob Gingrich <jgingrich@onyxpoint.com> - 4.1.1-0
+* Thu Mar 26 2015 Jacob Gingrich <jgingrich@onyxpoint.com> - 4.1.1-0
 - Updated the module for facter 2.4.
 - nslcd threads set to 5, no longer 'dynamic'.
 

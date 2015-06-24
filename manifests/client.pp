@@ -32,19 +32,19 @@ class openldap::client (
   include 'openldap'
 
   file { '/etc/openldap/ldap.conf':
-    owner    => 'root',
-    group    => 'root',
-    mode     => '0644',
-    content  => template('openldap/etc/openldap/ldap.conf.erb')
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('openldap/etc/openldap/ldap.conf.erb')
   }
 
   # Set up root's ldaprc file.
   file { '/root/.ldaprc':
-    owner    => 'root',
-    group    => 'root',
-    mode     => '0600',
-    replace  => false,
-    content  => "TLS_CACERTDIR ${tls_cacertdir}\nTLS_CERT ${tls_cert}\nTLS_KEY ${tls_key}\n"
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
+    replace => false,
+    content => "TLS_CACERTDIR ${tls_cacertdir}\nTLS_CERT ${tls_cert}\nTLS_KEY ${tls_key}\n"
   }
 
   validate_array_member($referrals,['on','off'])

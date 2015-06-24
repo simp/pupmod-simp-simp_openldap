@@ -26,8 +26,8 @@ class openldap::slapo::syncprov (
   }
 
   openldap::server::add_limits { 'Allow Sync User Unlimited':
-    who     => hiera('ldap::sync_dn',$::openldap::server::sync_dn),
-    limits  => [
+    who    => hiera('ldap::sync_dn',$::openldap::server::sync_dn),
+    limits => [
       "size.soft=${sync_size_soft_limit}",
       "size.hard=${sync_size_hard_limit}",
       "time.soft=${sync_time_soft_limit}",

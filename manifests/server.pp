@@ -108,22 +108,22 @@ class openldap::server (
   # 'administrators' group to become unable to sync if it doesn't
   # start identical to the master.
   exec { 'bootstrap_ldap':
-    command     => "/sbin/service ${slapd_svc} stop; \
+    command   => "/sbin/service ${slapd_svc} stop; \
         /bin/find /var/lib/ldap -type f -name \"__db*\" -exec /bin/rm {} \\;; \
         /bin/find /var/lib/ldap/db -type f -name \"*bdb\" -exec /bin/rm {} \\;; \
         /usr/sbin/slapadd -l /etc/openldap/default.ldif -f /etc/openldap/slapd.conf; \
         /bin/chown -h -R ldap.ldap /var/lib/ldap/*; \
         /bin/touch /etc/openldap/puppet_bootstrapped.lock; \
         /bin/echo 'Bootstrapped LDAP';",
-    onlyif      => '/usr/local/sbin/ldap_bootstrap_check.sh',
-    logoutput   => true,
-    require     => [
+    onlyif    => '/usr/local/sbin/ldap_bootstrap_check.sh',
+    logoutput => true,
+    require   => [
       File['/etc/openldap/schema'],
       File['/usr/local/sbin/ldap_bootstrap_check.sh'],
     ],
-    creates     => '/etc/openldap/puppet_bootstrapped.lock',
-    notify      => Service[$slapd_svc],
-    before      => Exec['fixperms']
+    creates   => '/etc/openldap/puppet_bootstrapped.lock',
+    notify    => Service[$slapd_svc],
+    before    => Exec['fixperms']
   }
 
   # Ensure all of /var/lib/ldap is owned by ldap.
@@ -157,52 +157,52 @@ class openldap::server (
   }
 
   file { '/etc/openldap':
-      owner     => 'root',
-      group     => 'ldap',
-      recurse   => true,
-      require   => Package["openldap-servers.${::hardwaremodel}"]
+      owner   => 'root',
+      group   => 'ldap',
+      recurse => true,
+      require => Package["openldap-servers.${::hardwaremodel}"]
   }
 
   file { '/var/lib/ldap/DB_CONFIG':
-      ensure    => 'symlink',
-      target    => '/etc/openldap/DB_CONFIG',
-      require   => Package["openldap-servers.${::hardwaremodel}"]
+      ensure  => 'symlink',
+      target  => '/etc/openldap/DB_CONFIG',
+      require => Package["openldap-servers.${::hardwaremodel}"]
   }
 
   if $schema_sync {
     file { '/etc/openldap/schema':
-      owner     => 'root',
-      group     => 'ldap',
-      mode      => '0644',
-      recurse   => true,
-      source    => $schema_source,
-      require   => Package["openldap-servers.${::hardwaremodel}"]
+      owner   => 'root',
+      group   => 'ldap',
+      mode    => '0644',
+      recurse => true,
+      source  => $schema_source,
+      require => Package["openldap-servers.${::hardwaremodel}"]
     }
   }
   else {
     file { '/etc/openldap/schema':
-      owner     => 'root',
-      group     => 'ldap',
-      mode      => '0644',
-      recurse   => true,
-      require   => Package["openldap-servers.${::hardwaremodel}"]
+      owner   => 'root',
+      group   => 'ldap',
+      mode    => '0644',
+      recurse => true,
+      require => Package["openldap-servers.${::hardwaremodel}"]
     }
   }
 
   file { [ '/var/lib/ldap', '/var/lib/ldap/db', '/var/lib/ldap/logs' ]:
-      ensure    => 'directory',
-      owner     => 'ldap',
-      group     => 'ldap',
-      mode      => '0660',
-      require   => Package["openldap-servers.${::hardwaremodel}"]
+      ensure  => 'directory',
+      owner   => 'ldap',
+      group   => 'ldap',
+      mode    => '0660',
+      require => Package["openldap-servers.${::hardwaremodel}"]
 
   }
 
   file { '/var/log/slapd.log':
-      owner     => 'root',
-      group     => 'root',
-      mode      => '0600',
-      require   => Package["openldap-servers.${::hardwaremodel}"]
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      require => Package["openldap-servers.${::hardwaremodel}"]
   }
 
   file { '/etc/openldap/dynamic_includes':

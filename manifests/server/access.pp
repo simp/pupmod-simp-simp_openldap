@@ -22,9 +22,9 @@ class openldap::server::access {
   }
 
   exec { 'postprocess_slapd.access':
-    command     => "/usr/local/sbin/simp/build_slapd_access.rb ${fragdir}_slapd.access",
-    unless      => "/usr/bin/diff -q ${fragdir}_slapd.access.out /etc/openldap/slapd.access",
-    require     => File['/usr/local/sbin/simp/build_slapd_access.rb']
+    command => "/usr/local/sbin/simp/build_slapd_access.rb ${fragdir}_slapd.access",
+    unless  => "/usr/bin/diff -q ${fragdir}_slapd.access.out /etc/openldap/slapd.access",
+    require => File['/usr/local/sbin/simp/build_slapd_access.rb']
   }
 
   file { '/usr/local/sbin/simp/build_slapd_access.rb':
@@ -35,12 +35,12 @@ class openldap::server::access {
   }
 
   file { '/etc/openldap/slapd.access':
-    ensure    => 'file',
-    owner     => 'root',
-    group     => 'ldap',
-    mode      => '0640',
-    require   => Exec['postprocess_slapd.access'],
-    notify    => Service[$::openldap::server::slapd_svc],
-    source    => "file://${fragdir}_slapd.access.out"
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    require => Exec['postprocess_slapd.access'],
+    notify  => Service[$::openldap::server::slapd_svc],
+    source  => "file://${fragdir}_slapd.access.out"
   }
 }

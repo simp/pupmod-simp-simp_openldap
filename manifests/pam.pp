@@ -158,29 +158,29 @@ class openldap::pam (
     # This should be removed when SSSD can handle shadow password changes in
     # LDAP.
     file { $ldap_conf:
-      owner    => 'root',
-      group    => 'root',
-      mode     => '0644',
-      content  => template("openldap/${ldap_conf}.erb")
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template("openldap/${ldap_conf}.erb")
     }
   }
   else {
     if $use_nscd {
       include 'nscd'
       file { $ldap_conf:
-        owner    => 'root',
-        group    => 'root',
-        mode     => '0644',
-        content  => template("openldap/${ldap_conf}.erb"),
-        notify   => Service['nscd']
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => template("openldap/${ldap_conf}.erb"),
+        notify  => Service['nscd']
       }
     }
     else {
       file { $ldap_conf:
-        owner    => 'root',
-        group    => 'root',
-        mode     => '0644',
-        content  => template("openldap/${ldap_conf}.erb")
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => template("openldap/${ldap_conf}.erb")
       }
     }
 
@@ -194,13 +194,13 @@ class openldap::pam (
     }
 
     file { '/etc/nslcd.conf':
-      ensure   => 'file',
-      owner    => 'root',
-      group    => 'root',
-      mode     => '0600',
-      content  => template('openldap/etc/nslcd.conf.erb'),
-      notify   => Service['nslcd'],
-      require  => [
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      content => template('openldap/etc/nslcd.conf.erb'),
+      notify  => Service['nslcd'],
+      require => [
         Package['nss-pam-ldapd'],
         File[$ldap_conf]
       ]

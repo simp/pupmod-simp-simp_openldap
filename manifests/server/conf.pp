@@ -372,8 +372,8 @@ class openldap::server::conf (
 
   if $use_tls {
     pki::copy { '/etc/openldap':
-      group   => 'ldap',
-      notify  => Service[$openldap::server::slapd_svc]
+      group  => 'ldap',
+      notify => Service[$openldap::server::slapd_svc]
     }
   }
 
@@ -402,29 +402,29 @@ class openldap::server::conf (
   }
 
   file { '/etc/openldap/slapd.conf':
-    ensure   => 'file',
-    owner    => 'root',
-    group    => 'ldap',
-    mode     => '0640',
-    content  => template('openldap/etc/openldap/slapd.conf.erb'),
-    notify   => Service[$openldap::server::slapd_svc]
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/slapd.conf.erb'),
+    notify  => Service[$openldap::server::slapd_svc]
   }
 
   file { '/etc/openldap/DB_CONFIG':
-    ensure   => 'file',
-    owner    => 'root',
-    group    => 'ldap',
-    mode     => '0640',
-    content  => template('openldap/etc/openldap/DB_CONFIG.erb'),
-    notify   => Service[$openldap::server::slapd_svc]
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/DB_CONFIG.erb'),
+    notify  => Service[$openldap::server::slapd_svc]
   }
 
   file { '/etc/openldap/default.ldif':
-    ensure   => 'file',
-    owner    => 'root',
-    group    => 'ldap',
-    mode     => '0640',
-    content  => template('openldap/etc/openldap/default.ldif.erb'),
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/default.ldif.erb'),
   }
 
   if ($::operatingsystem in ['RedHat','CentOS']) and ($::operatingsystemmajrelease > '6') {
@@ -439,12 +439,12 @@ class openldap::server::conf (
   }
   else {
     file { '/etc/sysconfig/ldap':
-      ensure   => 'file',
-      owner    => 'root',
-      group    => 'root',
-      mode     => '0640',
-      content  => template('openldap/etc/sysconfig/ldap.erb'),
-      notify   => Service[$::openldap::server::slapd_svc]
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0640',
+      content => template('openldap/etc/sysconfig/ldap.erb'),
+      notify  => Service[$::openldap::server::slapd_svc]
     }
   }
 
@@ -580,7 +580,7 @@ if \$syslogfacility-text == 'local6' and \$msg contains 'Password:: ' then ~
   validate_absolute_path($tlsCertificateKeyFile)
   if !empty($tlsCRLFile) {  validate_absolute_path($tlsCRLFile) }
   validate_array_member($tlsCRLCheck,['none','peer','all'])
-  validate_array_member($tlsVerifyClient,['never','allow','try','demand','hard','true',true])
+  validate_array_member($tlsVerifyClient,['never','allow','try','demand','hard',true])
   validate_array_member($database,[
     'bdb',
     'config',

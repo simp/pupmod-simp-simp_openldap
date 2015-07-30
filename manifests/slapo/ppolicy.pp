@@ -74,7 +74,14 @@ class openldap::slapo::ppolicy (
 ) {
     include 'openldap::server::dynamic_includes'
 
-    $check_password = versioncmp($::lsbmajdistrelease,'7') ? {
+    $_simp_version = simp_version() ? {
+      /undefined/ => '0',
+      default     => simp_version()
+    }
+
+    # This is used by the default template.
+    # This should be cleaned up all around.
+    $check_password = versioncmp($_simp_version,'4.2.0') ? {
       '-1' => 'check_password',
       default => 'simp_check_password'
     }

@@ -118,7 +118,9 @@ pwdFailureCountInterval: 900
 pwdMustChange: TRUE
 pwdAllowUserChange: TRUE
 pwdSafeModify: FALSE
-pwdCheckModule: <%= scope.lookupvar('::openldap::slapo::ppolicy::check_pmassword') %>.so
+<% if @_simp_ppolicy_check_password -%>
+pwdCheckModule: <%= @_simp_ppolicy_check_password %>.so
+<% end -%>
 
 # This is for "special" accounts like hostAuth and LDAPSync
 dn: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
@@ -142,4 +144,6 @@ pwdFailureCountInterval: 900
 pwdMustChange: FALSE
 pwdAllowUserChange: FALSE
 pwdSafeModify: FALSE
-pwdCheckModule: <%= scope.lookupvar('::openldap::slapo::ppolicy::check_password') %>.so
+<% if @_simp_ppolicy_check_password -%>
+pwdCheckModule: <%= @_simp_ppolicy_check_password %>.so
+<% end -%>

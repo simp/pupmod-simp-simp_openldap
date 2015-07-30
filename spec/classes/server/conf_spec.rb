@@ -45,7 +45,7 @@ describe 'openldap::server::conf' do
     it { should compile.with_all_deps }
     it { should create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }
     it { should create_file('/etc/openldap/default.ldif').with_content(/dn: #{params[:suffix]}/) }
-    it { should create_file('/etc/openldap/default.ldif').with_content(/pwdCheckModule: .*check_password.so/) }
+    it { should create_file('/etc/openldap/default.ldif').with_content(/pwdCheckModule: .*simp_check_password.so/) }
     it {
       if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
       then

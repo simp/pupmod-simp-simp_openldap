@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 1
+Release: 2
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -66,6 +66,14 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Thu Jul 30 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-2
+- The Password Policy overlay was getting loaded into the default.ldif even if
+  you didn't want to use it. This has been fixed.
+- Made the password policy overlay align with the latest SIMP build of the
+  plugin.
+- This means that you *must* have version simp-ppolicy-check-password-2.4.39-0
+  or later available to the system being configured.
+
 * Sat May 16 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-1
 - More closely align with the published STIG guidelines.
 

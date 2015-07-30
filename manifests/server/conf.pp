@@ -419,6 +419,7 @@ class openldap::server::conf (
     notify  => Service[$openldap::server::slapd_svc]
   }
 
+  $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
   file { '/etc/openldap/default.ldif':
     ensure  => 'file',
     owner   => 'root',

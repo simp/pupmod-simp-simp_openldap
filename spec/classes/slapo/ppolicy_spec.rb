@@ -43,11 +43,7 @@ describe 'openldap::slapo::ppolicy' do
     )}
 
     it {
-      if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
-        conf_name = 'check_password.conf'
-      else
-        conf_name = 'simp_check_password.conf'
-      end
+      conf_name = 'simp_check_password.conf'
 
       should create_file("/etc/openldap/#{conf_name}").with({
         :group    => 'ldap',

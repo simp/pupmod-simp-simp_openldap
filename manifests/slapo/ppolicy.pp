@@ -74,7 +74,12 @@ class openldap::slapo::ppolicy (
 ) {
     include 'openldap::server::dynamic_includes'
 
-    $check_password = versioncmp($::lsbmajdistrelease,'7') ? {
+    $_simp_version = simp_version() ? {
+      /undefined/ => '0',
+      default     => simp_version()
+    }
+
+    $_check_password = versioncmp($_simp_version,'4.2.0') ? {
       '-1' => 'check_password',
       default => 'simp_check_password'
     }
@@ -86,7 +91,7 @@ class openldap::slapo::ppolicy (
         content => template('openldap/slapo/ppolicy.erb')
     }
 
-    file { "/etc/openldap/${check_password}.conf":
+    file { "/etc/openldap/${_check_password}.conf":
       owner   => 'root',
       group   => 'ldap',
       mode    => '0640',

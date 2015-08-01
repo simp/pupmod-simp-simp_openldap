@@ -493,22 +493,22 @@ class openldap::server::conf (
 
     if $audit_to_syslog {
       include 'rsyslog'
-      rsyslog::add_conf { 'openldap_audit':
-        content => "\$InputFileName ${auditlog}
-\$InputFileTag slapd_audit:
-\$InputFileStateFile openldap_audit
-\$InputFileFacility local6
-\$InputFileSeverity notice
-\$InputRunFileMonitor
-",
+      rsyslog::rule::other { 'openldap_audit':
+        rule    => "
+input(type=\"imfile\"
+  File=\"${auditlog}\"
+  StateFile=\"openldap_audt\"
+  Tag=\"slapd_audit\"
+  Facility=\"local6\"
+  Severity=\"notice\"
+)",
         require => File[$auditlog]
       }
 
-      rsyslog::add_conf { '1_openldap_drop_passwords':
-        content => "
+      rsyslog::rule::drop { '1_openldap_drop_passwords':
+        rule => '
 # Drop passwords from OpenLDAP audit logs.
-if \$syslogfacility-text == 'local6' and \$msg contains 'Password:: ' then ~
-"
+if $syslogfacility-text == \'local6\' and $msg contains \'Password:: \''
       }
     }
   }
@@ -517,8 +517,9 @@ if \$syslogfacility-text == 'local6' and \$msg contains 'Password:: ' then ~
     include 'logrotate'
     include 'rsyslog'
 
-    rsyslog::add_rule { 'openldap':
-      rule => "local4.* \t\t /var/log/${log_file}"
+    rsyslog::rule::local { 'openldap':
+      rule            => "local4.*",
+      target_log_file => "/var/log/${log_file}"
     }
 
     logrotate::add { 'slapd':

@@ -5,7 +5,7 @@
 # ---
 #
 class openldap::server::dynamic_includes {
-  include 'openldap::server'
+  include '::openldap::server'
 
   concat_build { 'slapd_dynamic_includes':
     order  => '*.inc',

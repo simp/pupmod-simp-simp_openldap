@@ -11,7 +11,7 @@
 # * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::access {
-  include 'openldap::server'
+  include '::openldap::server'
 
   $fragdir = fragmentdir('slapd_access')
 

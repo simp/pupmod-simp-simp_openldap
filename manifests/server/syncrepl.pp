@@ -39,12 +39,6 @@ define openldap::server::syncrepl (
   $syncdata='default',
   $updateref=''
 ) {
-  include 'openldap::server::dynamic_includes'
-
-  openldap::server::dynamic_includes::add { 'syncrepl':
-    content => template('openldap/syncrepl.erb')
-  }
-
   validate_between($name,'0','1000')
   validate_re_array(split($syncrepl_retry,'(\d+ \d+)'),'^(\s*(\d+ (\d+|\+)\s*)|\s*)$')
   validate_array_member($syncrepl_type,['refreshOnly','refreshAndPersist'])
@@ -55,4 +49,10 @@ define openldap::server::syncrepl (
   if !empty($starttls) { validate_array_member($starttls,['yes','critical']) }
   if !empty($bindmethod) { validate_array_member($bindmethod,['simple','sasl']) }
   validate_array_member($syncdata,['default','accesslog','changelog'])
+
+  include '::openldap::server::dynamic_includes'
+
+  openldap::server::dynamic_includes::add { 'syncrepl':
+    content => template('openldap/syncrepl.erb')
+  }
 }

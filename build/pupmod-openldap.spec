@@ -13,7 +13,7 @@ Requires: pupmod-iptables >= 4.1.0-3
 Requires: pupmod-logrotate >= 4.1.0-0
 Requires: pupmod-nscd >= 5.0.0-0
 Requires: pupmod-pki >= 3.0.0-0
-Requires: pupmod-rsyslog >= 4.1.0-0
+Requires: pupmod-rsyslog >= 5.0.0-0
 Requires: pupmod-sssd >= 4.0.0-1
 Requires: pupmod-tcpwrappers >= 2.1.0-0
 Requires: puppet >= 3.3.0
@@ -66,6 +66,9 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Thu Jul 30 2015 Kendall Moore <kmoore@keywcorp.com> - 4.1.1-3
+- Updated to use the new rsyslog module.
+
 * Thu Jul 30 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-2
 - The Password Policy overlay was getting loaded into the default.ldif even if
   you didn't want to use it. This has been fixed.

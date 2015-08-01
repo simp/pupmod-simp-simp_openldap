@@ -86,22 +86,27 @@ class openldap::server (
 ) {
   $slapd_svc = 'slapd'
 
-  include 'openldap'
-  include 'openldap::client'
-  include 'openldap::server::access'
-  include 'openldap::server::dynamic_includes'
+  validate_bool($schema_sync)
+  validate_bool($allow_sync)
+  validate_bool($use_ppolicy)
+  validate_bool($use_tcpwrappers)
+
+  include '::openldap'
+  include '::openldap::client'
+  include '::openldap::server::access'
+  include '::openldap::server::dynamic_includes'
 
   if $allow_sync {
-    include 'openldap::slapo::syncprov'
+    include '::openldap::slapo::syncprov'
   }
 
   if $use_ppolicy {
-    include 'openldap::slapo::ppolicy'
+    include '::openldap::slapo::ppolicy'
   }
 
   # This needs to come after ppolicy and syncprov since some templates
   # use the values.
-  include 'openldap::server::conf'
+  include '::openldap::server::conf'
 
   # This is a very crude attempt to not bootstrap if the executing
   # node is a slave node. Bootstrapping slave nodes causes the
@@ -341,9 +346,4 @@ class openldap::server (
     require    => Package["openldap-servers.${::hardwaremodel}"],
     notify     => Service[$slapd_svc]
   }
-
-  validate_bool($schema_sync)
-  validate_bool($allow_sync)
-  validate_bool($use_ppolicy)
-  validate_bool($use_tcpwrappers)
 }

@@ -255,15 +255,28 @@
 # [*enable_logging*]
 # Type: Boolean
 # Default: false
-#   If true, send the output of local4 to /var/log/ldap.log.
+#   If true, enable the SIMP logging infrastructure
+#
+# [*log_to_file*]
+# Type: Boolean
+# Default: false
+#   If true, send the output logs to the file specified in $log_file.
+#   Has no effect if $enable_logging == false.
 #
 # [*log_file*]
 # Type: Absolute Path
 # Default: '/var/log/slapd.log'
 #   If $enable_logging is true, output all logs to this file via
 #   syslog.
+#   Has no effect if $enable_logging == false.
 #
-# [*use_iptables*]
+# [*forward_all_logs*]
+# Type: Boolean
+# Default: false
+#   If true, forward all OpenLDAP logs via rsyslog.
+#   Has no effect if $enable_logging == false.
+#
+# [*enable_iptables*]
 # Type: Boolean
 # Default: true
 #   If true, enable the SIMP iptables for OpenLDAP.
@@ -364,170 +377,12 @@ class openldap::server::conf (
   $db_log_buffer_size = '2097152',
   $db_log_autoremove = true,
   $ulimit_max_open_files = '81920',
-  $enable_logging = false,
+  $enable_logging  = defined('$::enable_logging') ? { true => $::enable_logging,  default => hiera('enable_logging',false) },
+  $log_to_file = false,
   $log_file = '/var/log/slapd.log',
-  $use_iptables = true
+  $forward_all_logs = false,
+  $enable_iptables = defined('$::use_iptables')   ? { true => $::use_iptables,  default => hiera('use_iptables',false) },
 ) {
-  include 'openldap::server'
-
-  if $use_tls {
-    pki::copy { '/etc/openldap':
-      group  => 'ldap',
-      notify => Service[$openldap::server::slapd_svc]
-    }
-  }
-
-  if $::hardwaremodel == 'x86_64' {
-      $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']
-  }
-  else {
-      $modulepath = ['/usr/lib/openldap']
-  }
-
-  if $force_log_quick_kill {
-    include 'common::incron'
-
-    common::incron::add_system_table { 'nuke_openldap_log_files':
-      path    => "${directory}/logs",
-      mask    => ['IN_CREATE'],
-      command => '/bin/rm $@/$#'
-    }
-  }
-
-  file { $modulepath:
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    recurse => true
-  }
-
-  file { '/etc/openldap/slapd.conf':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'ldap',
-    mode    => '0640',
-    content => template('openldap/etc/openldap/slapd.conf.erb'),
-    notify  => Service[$openldap::server::slapd_svc]
-  }
-
-  file { '/etc/openldap/DB_CONFIG':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'ldap',
-    mode    => '0640',
-    content => template('openldap/etc/openldap/DB_CONFIG.erb'),
-    notify  => Service[$openldap::server::slapd_svc]
-  }
-
-  $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
-  file { '/etc/openldap/default.ldif':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'ldap',
-    mode    => '0640',
-    content => template('openldap/etc/openldap/default.ldif.erb'),
-  }
-
-  if ($::operatingsystem in ['RedHat','CentOS']) and ($::operatingsystemmajrelease > '6') {
-    file { '/etc/sysconfig/slapd':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0640',
-      content => template('openldap/etc/sysconfig/slapd.erb'),
-      notify  => Service[$::openldap::server::slapd_svc]
-    }
-  }
-  else {
-    file { '/etc/sysconfig/ldap':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0640',
-      content => template('openldap/etc/sysconfig/ldap.erb'),
-      notify  => Service[$::openldap::server::slapd_svc]
-    }
-  }
-
-  # IPTables
-  if $use_iptables {
-    include 'iptables'
-    if $listen_ldap or $listen_ldaps {
-      iptables::add_tcp_stateful_listen { 'allow_ldap':
-        order       => '11',
-        client_nets => $client_nets,
-        dports      => 'ldap'
-      }
-    }
-    if $listen_ldaps {
-      iptables::add_tcp_stateful_listen { 'allow_ldaps':
-        order       => '11',
-        client_nets => $client_nets,
-        dports      => 'ldaps'
-      }
-    }
-  }
-
-  if $audit_transactions {
-    file { $auditlog:
-      ensure => 'present',
-      owner  => 'ldap',
-      group  => 'ldap',
-      mode   => '0750'
-    }
-
-    include 'logrotate'
-
-    logrotate::add { 'slapd_audit_log':
-      log_files     => $auditlog,
-      create        => '0640 ldap ldap',
-      rotate_period => $auditlog_rotate,
-      rotate        => $auditlog_preserve
-    }
-
-    openldap::server::dynamic_includes::add { 'auditlog':
-      order   => '1000',
-      content => template('openldap/slapo/auditlog.erb'),
-      require => File[$auditlog]
-    }
-
-    if $audit_to_syslog {
-      include 'rsyslog'
-      rsyslog::add_conf { 'openldap_audit':
-        content => "\$InputFileName ${auditlog}
-\$InputFileTag slapd_audit:
-\$InputFileStateFile openldap_audit
-\$InputFileFacility local6
-\$InputFileSeverity notice
-\$InputRunFileMonitor
-",
-        require => File[$auditlog]
-      }
-
-      rsyslog::add_conf { '1_openldap_drop_passwords':
-        content => "
-# Drop passwords from OpenLDAP audit logs.
-if \$syslogfacility-text == 'local6' and \$msg contains 'Password:: ' then ~
-"
-      }
-    }
-  }
-
-  if $enable_logging {
-    include 'logrotate'
-    include 'rsyslog'
-
-    rsyslog::add_rule { 'openldap':
-      rule => "local4.* \t\t /var/log/${log_file}"
-    }
-
-    logrotate::add { 'slapd':
-      log_files  => [ $log_file ],
-      missingok  => true,
-      lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
-    }
-  }
-
   validate_absolute_path($argsfile)
   validate_bool($audit_transactions)
   validate_bool($audit_to_syslog)
@@ -614,7 +469,181 @@ if \$syslogfacility-text == 'local6' and \$msg contains 'Password:: ' then ~
   validate_bool($db_log_autoremove)
   validate_integer($ulimit_max_open_files)
   validate_bool($enable_logging)
+  validate_bool($log_to_file)
   validate_absolute_path($log_file)
+  validate_bool($forward_all_logs)
   validate_bool($use_tls)
-  validate_bool($use_iptables)
+  validate_bool($enable_iptables)
+
+  include 'openldap::server'
+
+  if $use_tls {
+    pki::copy { '/etc/openldap':
+      group  => 'ldap',
+      notify => Service[$openldap::server::slapd_svc]
+    }
+  }
+
+  if $::hardwaremodel == 'x86_64' {
+      $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']
+  }
+  else {
+      $modulepath = ['/usr/lib/openldap']
+  }
+
+  if $force_log_quick_kill {
+    include 'common::incron'
+
+    common::incron::add_system_table { 'nuke_openldap_log_files':
+      path    => "${directory}/logs",
+      mask    => ['IN_CREATE'],
+      command => '/bin/rm $@/$#'
+    }
+  }
+
+  file { $modulepath:
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    recurse => true
+  }
+
+  file { '/etc/openldap/slapd.conf':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/slapd.conf.erb'),
+    notify  => Service[$openldap::server::slapd_svc]
+  }
+
+  file { '/etc/openldap/DB_CONFIG':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/DB_CONFIG.erb'),
+    notify  => Service[$openldap::server::slapd_svc]
+  }
+
+  $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
+  file { '/etc/openldap/default.ldif':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/default.ldif.erb'),
+  }
+
+  if ($::operatingsystem in ['RedHat','CentOS']) and ($::operatingsystemmajrelease > '6') {
+    file { '/etc/sysconfig/slapd':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0640',
+      content => template('openldap/etc/sysconfig/slapd.erb'),
+      notify  => Service[$::openldap::server::slapd_svc]
+    }
+  }
+  else {
+    file { '/etc/sysconfig/ldap':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0640',
+      content => template('openldap/etc/sysconfig/ldap.erb'),
+      notify  => Service[$::openldap::server::slapd_svc]
+    }
+  }
+
+  # IPTables
+  if $enable_iptables {
+    include 'iptables'
+    if $listen_ldap or $listen_ldaps {
+      iptables::add_tcp_stateful_listen { 'allow_ldap':
+        order       => '11',
+        client_nets => $client_nets,
+        dports      => 'ldap'
+      }
+    }
+    if $listen_ldaps {
+      iptables::add_tcp_stateful_listen { 'allow_ldaps':
+        order       => '11',
+        client_nets => $client_nets,
+        dports      => 'ldaps'
+      }
+    }
+  }
+
+  if $enable_logging or hiera('use_simp_logging',false) {
+    include '::rsyslog'
+
+    if $audit_transactions {
+      include '::logrotate'
+
+      file { $auditlog:
+        ensure => 'present',
+        owner  => 'ldap',
+        group  => 'ldap',
+        mode   => '0750'
+      }
+
+      logrotate::add { 'slapd_audit_log':
+        log_files     => $auditlog,
+        create        => '0640 ldap ldap',
+        rotate_period => $auditlog_rotate,
+        rotate        => $auditlog_preserve
+      }
+  
+      openldap::server::dynamic_includes::add { 'auditlog':
+        order   => '1000',
+        content => template('openldap/slapo/auditlog.erb'),
+        require => File[$auditlog]
+      }
+  
+      if $audit_to_syslog {
+        include '::rsyslog'
+        rsyslog::rule::data_source { 'openldap_audit':
+          rule    => "
+  input(type=\"imfile\"
+    File=\"${auditlog}\"
+    StateFile=\"openldap_audt\"
+    Tag=\"slapd_audit\"
+    Facility=\"local6\"
+    Severity=\"notice\"
+  )",
+          require => File[$auditlog]
+        }
+  
+        rsyslog::rule::drop { '1_drop_openldap_passwords':
+          rule => '
+  # Drop passwords from OpenLDAP audit logs.
+  if $syslogtag == \'slapd_audit\' and $msg contains \'Password:: \''
+        }
+      }
+    }
+
+    if $log_to_file {
+      include '::logrotate'
+
+      # These are quite heavyweight so we're moving them up in the stack.
+      rsyslog::rule::local { '05_openldap_local':
+        rule            => 'local4.*',
+        target_log_file => "/var/log/${log_file}"
+      }
+
+      logrotate::add { 'slapd':
+        log_files  => [ $log_file ],
+        missingok  => true,
+        lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
+      }
+    }
+
+    if $forward_all_logs {
+      rsyslog::rule::remote { '06_openldap_remote':
+        rule            => 'if $syslogfacility-text == \'local4\' then',
+        stop_processing => true
+      }
+    }
+  }
 }

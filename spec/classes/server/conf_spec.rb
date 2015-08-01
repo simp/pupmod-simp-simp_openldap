@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe 'openldap::server::conf' do
+  let :pre_condition do
+    'include ::openldap'
+  end
+
   base_facts = {
     "RHEL 6" => {
       :fqdn => 'spec.test',
@@ -122,7 +126,9 @@ describe 'openldap::server::conf' do
       it { should create_common__incron__add_system_table('nuke_openldap_log_files').with_command('/bin/rm $@/$#') }
     end
 
-    context 'use_iptables' do
+    context 'enable_iptables' do
+      let(:params) {{ :enable_iptables => true }}
+
       it_behaves_like "a fact set conf"
 
       it { should create_class('iptables') }
@@ -137,7 +143,7 @@ describe 'openldap::server::conf' do
           'match'   => '^uid=([^,]+),.*',
           'replace' => "uid=\$1,ou=People,dc=host,dc=net"
         }],
-        :use_iptables => false
+        :enable_iptables => false
       }}
 
       it_behaves_like "a fact set conf"
@@ -153,7 +159,8 @@ describe 'openldap::server::conf' do
           'match'   => '^uid=([^,]+),.*',
           'replace' => "uid=\$1,ou=People,dc=host,dc=net"
         }],
-        :listen_ldaps => false
+        :listen_ldaps => false,
+        :enable_iptables => true
       }}
 
       it_behaves_like "a fact set conf"
@@ -171,7 +178,8 @@ describe 'openldap::server::conf' do
           'replace' => "uid=\$1,ou=People,dc=host,dc=net"
         }],
         :listen_ldap  => false,
-        :listen_ldaps => false
+        :listen_ldaps => false,
+        :enable_iptables => true
       }}
 
       it_behaves_like "a fact set conf"
@@ -190,7 +198,8 @@ describe 'openldap::server::conf' do
         :authz_regexp       => [{
           'match'   => '^uid=([^,]+),.*',
           'replace' => "uid=\$1,ou=People,dc=host,dc=net"
-        }]
+        }],
+        :enable_logging => true
       }}
 
       it_behaves_like "a fact set conf"
@@ -207,8 +216,8 @@ describe 'openldap::server::conf' do
         })
       }
       it { should create_openldap__server__dynamic_includes__add('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
-      it { should create_rsyslog__add_conf('openldap_audit').with_content(/InputFileName #{params[:auditlog]}/) }
-      it { should create_rsyslog__add_conf('1_openldap_drop_passwords').with_content(/Password::/) }
+      it { should create_rsyslog__rule__data_source('openldap_audit').with_rule(/File="#{params[:auditlog]}"/) }
+      it { should create_rsyslog__rule__drop('1_drop_openldap_passwords').with_rule(/contains\s+'Password::\s+'/) }
     end
 
     context 'audit_transactions_no_audit_to_syslog' do
@@ -221,7 +230,8 @@ describe 'openldap::server::conf' do
         :authz_regexp       => [{
           'match'   => '^uid=([^,]+),.*',
           'replace' => "uid=\$1,ou=People,dc=host,dc=net"
-        }]
+        }],
+        :enable_logging     => true
       }}
 
       it_behaves_like "a fact set conf"
@@ -238,7 +248,7 @@ describe 'openldap::server::conf' do
       }
       it { should create_openldap__server__dynamic_includes__add('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
       it { should_not create_rsyslog__add_conf('openldap_audit') }
-      it { should_not create_rsyslog__add_rule('1_openldap_drop_passwords') }
+      it { should_not create_rsyslog__rule__drop('1_drop_openldap_passwords') }
     end
 
     context 'logging_enabled' do
@@ -249,6 +259,7 @@ describe 'openldap::server::conf' do
           'replace' => "uid=\$1,ou=People,dc=host,dc=net"
         }],
         :enable_logging     => true,
+        :log_to_file        => true,
         :log_file           => '/foo/bar'
       }}
       it_behaves_like "a fact set conf"
@@ -256,7 +267,7 @@ describe 'openldap::server::conf' do
       it { should create_class('logrotate') }
       it { should create_class('rsyslog') }
 
-      it { should create_rsyslog__add_rule('openldap').with_rule(/local4.*#{params[:log_file]}/) }
+      it { should create_rsyslog__rule__local('05_openldap_local').with_rule(/local4\.\*/) }
       it { should create_logrotate__add('slapd').with({
           :log_files => [params[:log_file]]
         })
@@ -266,7 +277,7 @@ describe 'openldap::server::conf' do
     context 'logging_disabled' do
       it_behaves_like "a fact set conf"
 
-      it { should_not create_rsyslog__add_rule('openldap') }
+      it { should_not create_rsyslog__rule__local('05_openldap_local') }
       it { should_not create_logrotate__add('slapd') }
     end
 

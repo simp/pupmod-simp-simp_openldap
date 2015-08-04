@@ -44,6 +44,9 @@ class openldap (
   $ldap_uri = hiera('ldap::uri'),
   $is_server = false,
 ) {
+
+  include 'openldap::pam'
+
   if $is_server { include 'openldap::server' }
 
   validate_bool($is_server)

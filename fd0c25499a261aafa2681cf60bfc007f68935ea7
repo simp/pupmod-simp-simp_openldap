@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9ad9bd40_95284634",
+        "filename": "build/pupmod-openldap.spec",
+        "patchSetId": 4
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2015-08-11T15:01:28Z",
+      "side": 1,
+      "message": "increment to 3",
+      "revId": "fd0c25499a261aafa2681cf60bfc007f68935ea7",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}

@@ -377,7 +377,7 @@ class openldap::server::conf (
   $db_log_buffer_size = '2097152',
   $db_log_autoremove = true,
   $ulimit_max_open_files = '81920',
-  $enable_logging  = defined('$::enable_logging') ? { true => $::enable_logging,  default => hiera('enable_logging',false) },
+  $enable_logging  = defined('$::enable_logging') ? { true => $::enable_logging,  default => hiera('enable_logging',true) },
   $log_to_file = false,
   $log_file = '/var/log/slapd.log',
   $forward_all_logs = false,

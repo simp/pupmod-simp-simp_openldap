@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 3
+Release: 4
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -23,7 +23,7 @@ Buildarch: noarch
 Requires: simp-bootstrap >= 4.2.0
 Obsoletes: pupmod-openldap-test
 
-Prefix: /etc/puppet/environments/simp/modules
+Prefix: %{_sysconfdir}/puppet/environments/simp/modules
 
 %description
 This Puppet module provides the capability to configure OpenLDAP servers and
@@ -59,13 +59,17 @@ mkdir -p %{buildroot}/%{prefix}/openldap
 #!/bin/sh
 
 if [ -d %{prefix}/openldap/plugins ]; then
-  /bin/mv %{prefix}/openldap/plugins %{prefix}/openldap/plugins.bak
+  mv %{prefix}/openldap/plugins %{prefix}/openldap/plugins.bak
 fi
 
 %postun
 # Post uninstall stuff
 
 %changelog
+* Mon Nov 09 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-4
+- Changed pwdGraceAuthnLimit to '-1' to allow users to change their passwords
+  post expiry.
+
 * Thu Jul 30 2015 Kendall Moore <kmoore@keywcorp.com> - 4.1.1-3
 - Updated to use the new rsyslog module.
 

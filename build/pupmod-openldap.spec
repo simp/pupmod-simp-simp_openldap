@@ -1,14 +1,15 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 4
+Release: 5
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: pupmod-auditd >= 4.1.0-2
 Requires: pupmod-common >= 4.1.0-6
-Requires: pupmod-concat >= 2.0.0-0
+Requires: pupmod-simplib >= 1.0.0-0
+Requires: pupmod-simpcat >= 2.0.0-0
 Requires: pupmod-iptables >= 4.1.0-3
 Requires: pupmod-logrotate >= 4.1.0-0
 Requires: pupmod-nscd >= 5.0.0-0
@@ -66,6 +67,9 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Mon Nov 09 2015 Chris Tessmer <chris.tessmer@onypoint.com> - 4.1.1-5
+- migration to simplib and simpcat (lib/ only)
+
 * Mon Nov 09 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-4
 - Changed pwdGraceAuthnLimit to '-1' to allow users to change their passwords
   post expiry.
@@ -352,7 +356,7 @@ fi
 - Fixed the password policy entries to properly install. Unfortunately, users
   will need to fix this manually in the actively running LDAP.
 
-* Tue Apr 22 2011 Maintenance - 2.0.0-1
+* Fri Apr 22 2011 Maintenance - 2.0.0-1
 - Added the variable $enable_logging to slapd::conf so that local4 can be
   captured.
 - Changed puppet://$puppet_server/ to puppet:///

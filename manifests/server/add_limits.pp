@@ -39,7 +39,7 @@ define openldap::server::add_limits (
   $l_limits = join($limits,' ')
 
   openldap::server::dynamic_includes::add { "limit_${l_name}":
-    content => "limits $who $l_limits\n"
+    content => "limits ${who} ${l_limits}\n"
   }
 
   validate_array($limits)

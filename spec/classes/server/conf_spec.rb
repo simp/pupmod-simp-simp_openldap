@@ -123,7 +123,7 @@ describe 'openldap::server::conf' do
 
       it_behaves_like "a fact set conf"
 
-      it { should create_common__incron__add_system_table('nuke_openldap_log_files').with_command('/bin/rm $@/$#') }
+      it { should create_simplib__incron__add_system_table('nuke_openldap_log_files').with_command('/bin/rm $@/$#') }
     end
 
     context 'enable_iptables' do

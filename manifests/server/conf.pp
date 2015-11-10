@@ -415,7 +415,7 @@ class openldap::server::conf (
   validate_array_member($password_hash,['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'])
   # Cast threads to a string so it can be regex against both
   # digits and the string 'dynamic'
-  validate_re("${threads}",'^(\d+|dynamic)$')
+  validate_re($threads,'^(\d+|dynamic)$')
   validate_absolute_path($pidfile)
   validate_bool($reverse_lookup)
   validate_re($sizelimit,'^(\d+|unlimited)$')
@@ -492,9 +492,9 @@ class openldap::server::conf (
   }
 
   if $force_log_quick_kill {
-    include 'common::incron'
+    include 'simplib::incron'
 
-    common::incron::add_system_table { 'nuke_openldap_log_files':
+    simplib::incron::add_system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'

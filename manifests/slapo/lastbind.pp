@@ -25,7 +25,7 @@ class openldap::slapo::lastbind (
     owner   => 'root',
     group   => 'ldap',
     mode    => '0640',
-    content => "lastbind-precision $lastbind_precision\n",
+    content => "lastbind-precision ${lastbind_precision}\n",
     require => Package['simp-lastbind']
   }
 

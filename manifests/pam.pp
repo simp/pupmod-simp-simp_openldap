@@ -184,7 +184,7 @@ class openldap::pam (
       }
     }
 
-    if ( $::operatingsystem in ['RedHat','CentOS'] ) and (versioncmp($::lsbmajdistrelease,'6') > 0) {
+    if ( $::operatingsystem in ['RedHat','CentOS'] ) and (versioncmp($::operatingsystemmajrelease,'6') > 0) {
       if $::selinux_current_mode and $::selinux_current_mode != 'disabled' {
         selboolean { 'authlogin_nsswitch_use_ldap':
           persistent => true,

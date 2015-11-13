@@ -1,6 +1,6 @@
 <%
 if ['RedHat','CentOS'].include?(@operatingsystem) then
-  if ( scope.function_versioncmp([@lsbdistrelease,"5.7"]) < 0 ) then
+  if ( scope.function_versioncmp([@operatingsystemrelease,"5.7"]) < 0 ) then
 -%>
 moduleload syncrepl.la
 <%

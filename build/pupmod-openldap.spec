@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 5
+Release: 6
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -67,6 +67,9 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Thu Nov 12 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-6
+- Replaced all 'lsb*' facts with 'operatingsystem*' facts.
+
 * Mon Nov 09 2015 Chris Tessmer <chris.tessmer@onypoint.com> - 4.1.1-5
 - migration to simplib and simpcat (lib/ only)
 

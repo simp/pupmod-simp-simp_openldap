@@ -68,6 +68,7 @@ fi
 %changelog
 * Thu Nov 12 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-6
 - Replaced all 'lsb*' facts with 'operatingsystem*' facts.
+- Updated to use SSSD by default on EL<7.
 
 * Mon Nov 09 2015 Chris Tessmer <chris.tessmer@onypoint.com> - 4.1.1-5
 - migration to simplib and simpcat (lib/ only)

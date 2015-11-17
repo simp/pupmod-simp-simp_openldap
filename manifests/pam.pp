@@ -130,9 +130,9 @@ class openldap::pam (
     'hsqldb','radvd','apache','tomcat'
   ],
   $use_auditd = true,
-  $use_nscd = hiera('use_nscd',true),
-  $use_sssd = hiera('use_sssd',false)
-) {
+  $use_nscd = $::openldap::use_nscd,
+  $use_sssd = $::openldap::use_sssd
+) inherits ::openldap {
 
   $ldap_conf = '/etc/pam_ldap.conf'
 

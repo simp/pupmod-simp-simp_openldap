@@ -38,7 +38,13 @@ describe 'openldap::pam' do
       should create_auditd__add_rules('ldap.conf').that_requires('File[/etc/pam_ldap.conf]')
     }
     it { should create_class('pki').that_comes_before('File[/etc/pam_ldap.conf]') }
-    it { should create_class('nscd') }
+    it {
+      if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemmajrelease].to_s < '7')
+        should create_class('nscd')
+      else
+        should create_class('sssd')
+      end
+    }
     it {
       should create_file('/etc/pam_ldap.conf').with({ :content => /ssl\s+start_tls/ })
       should create_file('/etc/pam_ldap.conf').with({ :content => /binddn\s+.+/ })
@@ -76,7 +82,13 @@ describe 'openldap::pam' do
     end
 
     context 'threads_is_default' do
-      it { should create_file('/etc/nslcd.conf').with({ :content => /threads 5/ }) }
+      it {
+        if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemmajrelease].to_s < '7')
+          should create_file('/etc/nslcd.conf').with({ :content => /threads 5/ })
+        else
+          should_not create_file('/etc/nslcd.conf')
+        end
+      }
     end
 
     context 'threads_is_user_overridden' do
@@ -84,8 +96,14 @@ describe 'openldap::pam' do
         :threads => 20
       }}
 
-      it { should create_file('/etc/nslcd.conf').with({ :content => /threads 20/ }) }
-      it { should create_file('/etc/nslcd.conf').without({ :content => /threads 5/ }) }
+      it { 
+        if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemmajrelease].to_s < '7')
+          should create_file('/etc/nslcd.conf').with({ :content => /threads 20/ })
+          should create_file('/etc/nslcd.conf').without({ :content => /threads 5/ })
+        else
+          should_not create_file('/etc/nslcd.conf')
+        end
+      }
     end
   end
 

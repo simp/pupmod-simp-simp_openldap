@@ -19,6 +19,25 @@
 # Default: false
 #   Set this if you want to create an OpenLDAP server on your node.
 #
+# [*use_nscd*]
+# Type: Boolean
+# Default: true
+#   Only appiles to *client* systems
+#
+#   Whether or not to use NSCD in the installation instead of SSSD. If
+#   '$use_sssd = true' then this will not be referenced.
+#
+# [*use_sssd*]
+# Type: Boolean
+# Default: false if EL<7, true otherwise
+#   Only appiles to *client* systems
+#
+#   Whether or not to use SSSD in the installation.
+#   There are issues where SSSD will allow a login, even if the user's password
+#   has expire, if the user has a valid SSH key. However, in EL7+, there are
+#   issues with nscd and nslcd which can lock users our of the system when
+#   using LDAP.
+#
 # == Hiera Variables
 #
 # [*ldap::base_dn*]
@@ -43,7 +62,9 @@ class openldap (
   $ldap_master = hiera('ldap::master',''),
   $ldap_uri = hiera('ldap::uri'),
   $is_server = false,
-) {
+  $use_nscd = $::openldap::params::use_nscd,
+  $use_sssd = $::openldap::params::use_sssd
+) inherits ::openldap::params {
   if $is_server { include 'openldap::server' }
 
   validate_bool($is_server)

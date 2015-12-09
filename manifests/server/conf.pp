@@ -475,7 +475,8 @@ class openldap::server::conf (
   validate_bool($use_tls)
   validate_bool($enable_iptables)
 
-  include 'openldap::server'
+  include '::openldap::server'
+  include '::openldap::server::conf::default_ldif'
 
   if $use_tls {
     pki::copy { '/etc/openldap':
@@ -524,15 +525,6 @@ class openldap::server::conf (
     mode    => '0640',
     content => template('openldap/etc/openldap/DB_CONFIG.erb'),
     notify  => Service[$openldap::server::slapd_svc]
-  }
-
-  $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
-  file { '/etc/openldap/default.ldif':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'ldap',
-    mode    => '0640',
-    content => template('openldap/etc/openldap/default.ldif.erb'),
   }
 
   if ($::operatingsystem in ['RedHat','CentOS']) and ($::operatingsystemmajrelease > '6') {

@@ -104,21 +104,25 @@ objectClass: pwdPolicy
 objectClass: pwdPolicyChecker
 cn: default
 pwdAttribute: userPassword
-pwdMinAge: 86400
-pwdMaxAge: 15552000
-pwdInHistory: 24
-pwdCheckQuality: 2
-pwdMinLength: 14
-pwdExpireWarning: 1209600
-pwdGraceAuthNLimit: -1
-pwdLockout: TRUE
-pwdLockoutDuration: 900
-pwdMaxFailure: 5
-pwdFailureCountInterval: 900
-pwdMustChange: TRUE
-pwdAllowUserChange: TRUE
-pwdSafeModify: FALSE
-<% if @_simp_ppolicy_check_password -%>
+pwdMinAge: <%= @ppolicy_pwd_min_age %>
+pwdMaxAge: <%= @ppolicy_pwd_max_age %>
+pwdInHistory: <%= @ppolicy_pwd_in_history %>
+<% if @_simp_ppolicy_check_password && !"#{@_simp_ppolicy_check_password}".empty? -%>
+pwdCheckQuality: <%= @ppolicy_pwd_check_quality %>
+<% else -%>
+pwdCheckQuality: 0
+<% end -%>
+pwdMinLength: <%= @pwd_min_length %>
+pwdExpireWarning: <%= @pwd_expire_warning %>
+pwdGraceAuthNLimit: <%= @pwd_grace_authn_limit %>
+pwdLockout: <%= @pwd_lockout.to_s.upcase %>
+pwdLockoutDuration: <%= @pwd_lockout_duration %>
+pwdMaxFailure: <%= @pwd_max_failure %>
+pwdFailureCountInterval: <%= @pwd_failure_count_interval %>
+pwdMustChange: <%= @pwd_must_change.to_s.upcase %>
+pwdAllowUserChange: <%= @pwd_allow_user_change.to_s.upcase %>
+pwdSafeModify: <%= @pwd_safe_modify.to_s.upcase %>
+<% if @_simp_ppolicy_check_password && !"#{@_simp_ppolicy_check_password}".empty? -%>
 pwdCheckModule: <%= @_simp_ppolicy_check_password %>.so
 <% end -%>
 

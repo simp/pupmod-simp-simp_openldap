@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5ac4a560_2bdedf11",
+        "filename": "templates/etc/openldap/default.ldif.erb",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2015-12-09T18:08:37Z",
+      "side": 1,
+      "message": "ppolicy_ needs to precede these variables",
+      "range": {
+        "startLine": 115,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 50
+      },
+      "revId": "16fe81a6e32879daaf34234c90db90c8935c675d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}

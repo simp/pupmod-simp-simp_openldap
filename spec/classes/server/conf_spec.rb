@@ -45,6 +45,7 @@ describe 'openldap::server::conf' do
   # This sets up the tests that should *always* work.
   shared_examples 'a fact set conf' do
     it { should create_class('openldap::server') }
+    it { should create_class('openldap::server::conf::default_ldif') }
 
     it { should compile.with_all_deps }
     it { should create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }

@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 6
+Release: 7
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -66,6 +66,11 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Tue Dec 08 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-7
+- The default.ldif template has been updated to provide the capability
+  to modify the password setting defaults.  This will *not* affect
+  the running LDAP server.
+
 * Thu Nov 12 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-6
 - Replaced all 'lsb*' facts with 'operatingsystem*' facts.
 - Updated to use SSSD by default on EL<7.

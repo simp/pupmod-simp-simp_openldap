@@ -206,20 +206,22 @@ class openldap::pam (
       ]
     }
 
+    $_nslcd_subscribe = $ssl ? {
+      false   => Package['nss-pam-ldapd'],
+      default => [
+        Package['nss-pam-ldapd'],
+        File[$tls_cacertdir],
+        File[$tls_cert],
+        File[$tls_key]
+      ]
+    }
+
     service { 'nslcd':
       ensure     => 'running',
       enable     => true,
       hasstatus  => true,
       hasrestart => true,
-      subscribe  => $ssl ? {
-        false   => Package['nss-pam-ldapd'],
-        default => [
-          Package['nss-pam-ldapd'],
-          File[$tls_cacertdir],
-          File[$tls_cert],
-          File[$tls_key]
-        ]
-      }
+      subscribe  => $_nslcd_subscribe
     }
   }
 

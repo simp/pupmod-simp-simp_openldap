@@ -1,59 +1,59 @@
-dn: <%= @suffix %>
-dc: <%= @suffix.split(',').first.split('dc=').last %>
+dn: <%= @_suffix %>
+dc: <%= @_suffix.split(',').first.split('dc=').last %>
 objectClass: top
 objectClass: domain
 
-dn: ou=Hosts,<%= @suffix %>
+dn: ou=Hosts,<%= @_suffix %>
 ou: Hosts
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Rpc,<%= @suffix %>
+dn: ou=Rpc,<%= @_suffix %>
 ou: Rpc
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Services,<%= @suffix %>
+dn: ou=Services,<%= @_suffix %>
 ou: Services
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Mounts,<%= @suffix %>
+dn: ou=Mounts,<%= @_suffix %>
 ou: Mounts
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Networks,<%= @suffix %>
+dn: ou=Networks,<%= @_suffix %>
 ou: Networks
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=People,<%= @suffix %>
+dn: ou=People,<%= @_suffix %>
 ou: People
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Group,<%= @suffix %>
+dn: ou=Group,<%= @_suffix %>
 ou: Group
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Netgroup,<%= @suffix %>
+dn: ou=Netgroup,<%= @_suffix %>
 ou: Netgroup
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Protocols,<%= @suffix %>
+dn: ou=Protocols,<%= @_suffix %>
 ou: Protocols
 objectClass: top
 objectClass: organizationalUnit
 
-dn: ou=Aliases,<%= @suffix %>
+dn: ou=Aliases,<%= @_suffix %>
 ou: Aliases
 objectClass: top
 objectClass: organizationalUnit
 
-dn: cn=localhost.localdomain,ou=Hosts,<%= @suffix %>
+dn: cn=localhost.localdomain,ou=Hosts,<%= @_suffix %>
 objectClass: top
 objectClass: ipHost
 objectClass: device
@@ -61,43 +61,43 @@ ipHostNumber: 127.0.0.1
 cn: localhost.localdomain
 cn: localhost
 
-dn: <%= @rootdn %>
-cn: <%= @rootdn.split(',').first.split('=').last %>
+dn: <%= @_rootdn %>
+cn: <%= @_rootdn.split(',').first.split('=').last %>
 objectClass: organizationalRole
 
-dn: <%= @syncdn %>
+dn: <%= @_syncdn %>
 objectClass: person
-cn: <%= @syncdn.split(',').first.split('=').last %>
+cn: <%= @_syncdn.split(',').first.split('=').last %>
 sn: Internal
-userPassword: <%= @syncpw %>
-pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
+userPassword: <%= @_syncpw %>
+pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,<%= @_suffix %>
 
-dn: <%= @binddn %>
+dn: <%= @_binddn %>
 objectClass: person
-cn: <%= @binddn.split(',').first.split('=').last %>
+cn: <%= @_binddn.split(',').first.split('=').last %>
 sn: Internal
-userPassword: <%= @bindpw %>
-pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
+userPassword: <%= @_bindpw %>
+pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,<%= @_suffix %>
 
-dn: cn=users,ou=Group,<%= @suffix %>
+dn: cn=users,ou=Group,<%= @_suffix %>
 objectClass: posixGroup
 objectClass: top
 cn: users
 gidNumber: 100
 
-dn: cn=administrators,ou=Group,<%= @suffix %>
+dn: cn=administrators,ou=Group,<%= @_suffix %>
 objectClass: posixGroup
 objectClass: top
 cn: administrators
 gidNumber: 700
 
-dn: ou=pwpolicies,<%= @suffix %>
+dn: ou=pwpolicies,<%= @_suffix %>
 ou: pwpolicies
 objectClass: top
 objectClass: organizationalUnit
 
 # Some sane defaults
-dn: cn=default,ou=pwpolicies,<%= @suffix %>
+dn: cn=default,ou=pwpolicies,<%= @_suffix %>
 objectClass: top
 objectClass: device
 objectClass: pwdPolicy
@@ -127,7 +127,7 @@ pwdCheckModule: <%= @_simp_ppolicy_check_password %>.so
 <% end -%>
 
 # This is for "special" accounts like hostAuth and LDAPSync
-dn: cn=noExpire_noLockout,ou=pwpolicies,<%= @suffix %>
+dn: cn=noExpire_noLockout,ou=pwpolicies,<%= @_suffix %>
 objectClass: top
 objectClass: device
 objectClass: pwdPolicy

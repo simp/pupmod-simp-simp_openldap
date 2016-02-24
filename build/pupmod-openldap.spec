@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 7
+Release: 9
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -9,11 +9,11 @@ Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: pupmod-auditd >= 4.1.0-2
 Requires: pupmod-iptables >= 4.1.0-3
 Requires: pupmod-logrotate >= 4.1.0-0
-Requires: pupmod-nscd >= 5.0.0-0
+Requires: pupmod-nscd >= 5.0.0-7
 Requires: pupmod-pki >= 3.0.0-0
 Requires: pupmod-rsyslog >= 5.0.0-0
 Requires: pupmod-simpcat >= 2.0.0-0
-Requires: pupmod-simplib >= 1.0.0-0
+Requires: pupmod-simplib >= 1.0.1-3
 Requires: pupmod-sssd >= 4.0.0-1
 Requires: pupmod-tcpwrappers >= 2.1.0-0
 Requires: puppet >= 3.3.0
@@ -21,7 +21,8 @@ Requires: simp_bootstrap >= 2.0.0-1
 Requires: puppetlabs-stdlib >= 4.1.0-0.SIMP
 Buildarch: noarch
 Requires: simp-bootstrap >= 4.2.0
-Obsoletes: pupmod-openldap-test
+Obsoletes: pupmod-openldap-test >= 0.0.1
+Requires: pupmod-onyxpoint-compliance_markup
 
 Prefix: %{_sysconfdir}/puppet/environments/simp/modules
 
@@ -66,6 +67,12 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Mon Feb 29 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-9
+- Updated to work cleanly with Puppet 4.3.2
+
+* Tue Feb 23 2016 Ralph Wright <ralph.wright@onyxpoint.com> - 4.1.1-8
+- Added compliance function support
+
 * Tue Dec 08 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-7
 - The default.ldif template has been updated to provide the capability
   to modify the password setting defaults.  This will *not* affect

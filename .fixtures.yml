@@ -5,7 +5,7 @@ fixtures:
     augeasproviders_core: "git://github.com/simp/augeasproviders_core"
     augeasproviders_grub: "git://github.com/simp/augeasproviders_grub"
     common: "git://github.com/simp/pupmod-simp-common"
-    simplib: "git://github.com/simp/pupmod-simp-simplib"
+    #simplib: "git://github.com/simp/pupmod-simp-simplib"
     simpcat: "git://github.com/simp/pupmod-simp-concat"
     iptables: "git://github.com/simp/pupmod-simp-iptables"
     logrotate: "git://github.com/simp/pupmod-simp-logrotate"
@@ -16,5 +16,7 @@ fixtures:
     sssd: "git://github.com/simp/pupmod-simp-sssd"
     stdlib: "git://github.com/simp/puppetlabs-stdlib"
     tcpwrappers: "git://github.com/simp/pupmod-simp-tcpwrappers"
+    compliance: "https://github.com/trevor-vaughan/pupmod-compliance"
   symlinks:
     openldap: "#{source_dir}"
+    simplib: "#{source_dir}/../simplib"

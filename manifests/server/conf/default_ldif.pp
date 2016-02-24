@@ -43,6 +43,14 @@ class openldap::server::conf::default_ldif (
   validate_bool($ppolicy_pwd_allow_user_change)
   validate_bool($ppolicy_pwd_safe_modify)
 
+  compliance_map()
+
+  $_suffix = $::openldap::server::conf::suffix
+  $_rootdn = $::openldap::server::conf::rootdn
+  $_syncdn = $::openldap::server::conf::syncdn
+  $_syncpw = $::openldap::server::conf::syncpw
+  $_binddn = $::openldap::server::conf::binddn
+  $_bindpw = $::openldap::server::conf::bindpw
   $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
   file { '/etc/openldap/default.ldif':
     ensure  => 'file',

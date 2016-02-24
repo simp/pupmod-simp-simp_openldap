@@ -415,7 +415,7 @@ class openldap::server::conf (
   validate_array_member($password_hash,['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'])
   # Cast threads to a string so it can be regex against both
   # digits and the string 'dynamic'
-  validate_re($threads,'^(\d+|dynamic)$')
+  validate_re(to_string($threads),'^(\d+|dynamic)$')
   validate_absolute_path($pidfile)
   validate_bool($reverse_lookup)
   validate_re($sizelimit,'^(\d+|unlimited)$')
@@ -474,6 +474,8 @@ class openldap::server::conf (
   validate_bool($forward_all_logs)
   validate_bool($use_tls)
   validate_bool($enable_iptables)
+
+  compliance_map()
 
   include '::openldap::server'
   include '::openldap::server::conf::default_ldif'

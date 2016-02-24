@@ -299,4 +299,6 @@ class openldap::pam (
   validate_absolute_path($tls_key)
   validate_bool($tls_randfile)
   validate_integer($threads)
+
+  compliance_map()
 }

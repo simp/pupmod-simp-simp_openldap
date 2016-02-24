@@ -475,6 +475,8 @@ class openldap::server::conf (
   validate_bool($use_tls)
   validate_bool($enable_iptables)
 
+  compliance_map()
+
   include '::openldap::server'
   include '::openldap::server::conf::default_ldif'
 

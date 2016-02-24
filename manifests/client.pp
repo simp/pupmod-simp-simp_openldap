@@ -58,4 +58,6 @@ class openldap::client (
   validate_array_member($tls_reqcert,['never','allow','try','demand','hard'])
   validate_array_member($tls_crlcheck,['none','peer','all'])
   if ! empty($tls_crlfile) { validate_absolute_path($tls_crlfile) }
+
+  compliance_map()
 }

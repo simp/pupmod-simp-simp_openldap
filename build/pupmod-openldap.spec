@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
 Version: 4.1.1
-Release: 9
+Release: 10
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -67,6 +67,9 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Mon Mar 14 2016 Nick Markowski <nmarkowski@keywcorp.com> - 4.1.1-10
+- Ensure that EL6.7+ uses SSSD over NSCD
+
 * Mon Feb 29 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-9
 - Updated to work cleanly with Puppet 4.3.2
 

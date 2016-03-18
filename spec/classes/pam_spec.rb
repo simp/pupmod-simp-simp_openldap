@@ -39,7 +39,7 @@ describe 'openldap::pam' do
     }
     it { should create_class('pki').that_comes_before('File[/etc/pam_ldap.conf]') }
     it {
-      if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemmajrelease].to_s < '7')
+      if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemrelease].to_s < '6.7')
         should create_class('nscd')
       else
         should create_class('sssd')
@@ -83,7 +83,7 @@ describe 'openldap::pam' do
 
     context 'threads_is_default' do
       it {
-        if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemmajrelease].to_s < '7')
+        if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemrelease].to_s < '6.7')
           should create_file('/etc/nslcd.conf').with({ :content => /threads 5/ })
         else
           should_not create_file('/etc/nslcd.conf')
@@ -97,7 +97,7 @@ describe 'openldap::pam' do
       }}
 
       it { 
-        if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemmajrelease].to_s < '7')
+        if (facts[:operatingsystem] == 'RedHat') && (facts[:operatingsystemrelease].to_s < '6.7')
           should create_file('/etc/nslcd.conf').with({ :content => /threads 20/ })
           should create_file('/etc/nslcd.conf').without({ :content => /threads 5/ })
         else

@@ -104,14 +104,14 @@ class openldap::pam (
   $sslpath = '',
   $start_tls = true,
   $tls_checkpeer = true,
-  $tls_cacertfile = '/etc/pki/cacerts/cacerts.pem',
-  $tls_cacertdir = '/etc/pki/cacerts',
+  $tls_cacertfile = '',
+  $tls_cacertdir = '',
   $tls_ciphers = hiera('openssl::cipher_suite',[
     'HIGH',
     '-SSLv2'
   ]),
-  $tls_cert = "/etc/pki/public/${::fqdn}.pub",
-  $tls_key = "/etc/pki/private/${::fqdn}.pem",
+  $tls_cert = '',
+  $tls_key = '',
   $tls_randfile = false,
   $threads = 5,
   $rootpwmoddn = '',
@@ -131,103 +131,11 @@ class openldap::pam (
   ],
   $use_auditd = true,
   $use_nscd = $::openldap::use_nscd,
-  $use_sssd = $::openldap::use_sssd
+  $use_sssd = $::openldap::use_sssd,
+  $use_simp_pki = defined('$::use_simp_pki') ? { true => $::use_simp_pki, default => hiera('use_simp_pki', true) }
 ) inherits ::openldap {
 
   $ldap_conf = '/etc/pam_ldap.conf'
-
-  if $use_auditd {
-    include '::auditd'
-
-    auditd::add_rules { 'ldap.conf':
-      content => "-w ${ldap_conf} -p a -k CFG_etc_ldap",
-      require => File[$ldap_conf]
-    }
-  }
-
-  if $ssl {
-    include '::pki'
-
-    Class['pki'] -> File[$ldap_conf]
-  }
-
-  # Complete hackery to account for legacy upgrades.
-  if $use_sssd {
-    include 'sssd'
-
-    # This should be removed when SSSD can handle shadow password changes in
-    # LDAP.
-    file { $ldap_conf:
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => template("openldap/${ldap_conf}.erb")
-    }
-  }
-  else {
-    if $use_nscd {
-      include 'nscd'
-      file { $ldap_conf:
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template("openldap/${ldap_conf}.erb"),
-        notify  => Service['nscd']
-      }
-    }
-    else {
-      file { $ldap_conf:
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template("openldap/${ldap_conf}.erb")
-      }
-    }
-
-    if ( $::operatingsystem in ['RedHat','CentOS'] ) and (versioncmp($::operatingsystemmajrelease,'6') > 0) {
-      if $::selinux_current_mode and $::selinux_current_mode != 'disabled' {
-        selboolean { 'authlogin_nsswitch_use_ldap':
-          persistent => true,
-          value      => 'on'
-        }
-      }
-    }
-
-    file { '/etc/nslcd.conf':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0600',
-      content => template('openldap/etc/nslcd.conf.erb'),
-      notify  => Service['nslcd'],
-      require => [
-        Package['nss-pam-ldapd'],
-        File[$ldap_conf]
-      ]
-    }
-
-    $_nslcd_subscribe = $ssl ? {
-      false   => Package['nss-pam-ldapd'],
-      default => [
-        Package['nss-pam-ldapd'],
-        File[$tls_cacertdir],
-        File[$tls_cert],
-        File[$tls_key]
-      ]
-    }
-
-    service { 'nslcd':
-      ensure     => 'running',
-      enable     => true,
-      hasstatus  => true,
-      hasrestart => true,
-      subscribe  => $_nslcd_subscribe
-    }
-  }
-
-  package { "openldap-clients.${::hardwaremodel}": ensure => 'latest' }
-  package { 'nss-pam-ldapd':                       ensure => 'latest' }
-  package { 'ruby-ldap':                           ensure => 'latest' }
 
   validate_string($base)
   validate_string($binddn)
@@ -292,13 +200,135 @@ class openldap::pam (
   validate_bool($ssl)
   validate_bool($start_tls)
   validate_bool($tls_checkpeer)
-  validate_absolute_path($tls_cacertfile)
-  validate_absolute_path($tls_cacertdir)
+  if !empty($tls_cacertfile) { validate_absolute_path($tls_cacertfile) }
+  if !empty($tls_cacertdir) { validate_absolute_path($tls_cacertdir) }
   validate_array($tls_ciphers)
-  validate_absolute_path($tls_cert)
-  validate_absolute_path($tls_key)
+  if !empty($_tls_cert) { validate_absolute_path($_tls_cert) }
+  if !empty($_tls_key) { validate_absolute_path($_tls_key) }
   validate_bool($tls_randfile)
   validate_integer($threads)
 
   compliance_map()
+
+  if $use_simp_pki {
+    include '::pki'
+  }
+
+  if empty($tls_cert) and $use_simp_pki {
+    $_tls_cert = $::pki::public_key
+  }
+  else {
+    $_tls_cert = $tls_cert
+  }
+
+  if empty($tls_key) and $use_simp_pki {
+    $_tls_key = $::pki::private_key
+  }
+  else {
+    $_tls_key = $tls_key
+  }
+
+  if empty($tls_cacertdir) and $use_simp_pki {
+    $_tls_cacertdir = $::pki::cacerts
+  }
+  else {
+    $_tls_cacertdir = $tls_cacertdir
+  }
+
+  if empty($tls_cacertfile) and $use_simp_pki {
+    $_tls_cacertfile = $::pki::cacerts
+  }
+  else {
+    $_tls_cacertfile = $tls_cacertfile
+  }
+
+  if $use_auditd {
+    include '::auditd'
+
+    auditd::add_rules { 'ldap.conf':
+      content => "-w ${ldap_conf} -p a -k CFG_etc_ldap",
+      require => File[$ldap_conf]
+    }
+  }
+
+  if $ssl and $use_simp_pki {
+    Class['pki'] -> File[$ldap_conf]
+  }
+
+  # Complete hackery to account for legacy upgrades.
+  if $use_sssd {
+    include '::sssd'
+
+    # This should be removed when SSSD can handle shadow password changes in
+    # LDAP.
+    file { $ldap_conf:
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template("openldap/${ldap_conf}.erb")
+    }
+  }
+  else {
+    if $use_nscd {
+      include '::nscd'
+
+      file { $ldap_conf:
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => template("openldap/${ldap_conf}.erb"),
+        notify  => Service['nscd']
+      }
+    }
+    else {
+      file { $ldap_conf:
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => template("openldap/${ldap_conf}.erb")
+      }
+    }
+
+    if ( $::operatingsystem in ['RedHat','CentOS'] ) and (versioncmp($::operatingsystemmajrelease,'6') > 0) {
+      if $::selinux_current_mode and $::selinux_current_mode != 'disabled' {
+        selboolean { 'authlogin_nsswitch_use_ldap':
+          persistent => true,
+          value      => 'on'
+        }
+      }
+    }
+
+    file { '/etc/nslcd.conf':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      content => template('openldap/etc/nslcd.conf.erb'),
+      notify  => Service['nslcd'],
+      require => [
+        Package['nss-pam-ldapd'],
+        File[$ldap_conf]
+      ]
+    }
+
+    service { 'nslcd':
+      ensure     => 'running',
+      enable     => true,
+      hasstatus  => true,
+      hasrestart => true
+    }
+
+    if $ssl {
+      Package['nss-pam-ldapd'] ~> Service['nslcd']
+    }
+
+    if $use_simp_pki {
+      Class['pki'] ~> Service['nslcd']
+    }
+  }
+
+  package { "openldap-clients.${::hardwaremodel}": ensure => 'latest' }
+  package { 'nss-pam-ldapd':                       ensure => 'latest' }
+  package { 'ruby-ldap':                           ensure => 'latest' }
+
 }

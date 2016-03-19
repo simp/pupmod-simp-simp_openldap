@@ -37,9 +37,11 @@ tls_cacertdir <%= @tls_cacertdir %>
 tls_randfile <%= @tls_randfile %>
 <% end -%>
 tls_ciphers <%= @tls_ciphers.join(':') %>
-<% if @use_certs then -%>
-tls_cert <%= @tls_cert %>
-tls_key <%= @tls_key %>
+<% unless @_tls_cert.empty? -%>
+tls_cert <%= @_tls_cert %>
+<% end -%>
+<% unless @_tls_key.empty? -%>
+tls_key <%= @_tls_key %>
 <% end -%>
 pagesize <%= @pagesize %>
 <% if Array(@nss_initgroups_ignoreusers).empty? then -%>

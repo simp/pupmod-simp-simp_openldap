@@ -1,7 +1,7 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
-Version: 4.1.1
-Release: 10
+Version: 4.1.2
+Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -59,14 +59,15 @@ mkdir -p %{buildroot}/%{prefix}/openldap
 %post
 #!/bin/sh
 
-if [ -d %{prefix}/openldap/plugins ]; then
-  mv %{prefix}/openldap/plugins %{prefix}/openldap/plugins.bak
-fi
-
 %postun
 # Post uninstall stuff
 
 %changelog
+* Sat Mar 19 2016 Trevor Vaughan <tvaughan@onyxpoint.comm> - 4.1.2-0
+- Migrated use_simp_pki to a global catalyst.
+- Fixed several ordering bugs as well as issues with being unable to work
+  standalone.
+
 * Mon Mar 14 2016 Nick Markowski <nmarkowski@keywcorp.com> - 4.1.1-10
 - Ensure that EL6.7+ uses SSSD over NSCD
 

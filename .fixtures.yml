@@ -10,7 +10,7 @@ fixtures:
     iptables: "git://github.com/simp/pupmod-simp-iptables"
     logrotate: "git://github.com/simp/pupmod-simp-logrotate"
     nscd: "git://github.com/simp/pupmod-simp-nscd"
-    pki: "git://github.com/simp/pupmod-simp-pki"
+    #pki: "git://github.com/simp/pupmod-simp-pki"
     rsync: "git://github.com/simp/pupmod-simp-rsync"
     rsyslog: "git://github.com/simp/pupmod-simp-rsyslog"
     sssd: "git://github.com/simp/pupmod-simp-sssd"
@@ -19,3 +19,4 @@ fixtures:
     compliance: "https://github.com/trevor-vaughan/pupmod-compliance"
   symlinks:
     openldap: "#{source_dir}"
+    pki: "#{source_dir}/../pki"

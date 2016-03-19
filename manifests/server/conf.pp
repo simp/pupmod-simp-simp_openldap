@@ -224,6 +224,11 @@
 # Default: true
 #   If true, enable TLS.
 #
+# [*use_simp_pki*]
+# Type: Boolean
+# Default: true
+#  If true, use the SIMP PKI module for key management.
+#
 # [*tlsVerifyClient*]
 # Type: One of 'never', 'allow', 'try', 'demand', 'hard', or 'true'
 # Default: 'try'
@@ -353,7 +358,8 @@ class openldap::server::conf (
   $timelimit_soft = '3600',
   $timelimit_hard = '3600',
   $writetimeout = '0',
-  $use_tls = true,
+  $use_tls = defined('$::enable_pki') ? { true => $::enable_pki, default => hiera('enable_pki', true) },
+  $use_simp_pki = defined('$::use_simp_pki') ? { true => $::use_simp_pki, default => hiera('use_simp_pki', true) },
   $tlsCACertificatePath = '/etc/openldap/pki/cacerts',
   $tlsCertificateFile = "/etc/openldap/pki/public/${::fqdn}.pub",
   $tlsCertificateKeyFile = "/etc/openldap/pki/private/${::fqdn}.pem",
@@ -473,6 +479,7 @@ class openldap::server::conf (
   validate_absolute_path($log_file)
   validate_bool($forward_all_logs)
   validate_bool($use_tls)
+  validate_bool($use_simp_pki)
   validate_bool($enable_iptables)
 
   compliance_map()
@@ -480,7 +487,7 @@ class openldap::server::conf (
   include '::openldap::server'
   include '::openldap::server::conf::default_ldif'
 
-  if $use_tls {
+  if $use_tls and $use_simp_pki {
     pki::copy { '/etc/openldap':
       group  => 'ldap',
       notify => Service[$openldap::server::slapd_svc]

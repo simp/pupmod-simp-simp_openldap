@@ -110,8 +110,8 @@ class openldap::pam (
     'HIGH',
     '-SSLv2'
   ]),
-  $tls_cert = "/etc/pki/public/${::fqdn}.pub",
-  $tls_key = "/etc/pki/private/${::fqdn}.pem",
+  $tls_cert = '',
+  $tls_key = '',
   $tls_randfile = false,
   $threads = 5,
   $rootpwmoddn = '',
@@ -131,10 +131,25 @@ class openldap::pam (
   ],
   $use_auditd = true,
   $use_nscd = $::openldap::use_nscd,
-  $use_sssd = $::openldap::use_sssd
+  $use_sssd = $::openldap::use_sssd,
+  $use_simp_pki = defined('$::use_simp_pki') ? { true => $::use_simp_pki, default => hiera('use_simp_pki', true) }
 ) inherits ::openldap {
 
   $ldap_conf = '/etc/pam_ldap.conf'
+
+  if empty($tls_cert) and $use_simp_pki {
+    $_tls_cert = "/etc/pki/public/${::fqdn}.pub"
+  }
+  else {
+    $_tls_cert = $tls_cert
+  }
+
+  if empty($tls_key) and $use_simp_pki {
+    $_tls_key = "/etc/pki/private/${::fqdn}.pem"
+  }
+  else {
+    $_tls_key = $tls_key
+  }
 
   if $use_auditd {
     include '::auditd'
@@ -145,7 +160,7 @@ class openldap::pam (
     }
   }
 
-  if $ssl {
+  if $ssl and $use_simp_pki {
     include '::pki'
 
     Class['pki'] -> File[$ldap_conf]
@@ -167,6 +182,7 @@ class openldap::pam (
   else {
     if $use_nscd {
       include 'nscd'
+
       file { $ldap_conf:
         owner   => 'root',
         group   => 'root',
@@ -206,22 +222,21 @@ class openldap::pam (
       ]
     }
 
-    $_nslcd_subscribe = $ssl ? {
-      false   => Package['nss-pam-ldapd'],
-      default => [
-        Package['nss-pam-ldapd'],
-        File[$tls_cacertdir],
-        File[$tls_cert],
-        File[$tls_key]
-      ]
-    }
-
     service { 'nslcd':
       ensure     => 'running',
       enable     => true,
       hasstatus  => true,
-      hasrestart => true,
-      subscribe  => $_nslcd_subscribe
+      hasrestart => true
+    }
+
+    if $ssl {
+      Package['nss-pam-ldapd'] ~> Service['nslcd']
+    }
+
+    if $use_simp_pki {
+      File[$tls_cacertdir] ~> Service['nslcd']
+      File[$_tls_cert] ~> Service['nslcd']
+      File[$_tls_key] ~> Service['nslcd']
     }
   }
 
@@ -295,8 +310,8 @@ class openldap::pam (
   validate_absolute_path($tls_cacertfile)
   validate_absolute_path($tls_cacertdir)
   validate_array($tls_ciphers)
-  validate_absolute_path($tls_cert)
-  validate_absolute_path($tls_key)
+  if !empty($_tls_cert) { validate_absolute_path($_tls_cert) }
+  if !empty($_tls_key) { validate_absolute_path($_tls_key) }
   validate_bool($tls_randfile)
   validate_integer($threads)
 

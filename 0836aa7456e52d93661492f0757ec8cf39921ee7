@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a6ced46_09d0ad52",
+        "filename": "manifests/pam.pp",
+        "patchSetId": 1
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1005194
+      },
+      "writtenOn": "2016-03-21T18:48:52Z",
+      "side": 1,
+      "message": "Fails spec, these resources are not defined.",
+      "range": {
+        "startLine": 236,
+        "startChar": 6,
+        "endLine": 239,
+        "endChar": 41
+      },
+      "revId": "0836aa7456e52d93661492f0757ec8cf39921ee7",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}

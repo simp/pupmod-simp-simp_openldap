@@ -63,7 +63,11 @@ mkdir -p %{buildroot}/%{prefix}/openldap
 # Post uninstall stuff
 
 %changelog
-* Sat Mar 19 2016 Trevor Vaughan <tvaughan@onyxpoint.comm> - 4.1.2-0
+* Wed Mar 23 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.3-0
+- Added an `openldap::server::service` class for external profiles that need to
+  restart the service without triggering unnecessary side effects.
+
+* Sat Mar 19 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.2-0
 - Migrated use_simp_pki to a global catalyst.
 - Fixed several ordering bugs as well as issues with being unable to work
   standalone.

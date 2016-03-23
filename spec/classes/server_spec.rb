@@ -101,7 +101,7 @@ describe 'openldap::server' do
 
     it { should create_user('ldap').with({
         :require  => "Package[openldap-servers.#{facts[:hardwaremodel]}]",
-        :notify   => 'Service[slapd]'
+        :notify   => 'Class[Openldap::Server::Service]'
       })
     }
   end

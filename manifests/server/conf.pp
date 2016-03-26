@@ -595,13 +595,13 @@ class openldap::server::conf (
         rotate_period => $auditlog_rotate,
         rotate        => $auditlog_preserve
       }
-  
+
       openldap::server::dynamic_includes::add { 'auditlog':
         order   => '1000',
         content => template('openldap/slapo/auditlog.erb'),
         require => File[$auditlog]
       }
-  
+
       if $audit_to_syslog {
         include '::rsyslog'
         rsyslog::rule::data_source { 'openldap_audit':
@@ -615,7 +615,7 @@ class openldap::server::conf (
   )",
           require => File[$auditlog]
         }
-  
+
         rsyslog::rule::drop { '1_drop_openldap_passwords':
           rule => '
   # Drop passwords from OpenLDAP audit logs.

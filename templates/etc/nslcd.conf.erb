@@ -1,6 +1,6 @@
 threads <%= @threads.to_i %>
 uid nslcd
-gid ldap
+gid nslcd
 <% @uri.each do |uri| -%>
 uri <%= uri %>
 <% end -%>
@@ -32,7 +32,12 @@ ssl start_tls
 ssl <%= @ssl %>
 <% end -%>
 tls_reqcert <%= @tls_reqcert %>
-tls_cacertdir <%= @tls_cacertdir %>
+<% unless @_tls_cacertdir.empty? -%>
+tls_cacertdir <%= @_tls_cacertdir %>
+<% end -%>
+<% unless @_tls_cacertfile.empty? -%>
+tls_cacertfile <%= @_tls_cacertfile %>
+<% end -%>
 <% if @tls_randfile then -%>
 tls_randfile <%= @tls_randfile %>
 <% end -%>

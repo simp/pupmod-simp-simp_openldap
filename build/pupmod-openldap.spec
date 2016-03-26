@@ -1,6 +1,6 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
-Version: 4.1.3
+Version: 4.1.4
 Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
@@ -63,6 +63,14 @@ mkdir -p %{buildroot}/%{prefix}/openldap
 # Post uninstall stuff
 
 %changelog
+* Sat Mar 26 2016 Nick Markowski <nmarkowski@keywcorp.com> - 4.1.4-0
+- nslcd group and user are ensured.
+- nslcd uid and gid default to 65 (nslcd). nslcd is no longer in the ldap group.
+- Created an nslcd conf dir for convenient cert location.  Defaults to /etc/nslcd.d.
+  If use_simp_pki is true, pki::copy copies the system certs here.
+- nslcd.conf tls options now have proper defaults. Fixed syntax errors in nslcd.conf
+  and pam_ldap.conf
+
 * Wed Mar 23 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.3-0
 - Added an `openldap::server::service` class for external profiles that need to
   restart the service without triggering unnecessary side effects.

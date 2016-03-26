@@ -1,6 +1,6 @@
 {
   "name":    "simp-openldap",
-  "version": "4.1.3",
+  "version": "4.1.4",
   "author":  "simp",
   "summary": "Manages OpenLDAP and related security bindings",
   "license": "Apache-2.0",

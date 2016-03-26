@@ -21,6 +21,21 @@
 #
 #   If this is left empty, it will default to ALLLOCAL.
 #
+# [*nslcd_conf_dir*]
+# Type: String (absolute path)
+# Default: /etc/nslcd.d
+#   Directory which contains the nslcd pki certs.
+#
+# [*nslcd_uid*]
+# Type: Integer
+# Default: 65
+#   UID of the nslcd user.
+#
+# [*nslcd_gid*]
+# Type: Integer
+# Default: 65
+#   GID of the nslcd group.
+#
 # [*use_auditd*]
 # Type: Boolean
 # Default: true
@@ -129,6 +144,9 @@ class openldap::pam (
     'clam','nfsnobody','rpm','nslcd','avahi','gdm','rtkit','pulse',
     'hsqldb','radvd','apache','tomcat'
   ],
+  $nslcd_conf_dir = '/etc/nslcd.d',
+  $nslcd_uid      = '65',
+  $nslcd_gid      = '65',
   $use_auditd = true,
   $use_nscd = $::openldap::use_nscd,
   $use_sssd = $::openldap::use_sssd,
@@ -207,6 +225,9 @@ class openldap::pam (
   if !empty($tls_key) { validate_absolute_path($tls_key) }
   validate_bool($tls_randfile)
   validate_integer($threads)
+  validate_absolute_path($nslcd_conf_dir)
+  validate_integer($nslcd_uid)
+  validate_integer($nslcd_gid)
 
   compliance_map()
 
@@ -215,28 +236,28 @@ class openldap::pam (
   }
 
   if empty($tls_cert) and $use_simp_pki {
-    $_tls_cert = $::pki::public_key
+    $_tls_cert = "${nslcd_conf_dir}/pki/public/${::fqdn}.pub"
   }
   else {
     $_tls_cert = $tls_cert
   }
 
   if empty($tls_key) and $use_simp_pki {
-    $_tls_key = $::pki::private_key
+    $_tls_key = "${nslcd_conf_dir}/pki/private/${::fqdn}.pem"
   }
   else {
     $_tls_key = $tls_key
   }
 
   if empty($tls_cacertdir) and $use_simp_pki {
-    $_tls_cacertdir = $::pki::cacerts
+    $_tls_cacertdir = "${nslcd_conf_dir}/pki/cacerts"
   }
   else {
     $_tls_cacertdir = $tls_cacertdir
   }
 
   if empty($tls_cacertfile) and $use_simp_pki {
-    $_tls_cacertfile = $::pki::cacerts
+    $_tls_cacertfile = "${nslcd_conf_dir}/pki/cacerts/cacerts.pem"
   }
   else {
     $_tls_cacertfile = $tls_cacertfile
@@ -276,54 +297,75 @@ class openldap::pam (
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
-        content => template("openldap/${ldap_conf}.erb"),
-        notify  => Service['nscd']
-      }
-    }
-    else {
-      file { $ldap_conf:
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
         content => template("openldap/${ldap_conf}.erb")
       }
-    }
 
-    if ( $::operatingsystem in ['RedHat','CentOS'] ) and (versioncmp($::operatingsystemmajrelease,'6') > 0) {
-      if $::selinux_current_mode and $::selinux_current_mode != 'disabled' {
-        selboolean { 'authlogin_nsswitch_use_ldap':
-          persistent => true,
-          value      => 'on'
+      if ( $::operatingsystem in ['RedHat','CentOS'] ) and (versioncmp($::operatingsystemmajrelease,'6') > 0) {
+        if $::selinux_current_mode and $::selinux_current_mode != 'disabled' {
+          selboolean { 'authlogin_nsswitch_use_ldap':
+            persistent => true,
+            value      => 'on'
+          }
         }
       }
-    }
 
-    file { '/etc/nslcd.conf':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0600',
-      content => template('openldap/etc/nslcd.conf.erb'),
-      notify  => Service['nslcd'],
-      require => [
-        Package['nss-pam-ldapd'],
-        File[$ldap_conf]
-      ]
-    }
+      group { 'nslcd':
+        ensure => 'present',
+        gid    => $nslcd_gid
+      }
 
-    service { 'nslcd':
-      ensure     => 'running',
-      enable     => true,
-      hasstatus  => true,
-      hasrestart => true
-    }
+      user { 'nslcd':
+        uid   => $nslcd_uid,
+        gid   => $nslcd_gid
+      }
 
-    if $ssl {
-      Package['nss-pam-ldapd'] ~> Service['nslcd']
-    }
+      file { $nslcd_conf_dir:
+        ensure => 'directory',
+        mode   => '0750',
+        owner  => 'root',
+        group  => 'nslcd'
+      }
 
-    if $use_simp_pki {
-      Class['pki'] ~> Service['nslcd']
+      file { '/etc/nslcd.conf':
+        ensure  => 'file',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0600',
+        content => template('openldap/etc/nslcd.conf.erb'),
+        notify  => Service['nslcd'],
+        require => [
+          Package['nss-pam-ldapd'],
+          File[$ldap_conf]
+        ]
+      }
+
+      service { 'nslcd':
+        ensure     => 'running',
+        enable     => true,
+        hasstatus  => true,
+        hasrestart => true,
+        require    => [
+          File['/etc/nslcd.conf'],
+          File[$nslcd_conf_dir]
+        ]
+      }
+
+      if $ssl {
+        Package['nss-pam-ldapd'] ~> Service['nslcd']
+      }
+
+      if $use_simp_pki {
+        pki::copy { $nslcd_conf_dir:
+          group   => 'nslcd',
+          notify  => Service['nslcd'],
+          require => [
+            File[$nslcd_conf_dir],
+            Group['nslcd']
+          ]
+        }
+
+        Class['pki'] ~> Service['nslcd']
+      }
     }
   }
 

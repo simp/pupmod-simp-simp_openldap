@@ -33,7 +33,7 @@ define openldap::server::add_limits (
   $limits
 ) {
 
-  include 'openldap::server::dynamic_includes'
+  include '::openldap::server::dynamic_includes'
 
   $l_name = regsubst($name,'/','_')
   $l_limits = join($limits,' ')

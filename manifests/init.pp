@@ -65,7 +65,7 @@ class openldap (
   $use_nscd = $::openldap::params::use_nscd,
   $use_sssd = $::openldap::params::use_sssd
 ) inherits ::openldap::params {
-  if $is_server { include 'openldap::server' }
+  if $is_server { include '::openldap::server' }
 
   validate_bool($is_server)
 }

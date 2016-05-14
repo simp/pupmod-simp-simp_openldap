@@ -1,6 +1,6 @@
 Summary: OpenLDAP Puppet Module
 Name: pupmod-openldap
-Version: 4.1.4
+Version: 4.1.5
 Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
@@ -63,6 +63,9 @@ mkdir -p %{buildroot}/%{prefix}/openldap
 # Post uninstall stuff
 
 %changelog
+* Thu May 19 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.5-0
+- Update to work with Puppet 4.4 with strict variable checking
+
 * Sat Mar 26 2016 Nick Markowski <nmarkowski@keywcorp.com> - 4.1.4-0
 - nslcd group and user are ensured.
 - nslcd uid and gid default to 65 (nslcd). nslcd is no longer in the ldap group.

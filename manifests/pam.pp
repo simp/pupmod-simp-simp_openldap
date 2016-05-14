@@ -315,8 +315,8 @@ class openldap::pam (
       }
 
       user { 'nslcd':
-        uid   => $nslcd_uid,
-        gid   => $nslcd_gid
+        uid => $nslcd_uid,
+        gid => $nslcd_gid
       }
 
       file { $nslcd_conf_dir:

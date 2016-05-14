@@ -72,31 +72,31 @@ class openldap::slapo::ppolicy (
     $min_punct = '0',
     $max_consecutive_per_class = '0'
 ) {
-    include 'openldap::server::dynamic_includes'
+  include '::openldap::server::dynamic_includes'
 
-    $_simp_version = simp_version() ? {
-      /undefined/ => '0',
-      default     => simp_version()
-    }
+  $_simp_version = simp_version() ? {
+    /undefined/ => '0',
+    default     => simp_version()
+  }
 
-    # This is used by the default template.
-    # This should be cleaned up all around.
-    $check_password = versioncmp($_simp_version,'4.2.0') ? {
-      '-1' => 'check_password',
-      default => 'simp_check_password'
-    }
+  # This is used by the default template.
+  # This should be cleaned up all around.
+  $check_password = versioncmp($_simp_version, '4.2.0') ? {
+    '-1'    => 'check_password',
+    default => 'simp_check_password'
+  }
 
-    package { 'simp-ppolicy-check-password': ensure => 'latest' }
+  package { 'simp-ppolicy-check-password': ensure => 'latest' }
 
-    openldap::server::dynamic_includes::add { 'ppolicy':
-        order   => '1000',
-        content => template('openldap/slapo/ppolicy.erb')
-    }
+  openldap::server::dynamic_includes::add { 'ppolicy':
+    order   => '1000',
+    content => template('openldap/slapo/ppolicy.erb')
+  }
 
-    file { "/etc/openldap/${check_password}.conf":
-      owner   => 'root',
-      group   => 'ldap',
-      mode    => '0640',
-      content => template('openldap/etc/openldap/check_password.conf.erb')
-    }
+  file { "/etc/openldap/${check_password}.conf":
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
+    content => template('openldap/etc/openldap/check_password.conf.erb')
+  }
 }

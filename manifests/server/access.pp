@@ -40,7 +40,7 @@ class openldap::server::access {
     group   => 'ldap',
     mode    => '0640',
     require => Exec['postprocess_slapd.access'],
-    notify  => Service[$::openldap::server::slapd_svc],
+    notify  => Class['openldap::server::service'],
     source  => "file://${fragdir}_slapd.access.out"
   }
 }

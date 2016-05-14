@@ -387,7 +387,7 @@ class openldap::server::conf (
   $log_to_file = false,
   $log_file = '/var/log/slapd.log',
   $forward_all_logs = false,
-  $enable_iptables = defined('$::use_iptables')   ? { true => $::use_iptables,  default => hiera('use_iptables',false) },
+  $enable_iptables = defined('$::use_iptables') ? { true => $::use_iptables,  default => hiera('use_iptables',false) },
 ) {
   validate_absolute_path($argsfile)
   validate_bool($audit_transactions)
@@ -484,13 +484,12 @@ class openldap::server::conf (
 
   compliance_map()
 
-  include '::openldap::server'
   include '::openldap::server::conf::default_ldif'
 
   if $use_tls and $use_simp_pki {
     pki::copy { '/etc/openldap':
       group  => 'ldap',
-      notify => Service[$openldap::server::slapd_svc]
+      notify => Class['openldap::server::service']
     }
   }
 
@@ -502,7 +501,7 @@ class openldap::server::conf (
   }
 
   if $force_log_quick_kill {
-    include 'simplib::incron'
+    include '::simplib::incron'
 
     simplib::incron::add_system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
@@ -524,7 +523,7 @@ class openldap::server::conf (
     group   => 'ldap',
     mode    => '0640',
     content => template('openldap/etc/openldap/slapd.conf.erb'),
-    notify  => Service[$openldap::server::slapd_svc]
+    notify  => Class['openldap::server::service']
   }
 
   file { '/etc/openldap/DB_CONFIG':
@@ -533,17 +532,17 @@ class openldap::server::conf (
     group   => 'ldap',
     mode    => '0640',
     content => template('openldap/etc/openldap/DB_CONFIG.erb'),
-    notify  => Service[$openldap::server::slapd_svc]
+    notify  => Class['openldap::server::service']
   }
 
-  if ($::operatingsystem in ['RedHat','CentOS']) and ($::operatingsystemmajrelease > '6') {
+  if ($::operatingsystem in ['RedHat','CentOS']) and (versioncmp($::operatingsystemmajrelease, '6') > 0) {
     file { '/etc/sysconfig/slapd':
       ensure  => 'file',
       owner   => 'root',
       group   => 'root',
       mode    => '0640',
       content => template('openldap/etc/sysconfig/slapd.erb'),
-      notify  => Service[$::openldap::server::slapd_svc]
+      notify  => Class['openldap::server::service']
     }
   }
   else {
@@ -553,13 +552,14 @@ class openldap::server::conf (
       group   => 'root',
       mode    => '0640',
       content => template('openldap/etc/sysconfig/ldap.erb'),
-      notify  => Service[$::openldap::server::slapd_svc]
+      notify  => Class['openldap::server::service']
     }
   }
 
   # IPTables
   if $enable_iptables {
-    include 'iptables'
+    include '::iptables'
+
     if $listen_ldap or $listen_ldaps {
       iptables::add_tcp_stateful_listen { 'allow_ldap':
         order       => '11',

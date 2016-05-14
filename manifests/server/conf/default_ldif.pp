@@ -25,8 +25,6 @@ class openldap::server::conf::default_ldif (
   $ppolicy_pwd_allow_user_change = true,
   $ppolicy_pwd_safe_modify = false
 ) {
-  assert_private()
-
   validate_integer($ppolicy_pwd_min_age)
   validate_integer($ppolicy_pwd_max_age)
   validate_integer($ppolicy_pwd_in_history)
@@ -45,13 +43,25 @@ class openldap::server::conf::default_ldif (
 
   compliance_map()
 
+  assert_private()
+
   $_suffix = $::openldap::server::conf::suffix
   $_rootdn = $::openldap::server::conf::rootdn
   $_syncdn = $::openldap::server::conf::syncdn
   $_syncpw = $::openldap::server::conf::syncpw
   $_binddn = $::openldap::server::conf::binddn
   $_bindpw = $::openldap::server::conf::bindpw
-  $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
+
+  if ( defined('$::openldap::slapo::ppolicy::check_password') and
+      getvar('::openldap::slapo::ppolicy::check_password') and
+      !empty(getvar('::openldap::slapo::ppolicy::check_password'))
+  ) {
+    $_simp_ppolicy_check_password = $::openldap::slapo::ppolicy::check_password
+  }
+  else {
+    $_simp_ppolicy_check_password = false
+  }
+
   file { '/etc/openldap/default.ldif':
     ensure  => 'file',
     owner   => 'root',

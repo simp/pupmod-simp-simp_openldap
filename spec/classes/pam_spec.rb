@@ -50,14 +50,14 @@ describe 'openldap::pam' do
         }
         it { is_expected.to contain_package("nss-pam-ldapd") }
         it { is_expected.to contain_package("openldap-clients.#{facts[:hardwaremodel]}") }
-    
+
         context 'no_auditd' do
           let(:params){{ :use_auditd => false }}
-    
+
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to_not create_auditd__add_rules('ldap.conf') }
         end
-    
+
         context 'no_pki and use_simp_pki=false' do
           let(:params){{
             :ssl            => false,
@@ -67,7 +67,7 @@ describe 'openldap::pam' do
             :tls_key        => '/etc/nslcd.d/foopki/fookey.pem',
             :tls_cert       => '/etc/nslcd.d/foopki/foocert.pub'
           }}
-    
+
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to_not create_class('pki').that_comes_before('File[/etc/pam_ldap.conf]') }
           if (['RedHat', 'CentOS'].include?(facts[:operatingsystem])) && (facts[:operatingsystemrelease].to_s < '6.7')
@@ -82,12 +82,12 @@ describe 'openldap::pam' do
           end
           it { is_expected.to_not create_pki__copy('/etc/nslcd.d') }
         end
-    
+
         context 'use_sssd' do
           let(:params){{
             :use_sssd => true
           }}
-    
+
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd') }
           it { is_expected.to compile.with_all_deps }
@@ -95,7 +95,7 @@ describe 'openldap::pam' do
           it { is_expected.to_not create_service('nscd').with_enable(true) }
           it { is_expected.to_not create_service('nslcd') }
         end
-    
+
         context 'threads_is_default' do
           it {
             if (['RedHat', 'CentOS'].include?(facts[:operatingsystem])) && (facts[:operatingsystemrelease].to_s < '6.7')
@@ -105,13 +105,13 @@ describe 'openldap::pam' do
             end
           }
         end
-    
+
         context 'threads_is_user_overridden' do
           let(:params){{
             :threads => 20
           }}
-    
-          it { 
+
+          it {
             if (['RedHat', 'CentOS'].include?(facts[:operatingsystem])) && (facts[:operatingsystemrelease].to_s < '6.7')
               is_expected.to create_file('/etc/nslcd.conf').with({ :content => /threads 20/ })
               is_expected.to create_file('/etc/nslcd.conf').without({ :content => /threads 5/ })

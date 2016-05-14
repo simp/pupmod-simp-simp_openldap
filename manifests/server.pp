@@ -83,8 +83,7 @@ class openldap::server (
   $host_auth_user = 'hostAuth',
   $use_ppolicy = true,
   $use_tcpwrappers = true
-) {
-  $slapd_svc = 'slapd'
+) inherits ::openldap {
 
   validate_bool($schema_sync)
   validate_bool($allow_sync)
@@ -93,10 +92,10 @@ class openldap::server (
 
   compliance_map()
 
-  include '::openldap'
   include '::openldap::client'
   include '::openldap::server::access'
   include '::openldap::server::dynamic_includes'
+  include '::openldap::server::service'
 
   if $allow_sync {
     include '::openldap::slapo::syncprov'
@@ -109,8 +108,6 @@ class openldap::server (
   # This needs to come after ppolicy and syncprov since some templates
   # use the values.
   include '::openldap::server::conf'
-
-  include '::openldap::server::service'
 
   file { '/etc/openldap':
       owner   => 'root',
@@ -270,7 +267,7 @@ class openldap::server (
   package { "openldap-servers.${::hardwaremodel}": ensure => 'latest' }
 
   if $use_tcpwrappers {
-    include 'tcpwrappers'
+    include '::tcpwrappers'
 
     tcpwrappers::allow { 'slapd':
       pattern => 'ALL',

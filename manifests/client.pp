@@ -29,7 +29,7 @@ class openldap::client (
     $tls_crlcheck = 'none',
     $tls_crlfile = ''
 ) {
-  include 'openldap'
+  include '::openldap'
 
   file { '/etc/openldap/ldap.conf':
     owner   => 'root',

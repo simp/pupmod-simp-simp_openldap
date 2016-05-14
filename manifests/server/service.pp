@@ -3,10 +3,12 @@
 #
 # This class manages the OpenLDAP service.
 #
-class openldap::server::service {
+class openldap::server::service (
+  $slapd_svc = 'slapd'
+){
   assert_private()
 
-  $slapd_svc = $::openldap::server::slapd_svc
+  include '::openldap::server::fix_bad_upgrade'
 
   # This is a very crude attempt to not bootstrap if the executing
   # node is a slave node. Bootstrapping slave nodes causes the
@@ -40,32 +42,14 @@ class openldap::server::service {
     notify  => Service[$slapd_svc]
   }
 
-  # We're not ready for using slapd.d.
-  # Occasionally, the updated openldap RPM packages come out with an
-  # automatic upgrade to slapd.d functionality. This works around
-  # having your system destroyed by that "feature".
-  exec { 'fix_bad_upgrade':
-    command => '/bin/rm -rf /etc/openldap/slapd.d && \
-      if [ -f /etc/openldap/slapd.conf.bak ]; then \
-        /bin/mv /etc/openldap/slapd.conf.bak /etc/openldap.slapd.conf; \
-      fi',
-    require => Package["openldap-servers.${::hardwaremodel}"],
-    notify  => [
-      File['/var/lib/ldap/DB_CONFIG'],
-      Service[$slapd_svc]
-    ],
-    onlyif  => '/usr/bin/test -d /etc/openldap/slapd.d',
-    before  => [
-      Exec['bootstrap_ldap'],
-      File['/etc/openldap/slapd.conf']
-    ]
-  }
-
   service { $slapd_svc:
     ensure     => 'running',
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => Package["openldap-servers.${::hardwaremodel}"]
+    require    => [
+      Package["openldap-servers.${::hardwaremodel}"],
+      Class['openldap::server::fix_bad_upgrade']
+    ]
   }
 }

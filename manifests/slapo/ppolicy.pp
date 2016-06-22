@@ -16,7 +16,7 @@
 #
 # [*min_points*]
 # Type: Integer
-# Default: '4'
+# Default: '3'
 #   The minimum number of character classes that must be included in your
 #   password for it to succeed.
 #
@@ -51,7 +51,7 @@
 #
 # [*max_consecutive_per_class*]
 # Type: Integer
-# Default: '0'
+# Default: '2'
 #   The maximum number of characters from any character class that can exist in
 #   a row.
 #
@@ -64,13 +64,13 @@ class openldap::slapo::ppolicy (
     $ppolicy_default='',
     $ppolicy_hash_cleartext='',
     $ppolicy_use_lockout='',
-    $min_points = '4',
+    $min_points = '3',
     $use_cracklib = true,
     $min_upper = '0',
     $min_lower = '0',
     $min_digit = '0',
     $min_punct = '0',
-    $max_consecutive_per_class = '0'
+    $max_consecutive_per_class = '2'
 ) {
   include '::openldap::server::dynamic_includes'
 

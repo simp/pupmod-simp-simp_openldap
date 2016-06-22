@@ -1,0 +1,4 @@
+dn: cn=administrators,ou=Group,#{domains}
+changetype: modify
+add: memberUid
+memberUid: test.user

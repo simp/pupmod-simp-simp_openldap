@@ -1,0 +1,31 @@
+---
+client_nets:
+ - 'ALL'
+use_simp_pki: false
+use_iptables: false
+use_nscd: false
+use_sssd: false
+enable_pki: false
+enable_logging: false
+
+openldap::server::conf::default_ldif::ppolicy_pwd_min_age: 0
+openldap::server::conf::default_ldif::ppolicy_pwd_failure_count_interval: 4
+
+ldap::uri:
+ - 'ldap://<%= server_fqdn %>'
+ldap::base_dn: '<%= domains %>'
+ldap::bind_dn: 'cn=hostAuth,ou=Hosts,<%= domains %>'
+ldap::bind_pw: 'foobarbaz'
+ldap::bind_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
+ldap::sync_dn: 'cn=LDAPSync,ou=Hosts,<%= domains %>'
+ldap::sync_pw: 'foobarbaz'
+ldap::sync_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
+ldap::root_dn: 'cn=LDAPAdmin,ou=People,<%= domains %>'
+ldap::root_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
+ldap::master: 'ldap://<%= server_fqdn %>'
+# suP3rP@ssw0r!
+ldap::root_hash: "{SSHA}ZcqPNbcqQhDNF5jYTLGl+KAGcrHNW9oo"
+
+openldap::server::use_tcpwrappers: false
+openldap::server::conf::use_tls: false
+openldap::client::use_tls: false

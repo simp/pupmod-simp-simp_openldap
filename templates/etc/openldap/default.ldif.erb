@@ -107,12 +107,11 @@ pwdAttribute: userPassword
 pwdMinAge: <%= @ppolicy_pwd_min_age %>
 pwdMaxAge: <%= @ppolicy_pwd_max_age %>
 pwdInHistory: <%= @ppolicy_pwd_in_history %>
-<% 
+<%
     if scope.function_defined(['$_simp_ppolicy_check_password']) &&
       @_simp_ppolicy_check_password &&
       !"#{@_simp_ppolicy_check_password}".empty?
 -%>
-
 pwdCheckQuality: <%= @ppolicy_pwd_check_quality %>
 <% else -%>
 pwdCheckQuality: 0
@@ -127,7 +126,7 @@ pwdFailureCountInterval: <%= @ppolicy_pwd_failure_count_interval %>
 pwdMustChange: <%= @ppolicy_pwd_must_change.to_s.upcase %>
 pwdAllowUserChange: <%= @ppolicy_pwd_allow_user_change.to_s.upcase %>
 pwdSafeModify: <%= @ppolicy_pwd_safe_modify.to_s.upcase %>
-<% 
+<%
     if scope.function_defined(['$_simp_ppolicy_check_password']) &&
       @_simp_ppolicy_check_password &&
       !"#{@_simp_ppolicy_check_password}".empty?
@@ -157,7 +156,7 @@ pwdFailureCountInterval: 900
 pwdMustChange: FALSE
 pwdAllowUserChange: FALSE
 pwdSafeModify: FALSE
-<% 
+<%
     if scope.function_defined(['$_simp_ppolicy_check_password']) &&
       @_simp_ppolicy_check_password &&
       !"#{@_simp_ppolicy_check_password}".empty?

@@ -1,0 +1,41 @@
+---
+client_nets:
+ - 'ALL'
+use_simp_pki: false
+use_iptables: false
+use_nscd: false
+use_sssd: false
+enable_pki: false
+enable_logging: false
+
+openldap::server::conf::default_ldif::ppolicy_pwd_min_age: 0
+openldap::server::conf::default_ldif::ppolicy_pwd_failure_count_interval: 4
+
+ldap::uri:
+ - 'ldap://<%= server_fqdn %>'
+ldap::base_dn: '<%= domains %>'
+ldap::bind_dn: 'cn=hostAuth,ou=Hosts,<%= domains %>'
+ldap::bind_pw: 'foobarbaz'
+ldap::bind_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
+ldap::sync_dn: 'cn=LDAPSync,ou=Hosts,<%= domains %>'
+ldap::sync_pw: 'foobarbaz'
+ldap::sync_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
+ldap::root_dn: 'cn=LDAPAdmin,ou=People,<%= domains %>'
+ldap::root_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
+ldap::master: 'ldap://<%= server_fqdn %>'
+# suP3rP@ssw0r!
+ldap::root_hash: "{SSHA}ZcqPNbcqQhDNF5jYTLGl+KAGcrHNW9oo"
+
+openldap::server::use_tcpwrappers: false
+openldap::server::conf::use_tls: true
+openldap::client::use_tls: true
+
+# Need to tell our modules where our certs live!
+# This is a good test of the case where users don't want to use our PKI module.
+pki_dir : '/etc/pki/simp-testing/pki'
+openldap::client::tls_cacertdir : "%{hiera('pki_dir')}/cacerts"
+openldap::client::tls_cert : "%{hiera('pki_dir')}/public/<%= server_fqdn %>.pub"
+openldap::client::tls_key: "%{hiera('pki_dir')}/private/<%= server_fqdn %>.pem"
+openldap::server::conf::tlsCACertificatePath: "%{hiera('pki_dir')}/cacerts"
+openldap::server::conf::tlsCertificateFile: "%{hiera('pki_dir')}/public/<%= server_fqdn %>.pub"
+openldap::server::conf::tlsCertificateKeyFile:  "%{hiera('pki_dir')}/private/<%= server_fqdn %>.pem"

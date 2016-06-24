@@ -5,10 +5,12 @@ REFERRALS           <%= @referrals %>
 SIZELIMIT           <%= @sizelimit %>
 TIMELIMIT           <%= @timelimit %>
 DEREF               <%= @dref %>
+<% if @use_tls -%>
 TLS_CACERTDIR       <%= @tls_cacertdir %>
 TLS_CIPHER_SUITE    <%= Array(@tls_cipher_suite).join(':') %>
 TLS_REQCERT         <%= @tls_reqcert %>
 TLS_CRLCHECK        <%= @tls_crlcheck %>
-<% if not @tls_crlfile.empty? -%>
+<%   if not @tls_crlfile.empty? -%>
 TLS_CRLFILE         <%= @tls_crlfile %>
+<%   end -%>
 <% end -%>

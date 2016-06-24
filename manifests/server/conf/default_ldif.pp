@@ -28,7 +28,6 @@ class openldap::server::conf::default_ldif (
   validate_integer($ppolicy_pwd_min_age)
   validate_integer($ppolicy_pwd_max_age)
   validate_integer($ppolicy_pwd_in_history)
-  validate_integer($ppolicy_pwd_in_history)
   validate_integer($ppolicy_pwd_check_quality)
   validate_integer($ppolicy_pwd_min_length)
   validate_integer($ppolicy_pwd_expire_warning)

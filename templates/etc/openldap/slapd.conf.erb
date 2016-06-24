@@ -139,10 +139,10 @@ TLSCRLFile <%= @tlsCRLFile %>
 <%   if not @tlsCACertificatePath.empty? then -%>
 TLSCACertificatePath <%= @tlsCACertificatePath %>
 <%   end -%>
-<% end -%>
 
 security <%= @security %>
 password-hash {<%= @password_hash %>}
+<% end -%>
 
 <% if not @bind_anon then -%>
 disallow bind_anon

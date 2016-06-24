@@ -21,6 +21,7 @@ class openldap::client (
     $sizelimit = '0',
     $timelimit = '15',
     $deref = 'never',
+    $use_tls = true,
     $tls_cacertdir = '/etc/pki/cacerts',
     $tls_cert = "/etc/pki/public/${::fqdn}.pub",
     $tls_key = "/etc/pki/private/${::fqdn}.pem",
@@ -44,7 +45,7 @@ class openldap::client (
     group   => 'root',
     mode    => '0600',
     replace => false,
-    content => "TLS_CACERTDIR ${tls_cacertdir}\nTLS_CERT ${tls_cert}\nTLS_KEY ${tls_key}\n"
+    content => template('openldap/ldaprc.erb')
   }
 
   validate_array_member($referrals,['on','off'])

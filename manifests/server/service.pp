@@ -21,6 +21,7 @@ class openldap::server::service (
         /usr/sbin/slapadd -l /etc/openldap/default.ldif -f /etc/openldap/slapd.conf; \
         /bin/chown -h -R ldap.ldap /var/lib/ldap/*; \
         /bin/touch /etc/openldap/puppet_bootstrapped.lock; \
+        /bin/chown root:ldap /etc/openldap/puppet_bootstrapped.lock; \
         /bin/echo 'Bootstrapped LDAP';",
     onlyif    => '/usr/local/sbin/ldap_bootstrap_check.sh',
     logoutput => true,

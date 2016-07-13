@@ -371,6 +371,5 @@ class openldap::pam (
 
   package { "openldap-clients.${::hardwaremodel}": ensure => 'latest' }
   package { 'nss-pam-ldapd':                       ensure => 'latest' }
-  package { 'ruby-ldap':                           ensure => 'latest' }
 
 }

@@ -1,3 +1,7 @@
+* Wed Jul 13 2016 Nick Markowski <nmarkowski@keywcorp.com> - 4.1.7-0
+- Ruby-ldap is not needed in this module, and is therefore no longer ensured
+  present.
+
 * Thu Jul 07 2016 Nick Miller <nick.miller@onyxpoint.com> - 4.1.6-0
 - Added acceptance tests
 - Added a parameter to the client class to disable tls connections. This makes

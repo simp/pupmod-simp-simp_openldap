@@ -15,16 +15,6 @@ unless ENV['BEAKER_provision'] == 'no'
   end
 end
 
-# returns an Array of puppet modules declared in .fixtures.yml
-def pupmods_in_fixtures_yaml
-  require 'yaml'
-  fixtures_yml = File.expand_path( '../.fixtures.yml', File.dirname(__FILE__))
-  data         = YAML.load_file( fixtures_yml )
-  repos        = data.fetch('fixtures').fetch('repositories').keys
-  symlinks     = data.fetch('fixtures').fetch('symlinks', {}).keys
-  (repos + symlinks)
-end
-
 
 RSpec.configure do |c|
   # ensure that environment OS is ready on each host
@@ -38,12 +28,16 @@ RSpec.configure do |c|
     begin
       # Install modules and dependencies from spec/fixtures/modules
       copy_fixture_modules_to( hosts )
+      server = only_host_with_role(hosts, 'server')
 
       # Generate and install PKI certificates on each SUT
       Dir.mktmpdir do |cert_dir|
-        run_fake_pki_ca_on( default, hosts, cert_dir )
+        run_fake_pki_ca_on(server, hosts, cert_dir )
         hosts.each{ |sut| copy_pki_to( sut, cert_dir, '/etc/pki/simp-testing' )}
       end
+
+      # add PKI keys
+      copy_keydist_to(server)
     rescue StandardError, ScriptError => e
       if ENV['PRY']
         require 'pry'; binding.pry

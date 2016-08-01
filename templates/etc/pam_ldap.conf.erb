@@ -69,19 +69,19 @@ ssl start_tls
 ssl on
 <%   end -%>
 tls_checkpeer <%= t_bool_xlat[@tls_checkpeer] %>
-<% unless @tls_cacertfile.empty? -%>
-tls_cacertfile <%= @tls_cacertfile %>
+<% unless @_tls_cacertfile.empty? -%>
+tls_cacertfile <%= @_tls_cacertfile %>
 <% end -%>
-<% unless @tls_cacertdir.empty? -%>
-tls_cacertdir <%= @tls_cacertdir %>
+<% unless @_tls_cacertdir.empty? -%>
+tls_cacertdir <%= @_tls_cacertdir %>
 <% end -%>
 tls_ciphers <%= Array(@tls_ciphers).join(':') %>
-<% if @use_certs then -%>
-<% unless @tls_cert.empty? -%>
-tls_cert <%= @tls_cert %>
+<% if @use_simp_pki then -%>
+<% unless @_tls_cert.empty? -%>
+tls_cert <%= @_tls_cert %>
 <% end -%>
-<% unless @tls_key.empty? -%>
-tls_key <%= @tls_key %>
+<% unless @_tls_key.empty? -%>
+tls_key <%= @_tls_key %>
 <% end -%>
 <% end -%>
 <% if @tls_randfile then -%>

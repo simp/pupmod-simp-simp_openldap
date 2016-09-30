@@ -25,7 +25,7 @@ define openldap::server::dynamic_includes::add (
 {
   $l_name = regsubst($name,'/','_')
 
-  concat_fragment { "slapd_dynamic_includes+${order}_${l_name}.inc":
+  simpcat_fragment { "slapd_dynamic_includes+${order}_${l_name}.inc":
     content => $content
   }
 }

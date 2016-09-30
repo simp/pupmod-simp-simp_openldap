@@ -40,7 +40,7 @@ define openldap::server::access::add (
 {
   $l_name = regsubst($name,'/','_')
 
-  concat_fragment { "slapd_access+${order}_${l_name}.inc":
+  simpcat_fragment { "slapd_access+${order}_${l_name}.inc":
     content => template('openldap/slapd.access.add.erb')
   }
 

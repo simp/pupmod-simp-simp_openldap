@@ -164,7 +164,7 @@ class openldap::server (
       group     => 'ldap',
       mode      => '0640',
       require   => Package["openldap-servers.${::hardwaremodel}"],
-      subscribe => Concat_build['slapd_dynamic_includes'],
+      subscribe => Simpcat_build['slapd_dynamic_includes'],
       notify    => Class['openldap::server::service'],
       audit     => content
   }

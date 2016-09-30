@@ -17,7 +17,7 @@ describe 'openldap::server::dynamic_includes::add' do
 
         it { should compile.with_all_deps }
 
-        it { should create_concat_fragment("slapd_dynamic_includes+#{params[:order]}_#{title}.inc").with_content(/#{params[:content]}/) }
+        it { should create_simpcat_fragment("slapd_dynamic_includes+#{params[:order]}_#{title}.inc").with_content(/#{params[:content]}/) }
       end
     end
   end

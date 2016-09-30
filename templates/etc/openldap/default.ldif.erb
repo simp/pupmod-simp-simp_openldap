@@ -108,7 +108,7 @@ pwdMinAge: <%= @ppolicy_pwd_min_age %>
 pwdMaxAge: <%= @ppolicy_pwd_max_age %>
 pwdInHistory: <%= @ppolicy_pwd_in_history %>
 <%
-    if scope.function_defined(['$_simp_ppolicy_check_password']) &&
+    if has_variable?('_simp_ppolicy_check_password') &&
       @_simp_ppolicy_check_password &&
       !"#{@_simp_ppolicy_check_password}".empty?
 -%>
@@ -127,7 +127,7 @@ pwdMustChange: <%= @ppolicy_pwd_must_change.to_s.upcase %>
 pwdAllowUserChange: <%= @ppolicy_pwd_allow_user_change.to_s.upcase %>
 pwdSafeModify: <%= @ppolicy_pwd_safe_modify.to_s.upcase %>
 <%
-    if scope.function_defined(['$_simp_ppolicy_check_password']) &&
+    if has_variable?('_simp_ppolicy_check_password') &&
       @_simp_ppolicy_check_password &&
       !"#{@_simp_ppolicy_check_password}".empty?
 -%>
@@ -157,7 +157,7 @@ pwdMustChange: FALSE
 pwdAllowUserChange: FALSE
 pwdSafeModify: FALSE
 <%
-    if scope.function_defined(['$_simp_ppolicy_check_password']) &&
+    if has_variable?('_simp_ppolicy_check_password') &&
       @_simp_ppolicy_check_password &&
       !"#{@_simp_ppolicy_check_password}".empty?
 -%>

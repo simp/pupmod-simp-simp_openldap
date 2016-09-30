@@ -1,7 +1,7 @@
 {
   "name": "simp-openldap",
-  "version": "4.1.9",
-  "author": "simp",
+  "version": "5.0.8",
+  "author": "SIMP Team",
   "summary": "Manages OpenLDAP and related security bindings",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/pupmod-simp-openldap",
@@ -16,47 +16,47 @@
   "dependencies": [
     {
       "name": "simp/auditd",
-      "version_requirement": ">= 5.1.0 < 6.0.0"
+      "version_requirement": ">= 5.1.1 < 6.0.0"
     },
     {
       "name": "simp/iptables",
-      "version_requirement": ">= 4.1.4 < 5.0.0"
+      "version_requirement": ">= 4.1.5 < 5.0.0"
     },
     {
       "name": "simp/logrotate",
-      "version_requirement": ">= 4.1.0 < 5.0.0"
+      "version_requirement": ">= 4.1.1 < 5.0.0"
     },
     {
       "name": "simp/nscd",
-      "version_requirement": ">= 5.0.1 < 6.0.0"
+      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/pki",
-      "version_requirement": ">= 4.2.4 < 5.0.0"
+      "version_requirement": ">= 4.2.5 < 5.0.0"
     },
     {
       "name": "simp/rsyslog",
-      "version_requirement": ">= 5.1.0 < 6.0.0"
+      "version_requirement": ">= 5.1.1 < 6.0.0"
     },
     {
       "name": "simp/simpcat",
-      "version_requirement": ">= 5.0.1 < 6.0.0"
+      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/simplib",
-      "version_requirement": ">= 1.3.1 < 2.0.0"
+      "version_requirement": ">= 2.0.0 < 3.0.0"
     },
     {
       "name": "simp/sssd",
-      "version_requirement": ">= 4.1.3 < 5.0.0"
+      "version_requirement": ">= 5.0.0 < 6.0.0"
     },
     {
       "name": "simp/tcpwrappers",
-      "version_requirement": ">= 4.1.0 < 5.0.0"
+      "version_requirement": ">= 5.0.0 < 6.0.0"
     },
     {
       "name": "simp/compliance_markup",
-      "version_requirement": ">= 1.0.1 < 2.0.0"
+      "version_requirement": ">= 1.0.2 < 2.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -76,3 +76,4 @@
     }
   ]
 }
+

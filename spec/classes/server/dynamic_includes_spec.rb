@@ -8,7 +8,7 @@ describe 'openldap::server::dynamic_includes' do
           facts
         end
 
-        it { is_expected.to create_concat_build('slapd_dynamic_includes').with({
+        it { is_expected.to create_simpcat_build('slapd_dynamic_includes').with({
             :target => '/etc/openldap/dynamic_includes',
             :before => 'Exec[bootstrap_ldap]'
           })

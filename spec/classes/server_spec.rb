@@ -44,7 +44,7 @@ describe 'openldap::server' do
 
         it { is_expected.to create_file('/etc/openldap/dynamic_includes').with({
             :require    => "Package[openldap-servers.#{facts[:hardwaremodel]}]",
-            :subscribe  => 'Concat_build[slapd_dynamic_includes]'
+            :subscribe  => 'Simpcat_build[slapd_dynamic_includes]'
           })
         }
 

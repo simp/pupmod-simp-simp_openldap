@@ -19,10 +19,10 @@ describe 'openldap::server::access::add' do
         it { should compile.with_all_deps }
 
         it {
-          should create_concat_fragment("slapd_access+#{params[:order]}_#{title}.inc").with_content(
+          should create_simpcat_fragment("slapd_access+#{params[:order]}_#{title}.inc").with_content(
             /Who: #{params[:who]}/
           )
-          should create_concat_fragment("slapd_access+#{params[:order]}_#{title}.inc").with_content(
+          should create_simpcat_fragment("slapd_access+#{params[:order]}_#{title}.inc").with_content(
             /What: #{params[:what]}/
           )
         }

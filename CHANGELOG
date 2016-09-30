@@ -1,3 +1,7 @@
+* Wed Oct 12 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 5.0.0-0
+- Updated to use the version of 'simpcat' that does not conflict with
+  'puppetlabs/concat'.
+
 * Thu Oct 06 2016 Liz Nemsick <lnemsick.simp@gmail.com> - 4.1.9-0
 - Fixed bug in which multiple URIs in ldap hieradata were not written
   into ldap.conf.

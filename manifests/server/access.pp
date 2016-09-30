@@ -13,9 +13,9 @@
 class openldap::server::access {
   include '::openldap::server'
 
-  $fragdir = fragmentdir('slapd_access')
+  $fragdir = simpcat_fragmentdir('slapd_access')
 
-  concat_build { 'slapd_access':
+  simpcat_build { 'slapd_access':
     order  => '*.inc',
     target => "${fragdir}_slapd.access",
     notify => Exec['postprocess_slapd.access']

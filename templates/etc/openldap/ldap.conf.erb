@@ -1,10 +1,10 @@
-URI                 <%= Array(@uri).flatten.last %>
+URI                 <%= Array(@uri).join(' ') %>
 BASE                <%= @base %>
 BINDDN              <%= @bind_dn %>
 REFERRALS           <%= @referrals %>
 SIZELIMIT           <%= @sizelimit %>
 TIMELIMIT           <%= @timelimit %>
-DEREF               <%= @dref %>
+DEREF               <%= @deref %>
 <% if @use_tls -%>
 TLS_CACERTDIR       <%= @tls_cacertdir %>
 TLS_CIPHER_SUITE    <%= Array(@tls_cipher_suite).join(':') %>

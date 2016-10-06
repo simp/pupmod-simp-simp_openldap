@@ -1,3 +1,8 @@
+* Thu Oct 06 2016 Liz Nemsick <lnemsick.simp@gmail.com> - 4.1.9-0
+- Fixed bug in which multiple URIs in ldap hieradata were not written
+  into ldap.conf.
+- Corrected variable reference in ldap.conf.erb
+
 * Mon Aug 01 2016 Nicholas Hughes <nicholasmhughes@gmail.com> - 4.1.8-0
 - Corrected variable references in pam_ldap.conf.erb
 

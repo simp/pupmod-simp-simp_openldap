@@ -53,10 +53,6 @@
     {
       "name": "simp/tcpwrappers",
       "version_requirement": ">= 5.0.0 < 6.0.0"
-    },
-    {
-      "name": "simp/compliance_markup",
-      "version_requirement": ">= 1.0.2 < 2.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -76,4 +72,3 @@
     }
   ]
 }
-

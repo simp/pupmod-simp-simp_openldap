@@ -90,7 +90,6 @@ class openldap::server (
   validate_bool($use_ppolicy)
   validate_bool($use_tcpwrappers)
 
-  compliance_map()
 
   include '::openldap::client'
   include '::openldap::server::access'

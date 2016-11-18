@@ -40,7 +40,6 @@ class openldap::server::conf::default_ldif (
   validate_bool($ppolicy_pwd_allow_user_change)
   validate_bool($ppolicy_pwd_safe_modify)
 
-  compliance_map()
 
   assert_private()
 

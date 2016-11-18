@@ -229,7 +229,6 @@ class openldap::pam (
   validate_integer($nslcd_uid)
   validate_integer($nslcd_gid)
 
-  compliance_map()
 
   if $use_simp_pki {
     include '::pki'

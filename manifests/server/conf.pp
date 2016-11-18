@@ -482,7 +482,6 @@ class openldap::server::conf (
   validate_bool($use_simp_pki)
   validate_bool($enable_iptables)
 
-  compliance_map()
 
   include '::openldap::server::conf::default_ldif'
 

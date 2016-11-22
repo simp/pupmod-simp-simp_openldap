@@ -1,3 +1,6 @@
+* Tue Nov 22 2016 Nick Miller <nick.miller@onyxpoint.com> - 5.0.1-0
+- Reset max_consecutive_per_class in openldap::slapo::ppolicy to 3
+
 * Mon Nov 21 2016 Chris Tessmer <chris.tessmer@onyxpoint.com> - 5.0.0-0
 - Updated to compliance_markup version 2
 

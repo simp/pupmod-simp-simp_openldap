@@ -51,7 +51,7 @@
 #
 # [*max_consecutive_per_class*]
 # Type: Integer
-# Default: '2'
+# Default: '3'
 #   The maximum number of characters from any character class that can exist in
 #   a row.
 #
@@ -70,7 +70,7 @@ class openldap::slapo::ppolicy (
     $min_lower = '0',
     $min_digit = '0',
     $min_punct = '0',
-    $max_consecutive_per_class = '2'
+    $max_consecutive_per_class = '3'
 ) {
   include '::openldap::server::dynamic_includes'
 

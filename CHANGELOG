@@ -1,3 +1,6 @@
+* Tue Nov 22 2016 Nick Miller <nick.miller@onyxpoint.com> - 4.1.10-0
+- Reset max_consecutive_per_class in openldap::slapo::ppolicy to 3
+
 * Thu Oct 06 2016 Liz Nemsick <lnemsick.simp@gmail.com> - 4.1.9-0
 - Fixed bug in which multiple URIs in ldap hieradata were not written
   into ldap.conf.

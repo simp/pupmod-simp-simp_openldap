@@ -16,7 +16,7 @@
   "dependencies": [
     {
       "name": "simp/auditd",
-      "version_requirement": ">= 5.1.1 < 6.0.0"
+      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/iptables",
@@ -24,7 +24,7 @@
     },
     {
       "name": "simp/logrotate",
-      "version_requirement": ">= 4.1.1 < 5.0.0"
+      "version_requirement": ">= 5.0.0 < 6.0.0"
     },
     {
       "name": "simp/nscd",
@@ -32,7 +32,7 @@
     },
     {
       "name": "simp/pki",
-      "version_requirement": ">= 4.2.5 < 5.0.0"
+      "version_requirement": ">= 5.0.0 < 6.0.0"
     },
     {
       "name": "simp/rsyslog",

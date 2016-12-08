@@ -83,7 +83,7 @@ describe 'openldap::server' do
 
         it { is_expected.to create_class('openldap::slapo::syncprov') }
         it { is_expected.to create_class('openldap::slapo::ppolicy') }
-        it { is_expected.to create_tcpwrappers__allow('slapd').with_pattern('ALL') }
+        it { is_expected.to_not create_tcpwrappers__allow('slapd').with_pattern('ALL') }
         it { is_expected.to create_file('/etc/openldap/schema') }
 
         context 'no_sync' do
@@ -99,9 +99,9 @@ describe 'openldap::server' do
         end
 
         context 'no_tcpwrappers' do
-          let(:params){{ :use_tcpwrappers => false }}
+          let(:params){{ :use_tcpwrappers => true }}
 
-          it { is_expected.to_not create_tcpwrappers__allow('slapd').with_pattern('ALL') }
+          it { is_expected.to create_tcpwrappers__allow('slapd').with_pattern('ALL') }
         end
       end
     end

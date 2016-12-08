@@ -128,16 +128,16 @@ end
 -%>
 
 <% if @use_tls then -%>
-TLSCertificateFile <%= @tlsCertificateFile %>
-TLSCertificateKeyFile <%= @tlsCertificateKeyFile %>
+TLSCertificateFile <%= @app_pki_cert %>
+TLSCertificateKeyFile <%= @app_pki_key %>
 TLSCipherSuite <%= @tlsCipherSuite %>
 TLSVerifyClient <%= @tlsVerifyClient %>
 TLSCRLCheck <%= @tlsCRLCheck %>
 <%   if not @tlsCRLFile.empty? then -%>
 TLSCRLFile <%= @tlsCRLFile %>
 <%   end -%>
-<%   if not @tlsCACertificatePath.empty? then -%>
-TLSCACertificatePath <%= @tlsCACertificatePath %>
+<%   if not @app_pki_ca_dir.empty? then -%>
+TLSCACertificatePath <%= @app_pki_ca_dir %>
 <%   end -%>
 
 security <%= @security %>

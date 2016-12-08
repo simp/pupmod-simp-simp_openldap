@@ -19,24 +19,11 @@
 # Default: false
 #   Set this if you want to create an OpenLDAP server on your node.
 #
-# [*use_nscd*]
-# Type: Boolean
-# Default: true
-#   Only appiles to *client* systems
-#
-#   Whether or not to use NSCD in the installation instead of SSSD. If
-#   '$use_sssd = true' then this will not be referenced.
 #
 # [*use_sssd*]
 # Type: Boolean
-# Default: false if EL<7, true otherwise
-#   Only appiles to *client* systems
-#
+# Default: false 
 #   Whether or not to use SSSD in the installation.
-#   There are issues where SSSD will allow a login, even if the user's password
-#   has expire, if the user has a valid SSH key. However, in EL7+, there are
-#   issues with nscd and nslcd which can lock users our of the system when
-#   using LDAP.
 #
 # == Hiera Variables
 #
@@ -57,14 +44,13 @@
 #   * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap (
-  $base_dn = hiera('ldap::base_dn'),
-  $bind_dn = hiera('ldap::bind_dn'),
-  $ldap_master = hiera('ldap::master',''),
-  $ldap_uri = hiera('ldap::uri'),
+  $ldap_uri = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"], 'value_type' => Array } ),
+  $base_dn = simplib::lookup('simp_options::ldap::base_dn', { 'value_type' => String }),
+  $bind_dn = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "cn=hostAuth,ou=Hosts,%{hiera('simp_options::ldap::base_dn')}", 'value_type' => String }),
+  $ldap_master = simplib::lookup('simp_options::ldap::master', { 'default_value' => "ldap://${hiera('simp_options::puppet::server')}", 'value_type' => String }),
   $is_server = false,
-  $use_nscd = $::openldap::params::use_nscd,
-  $use_sssd = $::openldap::params::use_sssd
-) inherits ::openldap::params {
+  $use_sssd = simplib::lookup('simp_options::sssd', { 'default_value' => false, 'value_type' => Boolean }),
+) {
   if $is_server { include '::openldap::server' }
 
   validate_bool($is_server)

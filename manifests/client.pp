@@ -14,18 +14,18 @@
 # TLSv1 if possible.
 #
 class openldap::client (
-    $uri = hiera('ldap::uri'),
-    $base = hiera('ldap::base_dn'),
-    $bind_dn = hiera('ldap::bind_dn'),
+    $uri = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"], 'value_type' => Array[String] } ),
+    $base_dn = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef , 'value_type' => Optional[String] }),
+    $bind_dn = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "cn=hostAuth,ou=Hosts,${hiera('simp_options::ldap::base_dn')}", 'value_type' => String }),
     $referrals = 'on',
     $sizelimit = '0',
     $timelimit = '15',
     $deref = 'never',
-    $use_tls = true,
-    $tls_cacertdir = '/etc/pki/cacerts',
-    $tls_cert = "/etc/pki/public/${::fqdn}.pub",
-    $tls_key = "/etc/pki/private/${::fqdn}.pem",
-    $tls_cipher_suite = hiera('openssl::cipher_suite',['HIGH:-SSLv2']),
+    $use_tls = simplib::lookup('simp_options::pki', { 'default_value' => false, 'value_type' => Boolean }),
+    $app_pki_ca_dir = '/etc/pki/cacerts',
+    $app_pki_cert = "/etc/pki/public/${::fqdn}.pub",
+    $app_pki_key = "/etc/pki/private/${::fqdn}.pem",
+    $tls_cipher_suite = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT', '!MEDIUM'], 'value_type' => Array[String] }),
     $tls_reqcert = 'allow',
     $tls_crlcheck = 'none',
     $tls_crlfile = ''
@@ -48,13 +48,17 @@ class openldap::client (
     content => template('openldap/ldaprc.erb')
   }
 
+  package { "openldap-clients.${::hardwaremodel}": ensure => 'latest' }
+  package { 'nss-pam-ldapd':                       ensure => 'latest' }
+
+
   validate_array_member($referrals,['on','off'])
   validate_integer($sizelimit)
   validate_integer($timelimit)
   validate_array_member($deref,['never','searching','finding','always'])
-  validate_absolute_path($tls_cacertdir)
-  validate_absolute_path($tls_cert)
-  validate_absolute_path($tls_key)
+  validate_absolute_path($app_pki_ca_dir)
+  validate_absolute_path($app_pki_cert)
+  validate_absolute_path($app_pki_key)
   validate_array($tls_cipher_suite)
   validate_array_member($tls_reqcert,['never','allow','try','demand','hard'])
   validate_array_member($tls_crlcheck,['none','peer','all'])

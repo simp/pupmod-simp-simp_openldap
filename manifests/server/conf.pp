@@ -120,9 +120,9 @@
 #
 #   Core, Cosine, InetOrgPerson, and NIS will always be included.
 #
-# [*client_nets*]
+# [*trusted_nets*]
 # Type: Array of Networks
-# Default: hiera('client_nets')
+# Default: hiera('trusted_nets')
 #   The networks that should be allowed into the server.
 #
 # [*force_log_quick_kill*]
@@ -291,12 +291,12 @@
 #   * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::conf (
-  $rootdn = hiera('ldap::root_dn',"LDAPAdmin,ou=People,${::openldap::base_dn}"),
-  $rootpw = hiera('ldap::root_hash'),
-  $syncdn = hiera('ldap::sync_dn',"LDAPSync,ou=People,${::openldap::base_dn}"),
-  $syncpw = hiera('ldap::sync_hash'),
-  $binddn = hiera('ldap::bind_dn',"hostAuth,ou=Hosts,${::openldap::base_dn}"),
-  $bindpw = hiera('ldap::bind_hash'),
+  $rootdn = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}", 'value_type' => String }),
+  $rootpw = simplib::lookup('simp_options::ldap::root_hash',{ 'default_value' => undef, 'value_type' => String }),
+  $syncdn = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}", 'value_type' => String }),
+  $syncpw = simplib::lookup('simp_options::ldap::sync_hash',{ 'default_value' => undef, 'value_type' => String }),
+  $binddn = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "${::openldap::base_dn}", 'value_type' => String }),
+  $bindpw = simplib::lookup('simp_options::ldap::bind_hash',{ 'default_value' => undef, 'value_type' => String }),
   $suffix = $::openldap::base_dn,
   $argsfile = '/var/run/openldap/slapd.args',
   $audit_transactions = true,
@@ -312,7 +312,7 @@ class openldap::server::conf (
   $bind_anon = false,
   $cachesize = '10000',
   $checkpoint = '1024 5',
-  $client_nets = hiera('client_nets'),
+  $trusted_nets = simplib::lookup('simp_options::trusted_nets',{ 'default_value' => ['127.0.0.1', '::1'], 'value_type' => Array[String] }),
   $concurrency = '',
   $conn_max_pending = '100',
   $conn_max_pending_auth = '100',
@@ -358,12 +358,12 @@ class openldap::server::conf (
   $timelimit_soft = '3600',
   $timelimit_hard = '3600',
   $writetimeout = '0',
-  $use_tls = defined('$::enable_pki') ? { true => $::enable_pki, default => hiera('enable_pki', true) },
-  $use_simp_pki = defined('$::use_simp_pki') ? { true => $::use_simp_pki, default => hiera('use_simp_pki', true) },
-  $tlsCACertificatePath = '/etc/openldap/pki/cacerts',
-  $tlsCertificateFile = "/etc/openldap/pki/public/${::fqdn}.pub",
-  $tlsCertificateKeyFile = "/etc/openldap/pki/private/${::fqdn}.pem",
-  $tlsCipherSuite = 'DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-DSS-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA256:DHE-RSA-AES256-SHA:DHE-DSS-AES256-SHA:AECDH-AES256-SHA:ADH-AES256-GCM-SHA384:ADH-AES256-SHA256:ADH-AES256-SHA:ECDH-RSA-AES256-GCM-SHA384:ECDH-ECDSA-AES256-GCM-SHA384:ECDH-RSA-AES256-SHA384:ECDH-ECDSA-AES256-SHA384:ECDH-RSA-AES256-SHA:ECDH-ECDSA-AES256-SHA:AES256-GCM-SHA384:AES256-SHA256:AES256-SHA',
+  $use_tls = simplib::lookup('simp_options::pki', { 'default_value' => false , 'value_type' => Boolean }),
+  $use_simp_pki = simplib::lookup('simp_options::pki', { 'default_value' => false , 'value_type' => Boolean }),
+  $app_pki_ca_dir = '/etc/openldap/pki/cacerts',
+  $app_pki_cert = "/etc/openldap/pki/public/${::fqdn}.pub",
+  $app_pki_key = "/etc/openldap/pki/private/${::fqdn}.pem",
+  $tlsCipherSuite = simplib::lookup('simp_options::openssl::cipher_suite',{ 'default_value' => ['DEFAULT', '!MEDIUM'], 'value_type' => Array[String] }),
   $tlsCRLCheck = 'none',
   $tlsCRLFile = '',
   $tlsVerifyClient = 'try',
@@ -383,11 +383,11 @@ class openldap::server::conf (
   $db_log_buffer_size = '2097152',
   $db_log_autoremove = true,
   $ulimit_max_open_files = '81920',
-  $enable_logging  = defined('$::enable_logging') ? { true => $::enable_logging,  default => hiera('enable_logging',true) },
+  $enable_logging  = simplib::lookup('simp_options::syslog', {'default_value' => false, 'value_type' => Boolean  }),
   $log_to_file = false,
   $log_file = '/var/log/slapd.log',
   $forward_all_logs = false,
-  $enable_iptables = defined('$::use_iptables') ? { true => $::use_iptables,  default => hiera('use_iptables',false) },
+  $enable_iptables = simplib::lookup('simp_options::iptables', {'default_value' => false, 'value_type' => Boolean  }),
 ) {
   validate_absolute_path($argsfile)
   validate_bool($audit_transactions)
@@ -399,7 +399,7 @@ class openldap::server::conf (
   validate_bool($bind_anon)
   validate_integer($cachesize)
   validate_re($checkpoint,'^\d+\s\d+$')
-  validate_net_list($client_nets)
+  validate_net_list($trusted_nets)
   validate_integer($conn_max_pending)
   validate_integer($conn_max_pending_auth)
   validate_array($default_schemas)
@@ -437,9 +437,9 @@ class openldap::server::conf (
   validate_re($timelimit_soft,'^(\d+|unlimited)$')
   validate_re($timelimit_hard,'^(\d+|unlimited)$')
   validate_integer($writetimeout)
-  validate_absolute_path($tlsCACertificatePath)
-  validate_absolute_path($tlsCertificateFile)
-  validate_absolute_path($tlsCertificateKeyFile)
+  validate_absolute_path($app_pki_ca_dir)
+  validate_absolute_path($app_pki_cert)
+  validate_absolute_path($app_pki_key)
   if !empty($tlsCRLFile) {  validate_absolute_path($tlsCRLFile) }
   validate_array_member($tlsCRLCheck,['none','peer','all'])
   validate_array_member($tlsVerifyClient,['never','allow','try','demand','hard',true])
@@ -486,10 +486,12 @@ class openldap::server::conf (
   include '::openldap::server::conf::default_ldif'
 
   if $use_tls and $use_simp_pki {
-    pki::copy { '/etc/openldap':
-      group  => 'ldap',
-      notify => Class['openldap::server::service']
-    }
+      include '::pki'
+      Class['pki'] -> Class['openldap']
+      pki::copy { '/etc/openldap':
+        group  => 'ldap',
+        notify => Class['openldap::server::service']
+      }
   }
 
   if $::hardwaremodel == 'x86_64' {
@@ -562,20 +564,20 @@ class openldap::server::conf (
     if $listen_ldap or $listen_ldaps {
       iptables::add_tcp_stateful_listen { 'allow_ldap':
         order       => '11',
-        client_nets => $client_nets,
+        trusted_nets => $trusted_nets,
         dports      => 'ldap'
       }
     }
     if $listen_ldaps {
       iptables::add_tcp_stateful_listen { 'allow_ldaps':
         order       => '11',
-        client_nets => $client_nets,
+        trusted_nets => $trusted_nets,
         dports      => 'ldaps'
       }
     }
   }
 
-  if $enable_logging or hiera('use_simp_logging',false) {
+  if $enable_logging {
     include '::rsyslog'
 
     if $audit_transactions {

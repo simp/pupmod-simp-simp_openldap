@@ -33,26 +33,53 @@ describe 'openldap::server::conf' do
           end
         }
 
+        context 'without_tls' do
+          let(:params) {{ }}
+          it { is_expected.to_not create_pki__copy('/etc/openldap') }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Openldap::Server::Service]') }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSCertificateFile/) }
+        end
+
         context 'with_tls' do
-          it { is_expected.to create_pki__copy('/etc/openldap').that_notifies('Class[Openldap::Server::Service]') }
+          let(:pre_condition) {
+            %(
+              class { "::openldap":
+                base_dn => "dc=host,dc=net"
+              }
+            )
+          }
+          let(:params) {{
+            :use_tls      => true,
+            :use_simp_pki => true
+          }}
+          it { is_expected.to create_pki__copy('/etc/openldap').with({
+            :notify => 'Class[Openldap::Server::Service]'
+            })
+          }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
-              :notify => 'Class[Openldap::Server::Service]',
-              :content => /TLSCertificateFile/
+            :notify => 'Class[Openldap::Server::Service]',
+            :content => /TLSCertificateFile/
             })
           }
         end
 
-        context 'without_tls' do
-          # Testing this by setting the global override
-          let(:facts){
-            facts[:enable_pki] = false
-
-            facts
+        context 'with_tls_but_not_simp_managed' do
+          let(:pre_condition) {
+            %(
+              class { "::openldap":
+                base_dn => "dc=host,dc=net"
+              }
+            )
           }
-
-          it { is_expected.to_not create_pki__copy('/etc/openldap') }
-          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Openldap::Server::Service]') }
-          it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSCertificateFile/) }
+          let(:params) {{
+            :use_tls      => true,
+            :use_simp_pki => false
+           }}
+           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
+              :notify => 'Class[Openldap::Server::Service]',
+              :content => /TLSCertificateFile/
+            })
+          }
         end
 
         context 'x86_64' do
@@ -87,12 +114,16 @@ describe 'openldap::server::conf' do
 
         context 'enable_iptables' do
           # Testing this by setting the global override
-          let(:facts){
-            facts[:use_iptables] = true
-
-            facts
+          let(:pre_condition) {
+            %(
+              class { "::openldap":
+                base_dn => "dc=host,dc=net"
+              }
+            )
           }
-
+          let(:params){{
+            :enable_iptables => true 
+          }}
           it { is_expected.to create_class('iptables') }
           it { is_expected.to create_iptables__add_tcp_stateful_listen('allow_ldap').with_dports('ldap') }
           it { is_expected.to create_iptables__add_tcp_stateful_listen('allow_ldaps').with_dports('ldaps') }
@@ -100,12 +131,17 @@ describe 'openldap::server::conf' do
 
         context 'do_not_use_iptables' do
           # Testing this by setting the global override
-          let(:facts){
-            facts[:use_iptables] = false
-
-            facts
+          let(:pre_condition) {
+            %(
+              class { "::openldap":
+                base_dn => "dc=host,dc=net"
+              }
+            )
           }
 
+          let(:params){{
+            :enable_iptables => false 
+          }}
           it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldap') }
           it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldaps') }
         end
@@ -234,6 +270,17 @@ describe 'openldap::server::conf' do
         end
 
         context 'logging_disabled' do
+          let(:pre_condition) {
+            %(
+              class { "::openldap":
+                base_dn => "dc=host,dc=net"
+              }
+            )
+          }
+
+          let(:params){{
+            :enable_logging     => false,
+          }}
           it { is_expected.to_not create_rsyslog__rule__local('05_openldap_local') }
           it { is_expected.to_not create_logrotate__add('slapd') }
         end

@@ -79,16 +79,12 @@ class openldap::server (
   $schema_sync = true,
   $schema_source = 'puppet:///modules/openldap/etc/openldap/schema',
   $allow_sync = true,
-  $sync_dn = hiera('ldap::sync_dn',"cn=LDAPSync,ou=Hosts,${::openldap::base_dn}"),
+  $sync_dn = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,%{hiera('simp_options::ldap::sync_dn')}", 'value_type' => String }),
   $host_auth_user = 'hostAuth',
   $use_ppolicy = true,
-  $use_tcpwrappers = true
+  $use_tcpwrappers = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false, 'value_type' => Boolean })
 ) inherits ::openldap {
 
-  validate_bool($schema_sync)
-  validate_bool($allow_sync)
-  validate_bool($use_ppolicy)
-  validate_bool($use_tcpwrappers)
 
 
   include '::openldap::client'

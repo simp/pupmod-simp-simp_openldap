@@ -60,7 +60,7 @@
 # * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::slapo::ppolicy (
-    $suffix = hiera('ldap::base_dn'),
+    $suffix = simplib::lookup('simp_options::ldap::basedn', { 'default_value' => "", 'value_type' => String }),
     $ppolicy_default='',
     $ppolicy_hash_cleartext='',
     $ppolicy_use_lockout='',

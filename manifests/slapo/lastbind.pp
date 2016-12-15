@@ -17,7 +17,7 @@
 class openldap::slapo::lastbind (
 # $lastbind_precision
 #     The value <in seconds> after which to update the authTimestamp
-    $lastbind_precision = '3600'
+Integer    $lastbind_precision = 3600
 ) {
   include 'openldap::server::dynamic_includes'
 
@@ -30,7 +30,7 @@ class openldap::slapo::lastbind (
   }
 
   openldap::server::dynamic_includes::add { 'lastbind':
-    order   => '1000',
+    order   => 1000,
     content => "moduleload lastbind.so\noverlay lastbind\n",
     require => Package['simp-lastbind']
   }

@@ -76,16 +76,14 @@
 #   * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server (
-  $schema_sync = true,
-  $schema_source = 'puppet:///modules/openldap/etc/openldap/schema',
-  $allow_sync = true,
-  $sync_dn = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,%{hiera('simp_options::ldap::sync_dn')}", 'value_type' => String }),
-  $host_auth_user = 'hostAuth',
-  $use_ppolicy = true,
-  $use_tcpwrappers = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false, 'value_type' => Boolean })
+  Boolean    $schema_sync = true,
+  String     $schema_source = 'puppet:///modules/openldap/etc/openldap/schema',
+  Boolean    $allow_sync = true,
+  String     $sync_dn = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,%{hiera('simp_options::ldap::sync_dn')}", 'value_type' => String }),
+  String     $host_auth_user = 'hostAuth',
+  Boolean    $use_ppolicy = true,
+  Boolean    $tcpwrappers = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false, 'value_type' => Boolean })
 ) inherits ::openldap {
-
-
 
   include '::openldap::client'
   include '::openldap::server::access'
@@ -261,7 +259,7 @@ class openldap::server (
   package { 'openldap': ensure => 'latest' }
   package { "openldap-servers.${::hardwaremodel}": ensure => 'latest' }
 
-  if $use_tcpwrappers {
+  if $tcpwrappers {
     include '::tcpwrappers'
 
     tcpwrappers::allow { 'slapd':

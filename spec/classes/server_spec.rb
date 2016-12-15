@@ -99,7 +99,7 @@ describe 'openldap::server' do
         end
 
         context 'no_tcpwrappers' do
-          let(:params){{ :use_tcpwrappers => true }}
+          let(:params){{ :tcpwrappers => true }}
 
           it { is_expected.to create_tcpwrappers__allow('slapd').with_pattern('ALL') }
         end

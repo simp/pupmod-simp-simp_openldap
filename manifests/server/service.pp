@@ -4,7 +4,7 @@
 # This class manages the OpenLDAP service.
 #
 class openldap::server::service (
-  $slapd_svc = 'slapd'
+  String  $slapd_svc = 'slapd'
 ){
   assert_private()
 

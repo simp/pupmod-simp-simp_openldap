@@ -257,7 +257,7 @@
 #   something reasonable for your system. The default should suffice
 #   in most cases.
 #
-# [*enable_logging*]
+# [*syslog*]
 # Type: Boolean
 # Default: false
 #   If true, enable the SIMP logging infrastructure
@@ -266,22 +266,22 @@
 # Type: Boolean
 # Default: false
 #   If true, send the output logs to the file specified in $log_file.
-#   Has no effect if $enable_logging == false.
+#   Has no effect if $syslog == false.
 #
 # [*log_file*]
 # Type: Absolute Path
 # Default: '/var/log/slapd.log'
-#   If $enable_logging is true, output all logs to this file via
+#   If $syslog is true, output all logs to this file via
 #   syslog.
-#   Has no effect if $enable_logging == false.
+#   Has no effect if $syslog == false.
 #
 # [*forward_all_logs*]
 # Type: Boolean
 # Default: false
 #   If true, forward all OpenLDAP logs via rsyslog.
-#   Has no effect if $enable_logging == false.
+#   Has no effect if $syslog == false.
 #
-# [*enable_iptables*]
+# [*firewall*]
 # Type: Boolean
 # Default: true
 #   If true, enable the SIMP iptables for OpenLDAP.
@@ -291,204 +291,145 @@
 #   * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::conf (
-  $rootdn = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}", 'value_type' => String }),
-  $rootpw = simplib::lookup('simp_options::ldap::root_hash',{ 'default_value' => undef, 'value_type' => String }),
-  $syncdn = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}", 'value_type' => String }),
-  $syncpw = simplib::lookup('simp_options::ldap::sync_hash',{ 'default_value' => undef, 'value_type' => String }),
-  $binddn = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "${::openldap::base_dn}", 'value_type' => String }),
-  $bindpw = simplib::lookup('simp_options::ldap::bind_hash',{ 'default_value' => undef, 'value_type' => String }),
-  $suffix = $::openldap::base_dn,
-  $argsfile = '/var/run/openldap/slapd.args',
-  $audit_transactions = true,
-  $audit_to_syslog = true,
-  $auditlog = '/var/log/slapd.audit',
-  $auditlog_rotate = 'daily',
-  $auditlog_preserve = '7',
-  $authz_policy = 'to',
-  $authz_regexp = [{
-    'match'   => '^uid=([^,]+),.*',
-    'replace' => "uid=\$1,ou=People,${::openldap::base_dn}"
-  }],
-  $bind_anon = false,
-  $cachesize = '10000',
-  $checkpoint = '1024 5',
-  $trusted_nets = simplib::lookup('simp_options::trusted_nets',{ 'default_value' => ['127.0.0.1', '::1'], 'value_type' => Array[String] }),
-  $concurrency = '',
-  $conn_max_pending = '100',
-  $conn_max_pending_auth = '100',
-  $default_schemas = [
-    'openssh-lpk',
-    'freeradius',
-    'autofs'
-  ],
-  $default_searchbase = '',
-  $disallow = ['bind_anon','tls_2_anon'],
-  $force_log_quick_kill = false,
-  $ditcontentrule = '',
-  $gentlehup = false,
-  $idletimeout = '0',
-  $include_chain_overlay = false,
-  $index_substr_any_step = '2',
-  $index_substr_any_len = '4',
-  $index_substr_if_maxlen = '4',
-  $index_substr_if_minlen = '2',
-  $index_intlen = '4',
-  $listen_ldap = true,
-  $listen_ldapi = true,
-  $listen_ldaps = true,
-  $custom_options = [],
-  $slapd_logLevel = ['stats', 'acl', 'sync'],
-  $password_crypt_salt_format = '%s',
-  $password_hash = 'SSHA',
-  $pidfile = '/var/run/openldap/slapd.pid',
-  $reverse_lookup = false,
-  $schemadn = 'cn=Subschema',
-  $security = 'ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256',
-  $sizelimit = '500',
-  $sizelimit_soft = '500',
-  $sizelimit_hard = '500',
-  $sizelimit_unchecked = '500',
-  $slapd_shutdown_timeout = '3',
-  $sockbuf_max_incoming = '262143',
-  $sockbuf_max_incoming_auth = '4194303',
-  $sortvals = [],
-  $tcp_buffer = '',
-  $threads = 'dynamic',
-  $timelimit = '3600',
-  $timelimit_soft = '3600',
-  $timelimit_hard = '3600',
-  $writetimeout = '0',
-  $use_tls = simplib::lookup('simp_options::pki', { 'default_value' => false , 'value_type' => Boolean }),
-  $use_simp_pki = simplib::lookup('simp_options::pki', { 'default_value' => false , 'value_type' => Boolean }),
-  $app_pki_ca_dir = '/etc/openldap/pki/cacerts',
-  $app_pki_cert = "/etc/openldap/pki/public/${::fqdn}.pub",
-  $app_pki_key = "/etc/openldap/pki/private/${::fqdn}.pem",
-  $tlsCipherSuite = simplib::lookup('simp_options::openssl::cipher_suite',{ 'default_value' => ['DEFAULT', '!MEDIUM'], 'value_type' => Array[String] }),
-  $tlsCRLCheck = 'none',
-  $tlsCRLFile = '',
-  $tlsVerifyClient = 'try',
-  $database = 'bdb',
-  $directory = '/var/lib/ldap',
-  $db_add_content_acl = false,
-  $db_lastmod = true,
-  $db_maxderefdepth = '15',
-  $db_mirrormode = false,
-  $db_monitoring = true,
-  $db_readonly = false,
-  $db_cachesize = '0 268435456 1',
-  $db_max_locks = '3000',
-  $db_max_lock_objects = '1500',
-  $db_max_lock_lockers = '1500',
-  $db_log_region_max_size = '262144',
-  $db_log_buffer_size = '2097152',
-  $db_log_autoremove = true,
-  $ulimit_max_open_files = '81920',
-  $enable_logging  = simplib::lookup('simp_options::syslog', {'default_value' => false, 'value_type' => Boolean  }),
-  $log_to_file = false,
-  $log_file = '/var/log/slapd.log',
-  $forward_all_logs = false,
-  $enable_iptables = simplib::lookup('simp_options::iptables', {'default_value' => false, 'value_type' => Boolean  }),
+  String                $rootdn                     = simplib::lookup('simp_options::ldap::root_dn',
+                                                        { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
+  Optional[String]      $rootpw                     = simplib::lookup('simp_options::ldap::root_hash',{ 'default_value' => undef }),
+  String                $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn',
+                                                         { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}" }),
+  Optional[String]      $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash',{ 'default_value' => undef }),
+  String                $binddn                     = simplib::lookup('simp_options::ldap::bind_dn',
+                                                        { 'default_value' => "${::openldap::base_dn}" }),
+  Optional[String]      $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash',{ 'default_value' => undef }),
+  Optional[String]      $suffix                     = $::openldap::base_dn,
+  Stdlib::Absolutepath  $argsfile                   = '/var/run/openldap/slapd.args',
+  Boolean               $audit_transactions         = true,
+  Boolean               $audit_to_syslog            = true,
+  Stdlib::Absolutepath  $auditlog                   = '/var/log/slapd.audit',
+  String                $auditlog_rotate            = 'daily',
+  Integer               $auditlog_preserve          = 7,
+  String                $authz_policy               = 'to',
+  Array[Hash]           $authz_regexp               = [{
+                                                        'match'   => '^uid=([^,]+),.*',
+                                                        'replace' => "uid=\$1,ou=People,${::openldap::base_dn}"
+                                                      }],
+  Boolean               $bind_anon                  = false,
+  Integer               $cachesize                  = 10000,
+  Pattern['(^\d+\s\d+$|^$)'] $checkpoint                 = '1024 5',
+  Array[String]         $trusted_nets               = simplib::lookup('simp_options::trusted_nets',
+                                                        { 'default_value' => ['127.0.0.1', '::1'] }),
+  String                $concurrency                = '',
+  Integer               $conn_max_pending           = 100,
+  Integer               $conn_max_pending_auth      = 100,
+  Array[String]         $default_schemas            = [ 'openssh-lpk', 'freeradius', 'autofs' ],
+  String                $default_searchbase         = '',
+  Array[String]         $disallow                   = ['bind_anon','tls_2_anon'],
+  Boolean               $force_log_quick_kill       = false,
+  String                $ditcontentrule             = '',
+  Boolean               $gentlehup                  = false,
+  Integer               $idletimeout                = 0,
+  Boolean               $include_chain_overlay      = false,
+  Integer               $index_substr_any_step      = 2,
+  Integer               $index_substr_any_len       = 4,
+  Integer               $index_substr_if_maxlen     = 4,
+  Integer               $index_substr_if_minlen     = 2,
+  Integer               $index_intlen               = 4,
+  Boolean               $listen_ldap                = true,
+  Boolean               $listen_ldapi               = true,
+  Boolean               $listen_ldaps               = true,
+  Array                 $custom_options             = [],
+  Array[String]         $slapd_logLevel             = ['stats', 'acl', 'sync'],
+  String                $password_crypt_salt_format = '%s',
+  String                $password_hash              = 'SSHA',
+  Stdlib::Absolutepath  $pidfile                    = '/var/run/openldap/slapd.pid',
+  Boolean               $reverse_lookup             = false,
+  String                $schemadn                   = 'cn=Subschema',
+  String                $security                   = 'ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256',
+  String                $sizelimit                  = '500',
+  String                $sizelimit_soft             = '500',
+  String                $sizelimit_hard             = '500',
+  String                $sizelimit_unchecked        = '500',
+  Integer               $slapd_shutdown_timeout     = 3,
+  Integer               $sockbuf_max_incoming       = 262143,
+  Integer               $sockbuf_max_incoming_auth  = 4194303,
+  Array                 $sortvals                   = [],
+  Optional[Integer]     $tcp_buffer                 = undef,
+  Variant[Enum['dynamic'],Integer]                $threads                    = 'dynamic',
+  String                $timelimit                  = '3600',
+  String                $timelimit_soft             = '3600',
+  String                $timelimit_hard             = '3600',
+  Integer               $writetimeout               = 0,
+  Boolean               $pki                        = simplib::lookup('simp_options::pki', { 'default_value' => false  }),
+  Boolean               $use_simp_pki               = simplib::lookup('simp_options::pki', { 'default_value' => false  }),
+  Stdlib::Absolutepath  $app_pki_dir                = "${::openldap::app_pki_dir}",
+  Stdlib::Absolutepath  $app_pki_ca_dir             = "${::openldap::app_pki_dir}/pki/cacerts",
+  Stdlib::Absolutepath  $app_pki_cert               = "${::openldap::app_pki_dir}/pki/public/${::fqdn}.pub",
+  Stdlib::Absolutepath  $app_pki_key                = "${::openldap::app_pki_dir}/pki/private/${::fqdn}.pem",
+  Array[String]         $tlsCipherSuite             = simplib::lookup('simp_options::openssl::cipher_suite'
+                                                        ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
+  String                $tlsCRLCheck                = 'none',
+  Optional[Stdlib::Absolutepath]         $tlsCRLFile                 = undef,
+  String                $tlsVerifyClient            = 'try',
+  String                $database                   = 'bdb',
+  Stdlib::Absolutepath  $directory                  = '/var/lib/ldap',
+  Boolean               $db_add_content_acl         = false,
+  Boolean               $db_lastmod                 = true,
+  Integer               $db_maxderefdepth           = 15,
+  Boolean               $db_mirrormode              = false,
+  Boolean               $db_monitoring              = true,
+  Boolean               $db_readonly                = false,
+  String                $db_cachesize               = '0 268435456 1',
+  Integer               $db_max_locks               = 3000,
+  Integer               $db_max_lock_objects        = 1500,
+  Integer               $db_max_lock_lockers        = 1500,
+  Integer               $db_log_region_max_size     = 262144,
+  Integer               $db_log_buffer_size         = 2097152,
+  Boolean               $db_log_autoremove          = true,
+  Integer               $ulimit_max_open_files      = 81920,
+  Boolean               $syslog                    = simplib::lookup('simp_options::syslog', {'default_value' => false }),
+  Boolean               $log_to_file                = false,
+  Stdlib::Absolutepath  $log_file                   = '/var/log/slapd.log',
+  Boolean               $forward_all_logs           = false,
+  Boolean               $firewall                   = simplib::lookup('simp_options::firewall', {'default_value' => false }),
 ) {
-  validate_absolute_path($argsfile)
-  validate_bool($audit_transactions)
-  validate_bool($audit_to_syslog)
-  validate_absolute_path($auditlog)
-  validate_integer($auditlog_preserve)
-  validate_array_member($authz_policy,['none','from','to','any'])
-  validate_array_of_hashes($authz_regexp)
-  validate_bool($bind_anon)
-  validate_integer($cachesize)
-  validate_re($checkpoint,'^\d+\s\d+$')
-  validate_net_list($trusted_nets)
-  validate_integer($conn_max_pending)
-  validate_integer($conn_max_pending_auth)
-  validate_array($default_schemas)
-  validate_array($disallow)
-  validate_bool($force_log_quick_kill)
-  validate_bool($gentlehup)
-  validate_integer($idletimeout)
-  validate_bool($include_chain_overlay)
-  validate_integer($index_substr_any_step)
-  validate_integer($index_substr_any_len)
-  validate_integer($index_substr_if_maxlen)
-  validate_integer($index_substr_if_minlen)
-  validate_integer($index_intlen)
-  validate_bool($listen_ldap)
-  validate_bool($listen_ldapi)
-  validate_bool($listen_ldaps)
-  validate_array($custom_options)
-  validate_array($slapd_logLevel)
-  validate_array_member($password_hash,['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'])
-  # Cast threads to a string so it can be regex against both
-  # digits and the string 'dynamic'
-  validate_re(to_string($threads),'^(\d+|dynamic)$')
-  validate_absolute_path($pidfile)
-  validate_bool($reverse_lookup)
-  validate_re($sizelimit,'^(\d+|unlimited)$')
-  validate_re($sizelimit_soft,'^(\d+|unlimited)$')
-  validate_re($sizelimit_hard,'^(\d+|unlimited)$')
-  validate_re($sizelimit_unchecked,'^(\d+|unlimited)$')
-  validate_integer($slapd_shutdown_timeout)
-  validate_integer($sockbuf_max_incoming)
-  validate_integer($sockbuf_max_incoming_auth)
-  validate_array($sortvals)
-  if ! empty($tcp_buffer) { validate_integer($tcp_buffer) }
-  validate_re($timelimit,'^(\d+|unlimited)$')
-  validate_re($timelimit_soft,'^(\d+|unlimited)$')
-  validate_re($timelimit_hard,'^(\d+|unlimited)$')
-  validate_integer($writetimeout)
-  validate_absolute_path($app_pki_ca_dir)
-  validate_absolute_path($app_pki_cert)
-  validate_absolute_path($app_pki_key)
-  if !empty($tlsCRLFile) {  validate_absolute_path($tlsCRLFile) }
-  validate_array_member($tlsCRLCheck,['none','peer','all'])
-  validate_array_member($tlsVerifyClient,['never','allow','try','demand','hard',true])
-  validate_array_member($database,[
-    'bdb',
-    'config',
-    'dnssrv',
-    'hdb',
-    'ldap',
-    'ldif',
-    'meta',
-    'monitor',
-    'null',
-    'passwd',
-    'perl',
-    'relay',
-    'shell',
-    'sql']
-  )
-  validate_absolute_path($directory)
-  validate_bool($db_add_content_acl)
-  validate_bool($db_lastmod)
-  validate_integer($db_maxderefdepth)
-  validate_bool($db_mirrormode)
-  validate_bool($db_monitoring)
-  validate_bool($db_readonly)
-  validate_re($db_cachesize,'^\d+ \d+ \d+$')
-  validate_integer($db_max_locks)
-  validate_integer($db_max_lock_objects)
-  validate_integer($db_max_lock_lockers)
-  validate_integer($db_log_region_max_size)
-  validate_integer($db_log_buffer_size)
-  validate_bool($db_log_autoremove)
-  validate_integer($ulimit_max_open_files)
-  validate_bool($enable_logging)
-  validate_bool($log_to_file)
-  validate_absolute_path($log_file)
-  validate_bool($forward_all_logs)
-  validate_bool($use_tls)
-  validate_bool($use_simp_pki)
-  validate_bool($enable_iptables)
-
+#  validate_array_member($authz_policy,['none','from','to','any'])
+#  validate_array_of_hashes($authz_regexp)
+#  validate_array_member($password_hash,['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'])
+# Cast threads to a string so it can be regex against both
+# digits and the string 'dynamic'
+#  validate_re(to_string($threads),'^(\d+|dynamic)$')
+#  validate_re($sizelimit,'^(\d+|unlimited)$')
+#  validate_re($sizelimit_soft,'^(\d+|unlimited)$')
+#  validate_re($sizelimit_hard,'^(\d+|unlimited)$')
+#  validate_re($sizelimit_unchecked,'^(\d+|unlimited)$')
+#  validate_re($timelimit,'^(\d+|unlimited)$')
+#  validate_re($timelimit_soft,'^(\d+|unlimited)$')
+#  validate_re($timelimit_hard,'^(\d+|unlimited)$')
+#  validate_array_member($tlsCRLCheck,['none','peer','all'])
+#  validate_array_member($tlsVerifyClient,['never','allow','try','demand','hard',true])
+#  validate_array_member($database,[
+#    'bdb',
+#    'config',
+#    'dnssrv',
+#    'hdb',
+#    'ldap',
+#    'ldif',
+#    'meta',
+#    'monitor',
+#    'null',
+#    'passwd',
+#    'perl',
+#    'relay',
+#    'shell',
+#    'sql']
+#  )
+#  validate_re($db_cachesize,'^\d+ \d+ \d+$')
 
   include '::openldap::server::conf::default_ldif'
 
-  if $use_tls and $use_simp_pki {
+  if $pki and $use_simp_pki {
       include '::pki'
       Class['pki'] -> Class['openldap']
-      pki::copy { '/etc/openldap':
+      pki::copy { "${app_pki_dir}":
         group  => 'ldap',
         notify => Class['openldap::server::service']
       }
@@ -558,7 +499,7 @@ class openldap::server::conf (
   }
 
   # IPTables
-  if $enable_iptables {
+  if $firewall {
     include '::iptables'
 
     if $listen_ldap or $listen_ldaps {
@@ -577,7 +518,7 @@ class openldap::server::conf (
     }
   }
 
-  if $enable_logging {
+  if $syslog {
     include '::rsyslog'
 
     if $audit_transactions {
@@ -598,7 +539,7 @@ class openldap::server::conf (
       }
 
       openldap::server::dynamic_includes::add { 'auditlog':
-        order   => '1000',
+        order   => 1000,
         content => template('openldap/slapo/auditlog.erb'),
         require => File[$auditlog]
       }

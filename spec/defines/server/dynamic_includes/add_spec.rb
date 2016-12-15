@@ -12,7 +12,7 @@ describe 'openldap::server::dynamic_includes::add' do
 
         let(:params) {{
           :content => 'foo',
-          :order   => '100'
+          :order   => 100
         }}
 
         it { should compile.with_all_deps }

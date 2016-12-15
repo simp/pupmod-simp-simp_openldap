@@ -37,13 +37,7 @@ describe 'openldap::slapo::syncprov' do
         context 'validate_checkpoint_bad' do
           let(:params) {{ :checkpoint => '2' }}
 
-          it do
-            expect {
-              is_expected.to create_openldap__server__dynamic_includes__add('syncprov').with_content(
-                /syncprov-checkpoint #{params[:checkpoint]}/
-              )
-            }.to raise_error(/"#{params[:checkpoint]}" does not match/)
-          end
+          it { expect { is_expected.to compile }.to raise_error }
         end
       end
     end

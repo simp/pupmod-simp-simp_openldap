@@ -127,13 +127,13 @@ authz-regexp
 end
 -%>
 
-<% if @use_tls then -%>
+<% if @pki then -%>
 TLSCertificateFile <%= @app_pki_cert %>
 TLSCertificateKeyFile <%= @app_pki_key %>
 TLSCipherSuite <%= @tlsCipherSuite %>
 TLSVerifyClient <%= @tlsVerifyClient %>
 TLSCRLCheck <%= @tlsCRLCheck %>
-<%   if not @tlsCRLFile.empty? then -%>
+<%   if defined?(@tlsCRLFile) then -%>
 TLSCRLFile <%= @tlsCRLFile %>
 <%   end -%>
 <%   if not @app_pki_ca_dir.empty? then -%>
@@ -179,7 +179,7 @@ reverse-lookup <%= @reverse_lookup ? 'on' : 'off' %>
 <% if not @sortvals.empty? then -%>
 sortvals <%= @sortvals.join(' ') -%>
 <% end -%>
-<% if not @tcp_buffer.empty? then -%>
+<% if defined?(@tcp_buffer) then -%>
 tcp-buffer <%= @tcp_buffer %>
 <% end -%>
 

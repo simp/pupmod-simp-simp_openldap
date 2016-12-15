@@ -5,13 +5,14 @@ HOSTS:
       - server
     yum_repos:
       simp:
-        url: https://dl.bintray.com/simp/5.1.X
+        name: simp-project_6_X_Alpha
+        url: https://dl.bintray.com/simp/5.1.X-Ext
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
     platform:   el-7-x86_64
-    box:        puppetlabs/centos-7.0-64-nocm
-    box_url:    https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+    box:        centos/7
     hypervisor: vagrant
+  #  box_url:    https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
   # slave1:
   #   roles:
   #     - slave
@@ -28,5 +29,5 @@ HOSTS:
   #   hypervisor: vagrant
 CONFIG:
   log_level:       verbose
-  type:            foss
-  vagrant_mem: 256
+  type:            aio
+  vagrant_memsize: 256

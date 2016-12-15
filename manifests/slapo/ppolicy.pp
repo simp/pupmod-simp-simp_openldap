@@ -60,17 +60,17 @@
 # * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::slapo::ppolicy (
-    $suffix = simplib::lookup('simp_options::ldap::basedn', { 'default_value' => "", 'value_type' => String }),
-    $ppolicy_default='',
-    $ppolicy_hash_cleartext='',
-    $ppolicy_use_lockout='',
-    $min_points = '3',
-    $use_cracklib = true,
-    $min_upper = '0',
-    $min_lower = '0',
-    $min_digit = '0',
-    $min_punct = '0',
-    $max_consecutive_per_class = '3'
+    String    $suffix                    = simplib::lookup('simp_options::ldap::basedn', { 'default_value' => "" }),
+    String    $ppolicy_default           ='',
+    String    $ppolicy_hash_cleartext    ='',
+    String    $ppolicy_use_lockout       ='',
+    Integer   $min_points                = 3,
+    Boolean   $use_cracklib              = true,
+    Integer   $min_upper                 = 0,
+    Integer   $min_lower                 = 0,
+    Integer   $min_digit                 = 0,
+    Integer   $min_punct                 = 0,
+    Integer   $max_consecutive_per_class = 3
 ) {
   include '::openldap::server::dynamic_includes'
 
@@ -89,7 +89,7 @@ class openldap::slapo::ppolicy (
   package { 'simp-ppolicy-check-password': ensure => 'latest' }
 
   openldap::server::dynamic_includes::add { 'ppolicy':
-    order   => '1000',
+    order   => 1000,
     content => template('openldap/slapo/ppolicy.erb')
   }
 

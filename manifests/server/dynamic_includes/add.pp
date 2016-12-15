@@ -20,9 +20,9 @@
 # * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 define openldap::server::dynamic_includes::add (
-    $content,
-    $order = '100' )
-{
+    String  $content,
+    Integer $order    = 100
+) {
   $l_name = regsubst($name,'/','_')
 
   simpcat_fragment { "slapd_dynamic_includes+${order}_${l_name}.inc":

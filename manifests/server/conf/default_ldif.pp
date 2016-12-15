@@ -10,36 +10,21 @@
 # * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::conf::default_ldif (
-  $ppolicy_pwd_min_age = '86400',
-  $ppolicy_pwd_max_age = '15552000',
-  $ppolicy_pwd_in_history = '24',
-  $ppolicy_pwd_check_quality = '2',
-  $ppolicy_pwd_min_length = '14',
-  $ppolicy_pwd_expire_warning = '1209600',
-  $ppolicy_pwd_grace_authn_limit = '-1',
-  $ppolicy_pwd_lockout = true,
-  $ppolicy_pwd_lockout_duration = '900',
-  $ppolicy_pwd_max_failure = '5',
-  $ppolicy_pwd_failure_count_interval = '900',
-  $ppolicy_pwd_must_change = true,
-  $ppolicy_pwd_allow_user_change = true,
-  $ppolicy_pwd_safe_modify = false
+  Integer   $ppolicy_pwd_min_age                = 86400,
+  Integer   $ppolicy_pwd_max_age                = 15552000,
+  Integer   $ppolicy_pwd_in_history             = 24,
+  Integer   $ppolicy_pwd_check_quality          = 2,
+  Integer   $ppolicy_pwd_min_length             = 14,
+  Integer   $ppolicy_pwd_expire_warning         = 1209600,
+  Integer   $ppolicy_pwd_grace_authn_limit      = -1,
+  Boolean   $ppolicy_pwd_lockout                = true,
+  Integer   $ppolicy_pwd_lockout_duration       = 900,
+  Integer   $ppolicy_pwd_max_failure            = 5,
+  Integer   $ppolicy_pwd_failure_count_interval = 900,
+  Boolean   $ppolicy_pwd_must_change            = true,
+  Boolean   $ppolicy_pwd_allow_user_change      = true,
+  Boolean   $ppolicy_pwd_safe_modify            = false
 ) {
-  validate_integer($ppolicy_pwd_min_age)
-  validate_integer($ppolicy_pwd_max_age)
-  validate_integer($ppolicy_pwd_in_history)
-  validate_integer($ppolicy_pwd_check_quality)
-  validate_integer($ppolicy_pwd_min_length)
-  validate_integer($ppolicy_pwd_expire_warning)
-  validate_integer($ppolicy_pwd_grace_authn_limit)
-  validate_bool($ppolicy_pwd_lockout)
-  validate_integer($ppolicy_pwd_lockout_duration)
-  validate_integer($ppolicy_pwd_max_failure)
-  validate_integer($ppolicy_pwd_failure_count_interval)
-  validate_bool($ppolicy_pwd_must_change)
-  validate_bool($ppolicy_pwd_allow_user_change)
-  validate_bool($ppolicy_pwd_safe_modify)
-
 
   assert_private()
 

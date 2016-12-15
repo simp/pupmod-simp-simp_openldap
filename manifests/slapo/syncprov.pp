@@ -9,19 +9,19 @@
 # * Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::slapo::syncprov (
-  $checkpoint='',
-  $sessionlog='',
-  $nopresent=false,
-  $reloadhint=false,
-  $sync_size_soft_limit = 'unlimited',
-  $sync_size_hard_limit = 'unlimited',
-  $sync_time_soft_limit = 'unlimited',
-  $sync_time_hard_limit = 'unlimited'
+  Pattern['(^\d+\s\d+$|^$)']          $checkpoint               ='',
+  String                              $sessionlog               ='',
+  Boolean                             $nopresent                =false,
+  Boolean                             $reloadhint               =false,
+  Variant[Enum['unlimited'],Integer]  $sync_size_soft_limit     = 'unlimited',
+  Variant[Enum['unlimited'],Integer]  $sync_size_hard_limit     = 'unlimited',
+  Variant[Enum['unlimited'],Integer]  $sync_time_soft_limit     = 'unlimited',
+  Variant[Enum['unlimited'],Integer]  $sync_time_hard_limit     = 'unlimited'
 ) {
   include 'openldap::server::dynamic_includes'
 
   openldap::server::dynamic_includes::add { 'syncprov':
-    order   => '1000',
+    order   => 1000,
     content => template('openldap/slapo/syncprov.erb')
   }
 
@@ -35,8 +35,6 @@ class openldap::slapo::syncprov (
     ]
   }
 
-  if !empty($checkpoint) { validate_re($checkpoint,'\d+ \d+') }
-  if !empty($sessionlog) { validate_integer($sessionlog) }
-  validate_bool($nopresent)
-  validate_bool($reloadhint)
+#  if !empty($checkpoint) { validate_re($checkpoint,'\d+ \d+') }
+#  if !empty($sessionlog) { validate_integer($sessionlog) }
 }

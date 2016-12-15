@@ -8,7 +8,7 @@ describe 'openldap::slapo::lastbind' do
           facts
         end
 
-        let(:params) {{ :lastbind_precision => '3600' }}
+        let(:params) {{ :lastbind_precision => 3600 }}
 
         it { is_expected.to create_class('openldap::server::dynamic_includes') }
 

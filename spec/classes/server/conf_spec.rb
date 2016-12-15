@@ -49,7 +49,7 @@ describe 'openldap::server::conf' do
             )
           }
           let(:params) {{
-            :use_tls      => true,
+            :pki      => true,
             :use_simp_pki => true
           }}
           it { is_expected.to create_pki__copy('/etc/openldap').with({
@@ -72,7 +72,7 @@ describe 'openldap::server::conf' do
             )
           }
           let(:params) {{
-            :use_tls      => true,
+            :pki      => true,
             :use_simp_pki => false
            }}
            it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
@@ -122,7 +122,7 @@ describe 'openldap::server::conf' do
             )
           }
           let(:params){{
-            :enable_iptables => true 
+            :firewall => true 
           }}
           it { is_expected.to create_class('iptables') }
           it { is_expected.to create_iptables__add_tcp_stateful_listen('allow_ldap').with_dports('ldap') }
@@ -140,7 +140,7 @@ describe 'openldap::server::conf' do
           }
 
           let(:params){{
-            :enable_iptables => false 
+            :firewall => false 
           }}
           it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldap') }
           it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldaps') }
@@ -156,7 +156,7 @@ describe 'openldap::server::conf' do
           }
           let(:params){{
             :listen_ldaps => false,
-            :enable_iptables => true
+            :firewall => true
           }}
 
           it { is_expected.to create_class('iptables') }
@@ -175,7 +175,7 @@ describe 'openldap::server::conf' do
           let(:params){{
             :listen_ldap  => false,
             :listen_ldaps => false,
-            :enable_iptables => true
+            :firewall => true
           }}
 
           it { is_expected.to create_class('iptables') }
@@ -194,8 +194,8 @@ describe 'openldap::server::conf' do
           let(:params){{
             :auditlog           => '/var/log/ldap_audit.log',
             :auditlog_rotate    => 'daily',
-            :auditlog_preserve  => '7',
-            :enable_logging => true
+            :auditlog_preserve  => 7,
+            :syslog => true
           }}
 
           it { is_expected.to create_class('logrotate') }
@@ -225,9 +225,9 @@ describe 'openldap::server::conf' do
           let(:params){{
             :auditlog           => '/var/log/ldap_audit.log',
             :auditlog_rotate    => 'daily',
-            :auditlog_preserve  => '7',
+            :auditlog_preserve  => 7,
             :audit_to_syslog    => false,
-            :enable_logging     => true
+            :syslog     => true
           }}
 
           it { is_expected.to create_class('logrotate') }
@@ -254,7 +254,7 @@ describe 'openldap::server::conf' do
             )
           }
           let(:params){{
-            :enable_logging     => true,
+            :syslog     => true,
             :log_to_file        => true,
             :log_file           => '/foo/bar'
           }}
@@ -279,7 +279,7 @@ describe 'openldap::server::conf' do
           }
 
           let(:params){{
-            :enable_logging     => false,
+            :syslog     => false,
           }}
           it { is_expected.to_not create_rsyslog__rule__local('05_openldap_local') }
           it { is_expected.to_not create_logrotate__add('slapd') }

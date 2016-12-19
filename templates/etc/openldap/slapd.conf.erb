@@ -127,7 +127,7 @@ authz-regexp
 end
 -%>
 
-<% if @pki then -%>
+<% if @use_tls then -%>
 TLSCertificateFile <%= @app_pki_cert %>
 TLSCertificateKeyFile <%= @app_pki_key %>
 TLSCipherSuite <%= @tlsCipherSuite %>

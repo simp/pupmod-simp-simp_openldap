@@ -3,7 +3,6 @@ simp_options::trusted_nets:
  - 'ALL'
 simp_options::firewall: false
 simp_options::sssd: false
-simp_options::pki: true
 simp_options::syslog: false
 
 openldap::server::conf::default_ldif::ppolicy_pwd_min_age: 0
@@ -27,8 +26,6 @@ simp_options::ldap::root_hash: "{SSHA}ZcqPNbcqQhDNF5jYTLGl+KAGcrHNW9oo"
 openldap::server::tcpwrappers: false
 openldap::server::conf::pki: true
 openldap::server::conf::use_simp_pki: false
-openldap::client::pki: true
-openldap::client::use_simp_pki: false
 
 # Need to tell our modules where our certs live!
 # This is a good test of the case where users don't want to use our PKI module.

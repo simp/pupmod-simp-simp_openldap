@@ -37,7 +37,7 @@ describe 'openldap::slapo::syncprov' do
         context 'validate_checkpoint_bad' do
           let(:params) {{ :checkpoint => '2' }}
 
-          it { expect { is_expected.to compile }.to raise_error }
+          it { expect { is_expected.to compile }.to raise_error(/expects a match for Pattern/) }
         end
       end
     end

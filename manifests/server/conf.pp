@@ -224,11 +224,6 @@
 # Default: true
 #   If true, enable TLS.
 #
-# [*use_simp_pki*]
-# Type: Boolean
-# Default: true
-#  If true, use the SIMP PKI module for key management.
-#
 # [*tlsVerifyClient*]
 # Type: One of 'never', 'allow', 'try', 'demand', 'hard', or 'true'
 # Default: 'try'
@@ -358,8 +353,10 @@ class openldap::server::conf (
   String                $timelimit_soft             = '3600',
   String                $timelimit_hard             = '3600',
   Integer               $writetimeout               = 0,
-  Boolean               $pki                        = simplib::lookup('simp_options::pki', { 'default_value' => false  }),
-  Boolean               $use_simp_pki               = simplib::lookup('simp_options::pki', { 'default_value' => false  }),
+  Variant[Boolean,
+         Enum['simp']]  $pki                        = simplib::lookup('simp_options::pki', { 'default_value' => false  }),
+  Boolean               $use_tls                    = true,
+  Stdlib::Absolutepath  $app_pki_cert_source        = "${::openldap::app_pki_cert_source}",
   Stdlib::Absolutepath  $app_pki_dir                = "${::openldap::app_pki_dir}",
   Stdlib::Absolutepath  $app_pki_ca_dir             = "${::openldap::app_pki_dir}/pki/cacerts",
   Stdlib::Absolutepath  $app_pki_cert               = "${::openldap::app_pki_dir}/pki/public/${::fqdn}.pub",
@@ -426,14 +423,17 @@ class openldap::server::conf (
 
   include '::openldap::server::conf::default_ldif'
 
-  if $pki and $use_simp_pki {
-      include '::pki'
-      Class['pki'] -> Class['openldap']
-      pki::copy { "${app_pki_dir}":
-        group  => 'ldap',
-        notify => Class['openldap::server::service']
-      }
-  }
+  if $pki {
+
+    if $pki == 'simp' { Class['pki'] -> Class['openldap'] }
+
+    pki::copy { "${app_pki_dir}":
+      group  => 'ldap',
+      source => "${app_pki_cert_source}",
+      notify => Class['openldap::server::service'],
+      pki    => $pki
+    }
+  } 
 
   if $::hardwaremodel == 'x86_64' {
       $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']

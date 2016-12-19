@@ -34,7 +34,12 @@ describe 'openldap::server::conf' do
         }
 
         context 'without_tls' do
-          let(:params) {{ }}
+          let(:pre_condition) {
+            %(
+              class { "::openldap": base_dn => "dc=host,dc=net" }
+            )
+          }
+          let(:params) {{ :use_tls => false }}
           it { is_expected.to_not create_pki__copy('/etc/openldap') }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Openldap::Server::Service]') }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSCertificateFile/) }
@@ -42,16 +47,12 @@ describe 'openldap::server::conf' do
 
         context 'with_tls' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params) {{
-            :pki      => true,
-            :use_simp_pki => true
+            :pki      => 'simp',
           }}
+          it { is_expected.to contain_class('pki') }
           it { is_expected.to create_pki__copy('/etc/openldap').with({
             :notify => 'Class[Openldap::Server::Service]'
             })
@@ -65,21 +66,22 @@ describe 'openldap::server::conf' do
 
         context 'with_tls_but_not_simp_managed' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params) {{
             :pki      => true,
-            :use_simp_pki => false
+            :syslog   => false,
            }}
-           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
               :notify => 'Class[Openldap::Server::Service]',
               :content => /TLSCertificateFile/
             })
           }
+          it { is_expected.to create_pki__copy('/etc/openldap').with({
+            :notify => 'Class[Openldap::Server::Service]'
+            })
+          }
+          it { is_expected.to_not contain_class('pki') }
         end
 
         context 'x86_64' do
@@ -100,11 +102,7 @@ describe 'openldap::server::conf' do
 
         context 'force_log_quick_kill' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
 
           let(:params){{ :force_log_quick_kill => true }}
@@ -115,11 +113,7 @@ describe 'openldap::server::conf' do
         context 'enable_iptables' do
           # Testing this by setting the global override
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :firewall => true 
@@ -132,11 +126,7 @@ describe 'openldap::server::conf' do
         context 'do_not_use_iptables' do
           # Testing this by setting the global override
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
 
           let(:params){{
@@ -148,11 +138,7 @@ describe 'openldap::server::conf' do
 
         context 'use_iptables_no_listen_ldaps' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :listen_ldaps => false,
@@ -166,11 +152,7 @@ describe 'openldap::server::conf' do
 
         context 'use_iptables_no_listen_ldap_or_ldaps' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :listen_ldap  => false,
@@ -185,11 +167,7 @@ describe 'openldap::server::conf' do
 
         context 'audit_transactions' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :auditlog           => '/var/log/ldap_audit.log',
@@ -216,11 +194,7 @@ describe 'openldap::server::conf' do
 
         context 'audit_transactions_no_audit_to_syslog' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :auditlog           => '/var/log/ldap_audit.log',
@@ -247,11 +221,7 @@ describe 'openldap::server::conf' do
 
         context 'logging_enabled' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :syslog     => true,
@@ -271,11 +241,7 @@ describe 'openldap::server::conf' do
 
         context 'logging_disabled' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
 
           let(:params){{
@@ -298,11 +264,7 @@ describe 'openldap::server::conf' do
 
         context 'threads_is_user_overridden' do
           let(:pre_condition) {
-            %(
-              class { "::openldap":
-                base_dn => "dc=host,dc=net"
-              }
-            )
+            %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{ :threads => 20 }}
 

@@ -348,7 +348,7 @@ class openldap::server::conf (
   Integer               $sockbuf_max_incoming_auth  = 4194303,
   Array                 $sortvals                   = [],
   Optional[Integer]     $tcp_buffer                 = undef,
-  Variant[Enum['dynamic'],Integer]                $threads                    = 'dynamic',
+  Variant[Enum['dynamic'],Integer] $threads                    = 'dynamic',
   String                $timelimit                  = '3600',
   String                $timelimit_soft             = '3600',
   String                $timelimit_hard             = '3600',
@@ -364,7 +364,7 @@ class openldap::server::conf (
   Array[String]         $tlsCipherSuite             = simplib::lookup('simp_options::openssl::cipher_suite'
                                                         ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
   String                $tlsCRLCheck                = 'none',
-  Optional[Stdlib::Absolutepath]         $tlsCRLFile                 = undef,
+  Optional[Stdlib::Absolutepath] $tlsCRLFile                 = undef,
   String                $tlsVerifyClient            = 'try',
   String                $database                   = 'bdb',
   Stdlib::Absolutepath  $directory                  = '/var/lib/ldap',
@@ -443,9 +443,9 @@ class openldap::server::conf (
   }
 
   if $force_log_quick_kill {
-    include '::simplib::incron'
+    include '::incron'
 
-    simplib::incron::add_system_table { 'nuke_openldap_log_files':
+    incron::system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'
@@ -503,17 +503,17 @@ class openldap::server::conf (
     include '::iptables'
 
     if $listen_ldap or $listen_ldaps {
-      iptables::add_tcp_stateful_listen { 'allow_ldap':
-        order       => '11',
+      iptables::listen::tcp_stateful { 'allow_ldap':
+        order        => 11,
         trusted_nets => $trusted_nets,
-        dports      => 'ldap'
+        dports       => 389
       }
     }
     if $listen_ldaps {
-      iptables::add_tcp_stateful_listen { 'allow_ldaps':
-        order       => '11',
+      iptables::listen::tcp_stateful { 'allow_ldaps':
+        order        => 11,
         trusted_nets => $trusted_nets,
-        dports      => 'ldaps'
+        dports       => 636
       }
     }
   }
@@ -531,8 +531,8 @@ class openldap::server::conf (
         mode   => '0750'
       }
 
-      logrotate::add { 'slapd_audit_log':
-        log_files     => $auditlog,
+      logrotate::rule { 'slapd_audit_log':
+        log_files     => [ $auditlog ],
         create        => '0640 ldap ldap',
         rotate_period => $auditlog_rotate,
         rotate        => $auditlog_preserve
@@ -572,10 +572,10 @@ class openldap::server::conf (
       # These are quite heavyweight so we're moving them up in the stack.
       rsyslog::rule::local { '05_openldap_local':
         rule            => 'local4.*',
-        target_log_file => "/var/log/${log_file}"
+        target_log_file => $log_file
       }
 
-      logrotate::add { 'slapd':
+      logrotate::rule { 'slapd':
         log_files  => [ $log_file ],
         missingok  => true,
         lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'

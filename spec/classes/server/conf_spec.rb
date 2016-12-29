@@ -50,7 +50,7 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params) {{
-            :pki      => 'simp',
+            :pki => 'simp',
           }}
           it { is_expected.to contain_class('pki') }
           it { is_expected.to create_pki__copy('/etc/openldap').with({
@@ -69,8 +69,8 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params) {{
-            :pki      => true,
-            :syslog   => false,
+            :pki    => true,
+            :syslog => false,
            }}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
               :notify => 'Class[Openldap::Server::Service]',
@@ -107,7 +107,7 @@ describe 'openldap::server::conf' do
 
           let(:params){{ :force_log_quick_kill => true }}
 
-          it { is_expected.to create_simplib__incron__add_system_table('nuke_openldap_log_files').with_command('/bin/rm $@/$#') }
+          it { is_expected.to create_incron__system_table('nuke_openldap_log_files').with_command('/bin/rm $@/$#') }
         end
 
         context 'enable_iptables' do
@@ -116,11 +116,11 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
-            :firewall => true 
+            :firewall => true
           }}
           it { is_expected.to create_class('iptables') }
-          it { is_expected.to create_iptables__add_tcp_stateful_listen('allow_ldap').with_dports('ldap') }
-          it { is_expected.to create_iptables__add_tcp_stateful_listen('allow_ldaps').with_dports('ldaps') }
+          it { is_expected.to create_iptables__listen__tcp_stateful('allow_ldap').with_dports(389) }
+          it { is_expected.to create_iptables__listen__tcp_stateful('allow_ldaps').with_dports(636) }
         end
 
         context 'do_not_use_iptables' do
@@ -130,10 +130,10 @@ describe 'openldap::server::conf' do
           }
 
           let(:params){{
-            :firewall => false 
+            :firewall => false
           }}
-          it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldap') }
-          it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldaps') }
+          it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldap') }
+          it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldaps') }
         end
 
         context 'use_iptables_no_listen_ldaps' do
@@ -142,12 +142,12 @@ describe 'openldap::server::conf' do
           }
           let(:params){{
             :listen_ldaps => false,
-            :firewall => true
+            :firewall     => true
           }}
 
           it { is_expected.to create_class('iptables') }
-          it { is_expected.to create_iptables__add_tcp_stateful_listen('allow_ldap').with_dports('ldap') }
-          it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldaps') }
+          it { is_expected.to create_iptables__listen__tcp_stateful('allow_ldap').with_dports(389) }
+          it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldaps') }
         end
 
         context 'use_iptables_no_listen_ldap_or_ldaps' do
@@ -157,12 +157,12 @@ describe 'openldap::server::conf' do
           let(:params){{
             :listen_ldap  => false,
             :listen_ldaps => false,
-            :firewall => true
+            :firewall     => true
           }}
 
           it { is_expected.to create_class('iptables') }
-          it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldap') }
-          it { is_expected.to_not create_iptables__add_tcp_stateful_listen('allow_ldaps') }
+          it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldap') }
+          it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldaps') }
         end
 
         context 'audit_transactions' do
@@ -170,21 +170,21 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
-            :auditlog           => '/var/log/ldap_audit.log',
-            :auditlog_rotate    => 'daily',
-            :auditlog_preserve  => 7,
-            :syslog => true
+            :auditlog          => '/var/log/ldap_audit.log',
+            :auditlog_rotate   => 'daily',
+            :auditlog_preserve => 7,
+            :syslog            => true
           }}
 
           it { is_expected.to create_class('logrotate') }
           it { is_expected.to create_class('rsyslog') }
 
           it { is_expected.to create_file(params[:auditlog]) }
-          it { is_expected.to create_logrotate__add('slapd_audit_log').with({
-              :log_files      => params[:auditlog],
-              :create         => '0640 ldap ldap',
-              :rotate_period  => params[:auditlog_rotate],
-              :rotate         => params[:auditlog_preserve]
+          it { is_expected.to create_logrotate__rule('slapd_audit_log').with({
+              :log_files     => [params[:auditlog]],
+              :create        => '0640 ldap ldap',
+              :rotate_period => params[:auditlog_rotate],
+              :rotate        => params[:auditlog_preserve]
             })
           }
           it { is_expected.to create_openldap__server__dynamic_includes__add('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
@@ -197,21 +197,21 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
-            :auditlog           => '/var/log/ldap_audit.log',
-            :auditlog_rotate    => 'daily',
-            :auditlog_preserve  => 7,
-            :audit_to_syslog    => false,
-            :syslog     => true
+            :auditlog          => '/var/log/ldap_audit.log',
+            :auditlog_rotate   => 'daily',
+            :auditlog_preserve => 7,
+            :audit_to_syslog   => false,
+            :syslog            => true
           }}
 
           it { is_expected.to create_class('logrotate') }
 
           it { is_expected.to create_file(params[:auditlog]) }
-          it { is_expected.to create_logrotate__add('slapd_audit_log').with({
-              :log_files      => params[:auditlog],
-              :create         => '0640 ldap ldap',
-              :rotate_period  => params[:auditlog_rotate],
-              :rotate         => params[:auditlog_preserve]
+          it { is_expected.to create_logrotate__rule('slapd_audit_log').with({
+              :log_files     => [params[:auditlog]],
+              :create        => '0640 ldap ldap',
+              :rotate_period => params[:auditlog_rotate],
+              :rotate        => params[:auditlog_preserve]
             })
           }
           it { is_expected.to create_openldap__server__dynamic_includes__add('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
@@ -224,16 +224,16 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
-            :syslog     => true,
-            :log_to_file        => true,
-            :log_file           => '/foo/bar'
+            :syslog      => true,
+            :log_to_file => true,
+            :log_file    => '/foo/bar'
           }}
 
           it { is_expected.to create_class('logrotate') }
           it { is_expected.to create_class('rsyslog') }
 
           it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule(/local4\.\*/) }
-          it { is_expected.to create_logrotate__add('slapd').with({
+          it { is_expected.to create_logrotate__rule('slapd').with({
               :log_files => [params[:log_file]]
             })
           }
@@ -245,10 +245,10 @@ describe 'openldap::server::conf' do
           }
 
           let(:params){{
-            :syslog     => false,
+            :syslog => false,
           }}
           it { is_expected.to_not create_rsyslog__rule__local('05_openldap_local') }
-          it { is_expected.to_not create_logrotate__add('slapd') }
+          it { is_expected.to_not create_logrotate__rule('slapd') }
         end
 
         context 'threads_is_dynamic' do

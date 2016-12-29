@@ -264,7 +264,7 @@ class openldap::server (
 
     tcpwrappers::allow { 'slapd':
       pattern => 'ALL',
-      order   => '1'
+      order   => 1
     }
   }
 

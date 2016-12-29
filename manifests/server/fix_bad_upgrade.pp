@@ -1,6 +1,3 @@
-#
-# == Class: openldap::server::fix_bad_upgrade
-#
 # Fix the slapd.d upgrade cycle that we're not currently ready for.
 #
 # This pops up in the RPM updates from time to time.

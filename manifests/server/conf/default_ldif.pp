@@ -1,13 +1,8 @@
-#
-# == Class: openldap::server::conf::default_ldif
-#
 # This allows for the modification of the default LDIF entries in
 # /etc/openldap/default.ldif. It will *not* modify any active values in a
 # running LDAP server.
 #
-# == Authors:
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::conf::default_ldif (
   Integer   $ppolicy_pwd_min_age                = 86400,

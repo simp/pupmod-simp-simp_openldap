@@ -1,22 +1,18 @@
-# == Class: openldap::slapo::syncprov
-#
 # Allow other LDAP servers to synchronize with this one.
 #
 # All parameters are defined in slapo-syncprov(5).
 #
-# == Authors:
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::slapo::syncprov (
-  Pattern['(^\d+\s\d+$|^$)']          $checkpoint               ='',
-  String                              $sessionlog               ='',
-  Boolean                             $nopresent                =false,
-  Boolean                             $reloadhint               =false,
-  Variant[Enum['unlimited'],Integer]  $sync_size_soft_limit     = 'unlimited',
-  Variant[Enum['unlimited'],Integer]  $sync_size_hard_limit     = 'unlimited',
-  Variant[Enum['unlimited'],Integer]  $sync_time_soft_limit     = 'unlimited',
-  Variant[Enum['unlimited'],Integer]  $sync_time_hard_limit     = 'unlimited'
+  Pattern['(^\d+\s\d+$|^$)']         $checkpoint           = '',
+  String                             $sessionlog           = '',
+  Boolean                            $nopresent            = false,
+  Boolean                            $reloadhint           = false,
+  Variant[Enum['unlimited'],Integer] $sync_size_soft_limit = 'unlimited',
+  Variant[Enum['unlimited'],Integer] $sync_size_hard_limit = 'unlimited',
+  Variant[Enum['unlimited'],Integer] $sync_time_soft_limit = 'unlimited',
+  Variant[Enum['unlimited'],Integer] $sync_time_hard_limit = 'unlimited'
 ) {
   include 'openldap::server::dynamic_includes'
 

@@ -1,7 +1,6 @@
-#
-# == Class: openldap::server::service
-#
 # This class manages the OpenLDAP service.
+#
+# @param slapd_svc
 #
 class openldap::server::service (
   String  $slapd_svc = 'slapd'

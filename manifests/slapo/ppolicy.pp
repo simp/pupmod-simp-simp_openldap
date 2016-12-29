@@ -1,5 +1,3 @@
-# Class: openldap::slapo::ppolicy
-#
 # Configure the password policy for a site.
 #
 # See slapo-ppolicy(5) for details of any option not defined below.
@@ -7,63 +5,43 @@
 # This also includes the options for configuring the password checking plugin
 # that's included with SIMP.
 #
-# == Parameters:
-#
-# [*suffix*]
-# Type: LDAP DN
-# Default: hiera('ldap::base_dn')
+# @param suffix
 #   The Base DN of the LDAP domain to which you wish to connect.
 #
-# [*min_points*]
-# Type: Integer
-# Default: '3'
+# @param min_points
 #   The minimum number of character classes that must be included in your
 #   password for it to succeed.
 #
-# [*use_cracklib*]
-# Type: Boolean
-# Default: true
+# @param use_cracklib
 #   If true, use cracklib when checking the password.
 #
-# [*min_upper*]
-# Type: Integer
-# Default: '0'
+# @param min_upper
 #   The minimum number of upper case characters that must be present for the
 #   password to be valid.
 #
-# [*min_lower*]
-# Type: Integer
-# Default: '0'
+# @param min_lower
 #   The minimum number of lower case characters that must be present for the
 #   password to be valid.
 #
-# [*min_digit*]
-# Type: Integer
-# Default: '0'
+# @param min_digit
 #   The minimum number of digit characters that must be present for the
 #   password to be valid.
 #
-# [*min_punct*]
-# Type: Integer
-# Default: '0'
+# @param min_punct
 #   The minimum number of punctuation characters that must be present for the
 #   password to be valid.
 #
-# [*max_consecutive_per_class*]
-# Type: Integer
-# Default: '3'
+# @param max_consecutive_per_class
 #   The maximum number of characters from any character class that can exist in
 #   a row.
 #
-# == Authors
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::slapo::ppolicy (
     String    $suffix                    = simplib::lookup('simp_options::ldap::basedn', { 'default_value' => "" }),
-    String    $ppolicy_default           ='',
-    String    $ppolicy_hash_cleartext    ='',
-    String    $ppolicy_use_lockout       ='',
+    String    $ppolicy_default           = '',
+    String    $ppolicy_hash_cleartext    = '',
+    String    $ppolicy_use_lockout       = '',
     Integer   $min_points                = 3,
     Boolean   $use_cracklib              = true,
     Integer   $min_upper                 = 0,

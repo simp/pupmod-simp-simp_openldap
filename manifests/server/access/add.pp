@@ -1,43 +1,32 @@
-# == Define: openldap::server::access::add
-#
 # Add an access control entry to access.conf.
 #
 # Any variable not described below can be found in slapd.access(5).
 #
-# == Parameters
-#
-# [*name*]
-# Type: String
+# @param name
 #   The unique name of the dynamic include. This does become part of the sort
 #   order so be careful!
 #
-# [*comment*]
-# Type: String
+# @param comment
 #   An arbitrary comment that will be included above the entry.
 #
-# [*content*]
-# Type: String
+# @param content
 #   If this is specified, then this will be used as the *entire* content under
 #   $what. If you do not specify this, then $who is a required variable.
 #
-# [*order*]
-# Type: Integer
-# Default: 1000
+# @param order
 #   The default sort order of the entry to be added
 #
-# == Authors:
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 define openldap::server::access::add (
-    $what,
-    $comment = '',
-    $who = '',
-    $access = '',
-    $control = '',
-    $content = '',
-    $order = '1000' )
-{
+  $what,
+  $comment = '',
+  $who     = '',
+  $access  = '',
+  $control = '',
+  $content = '',
+  $order   = '1000'
+) {
   $l_name = regsubst($name,'/','_')
 
   simpcat_fragment { "slapd_access+${order}_${l_name}.inc":

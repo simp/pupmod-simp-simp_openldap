@@ -1,16 +1,11 @@
-# == Define: openldap::server::add_limits
-#
 # This define allows you to all 'limits' sections under the main database.
 #
-# See slapd.conf(5) for details.
+# @see slapd.conf(5) for details.
 #
-# == Parameters:
-#
-# [*name*]
-# Type: String
+# @param name
 #   A unique name for the limits entry.
 #
-# [*who*]
+# @param who
 #   Any of the following values (not validated)
 #   *                          All, including anonymous and authenticated users
 #   anonymous                  Anonymous (non-authenticated) users
@@ -20,13 +15,10 @@
 #   dn.<scope-style>=<DN>      Users within scope of a DN
 #   group[/oc[/at]]=<pattern>  Members of a group
 #
-# [*limits*]
-#   Type: Array
+# @param limits
 #     A list of limits to apply to $who per slapd.conf(5)
 #
-# == Authors:
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 define openldap::server::add_limits (
   $who,

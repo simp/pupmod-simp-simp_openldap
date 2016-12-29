@@ -1,9 +1,7 @@
-# == Class: openldap::client
-#
 # Set up /etc/openldap/ldap.conf with the global options for accessing the LDAP
 # servers.
 #
-# See ldap.conf(5) for details.
+# @see ldap.conf(5) for details.
 #
 # Regarding: POODLE - CVE-2014-3566
 #
@@ -13,45 +11,43 @@
 # eliminated. Take care to ensure that your clients only connect with
 # TLSv1 if possible.
 #
-# [*pki*]
-# Variant[Boolean,Enum['simp']]
-# default Global catalyst simp_options::pki or false
-# if pki is set to false you must take care of setting
-# the certificate sources.  Otherwise pki::copy will
-# take care of copying the certs.  See the simp
-# module pupmod-simp-pki for more information.
+# @param pki
+#   default Global catalyst simp_options::pki or false
+#   if pki is set to false you must take care of setting
+#   the certificate sources.  Otherwise pki::copy will
+#   take care of copying the certs.  See the simp
+#   module pupmod-simp-pki for more information.
 #
-# [*use_tls*]
-# Boolean
-# default true
-# Wether or not to use TLS when connecting to the
-# ldap server.
+# @param use_tls
+#   Whether or not to use TLS when connecting to the
+#   ldap server.
 #
-# See the openldap documentation for information on other
+# @see the openldap documentation for information on other
 # parameters.
+#
 class openldap::client (
-  Array[String]                    $uri                  = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"] } ),
-  Optional[String]                 $base_dn             = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef }),
-  String                           $bind_dn             = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "cn=hostAuth,ou=Hosts,${hiera('simp_options::ldap::base_dn')}" }),
-  Enum['on','off']                 $referrals           = 'on',
-  Integer                          $sizelimit           = 0,
-  Integer                          $timelimit           = 15,
-  Variant[Boolean,Enum['simp']]    $pki                 = simplib::lookup('simp_options::pki', { 'default_value' => false }),
-  Boolean                          $use_tls             = true,
-  Optional[Stdlib::Absolutepath]   $app_pki_cert_source = "${::openldap::app_pki_cert_source}",
-  Optional[Stdlib::Absolutepath]   $app_pki_dir         = "${::openldap::app_pki_dir}",
-  Optional[Stdlib::Absolutepath]   $app_pki_ca_dir      = "${::openldap::app_pki_dir}/pki/cacerts",
-  Stdlib::Absolutepath             $app_pki_cert        = "${::openldap::app_pki_dir}/pki/public/${::fqdn}.pub",
-  Stdlib::Absolutepath             $app_pki_key         = "${::openldap::app_pki_dir}/pki/private/${::fqdn}.pem",
-  Boolean                          $is_server           = $::openldap::is_server,
-  Array[String]                    $tls_cipher_suite    = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT','!MEDIUM'] }),
-  Enum['none','peer','all']        $tls_crlcheck        = 'none',
+  Array[Simplib::URI]            $uri                  = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"] } ),
+  Optional[String]               $base_dn             = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef }),
+  String                         $bind_dn             = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "cn=hostAuth,ou=Hosts,${hiera('simp_options::ldap::base_dn')}" }),
+  Enum['on','off']               $referrals           = 'on',
+  Integer                        $sizelimit           = 0,
+  Integer                        $timelimit           = 15,
+  Variant[Boolean,Enum['simp']]  $pki                 = simplib::lookup('simp_options::pki', { 'default_value' => false }),
+  Boolean                        $use_tls             = true,
+  Optional[Stdlib::Absolutepath] $app_pki_cert_source = "${::openldap::app_pki_cert_source}",
+  Optional[Stdlib::Absolutepath] $app_pki_dir         = "${::openldap::app_pki_dir}",
+  Optional[Stdlib::Absolutepath] $app_pki_ca_dir      = "${::openldap::app_pki_dir}/pki/cacerts",
+  Stdlib::Absolutepath           $app_pki_cert        = "${::openldap::app_pki_dir}/pki/public/${::fqdn}.pub",
+  Stdlib::Absolutepath           $app_pki_key         = "${::openldap::app_pki_dir}/pki/private/${::fqdn}.pem",
+  Boolean                        $is_server           = $::openldap::is_server,
+  Array[String]                  $tls_cipher_suite    = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT','!MEDIUM'] }),
+  Enum['none','peer','all']      $tls_crlcheck        = 'none',
   Variant[Enum[''],
-    Stdlib::Absolutepath]      $tls_crlfile         = '',
+    Stdlib::Absolutepath]        $tls_crlfile         = '',
   Enum['never','searching',
-    'finding','always']         $deref               = 'never',
+    'finding','always']          $deref               = 'never',
   Enum['never','allow',
-    'try','demand','hard']      $tls_reqcert         = 'allow'
+    'try','demand','hard']       $tls_reqcert         = 'allow'
 ) {
   include '::openldap'
 

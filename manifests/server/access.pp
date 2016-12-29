@@ -1,14 +1,9 @@
-#
-# == Class: openldap::server::access
-#
 # This is a helper class for adding access control rules to
 # /etc/openldap/slapd.access.
 #
 # This whole thing needs to be rewritten as a native type.
 #
-# == Authors:
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::access {
   include '::openldap::server'

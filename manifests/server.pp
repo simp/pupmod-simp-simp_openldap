@@ -1,6 +1,3 @@
-#
-# == Class: openldap::server
-#
 # This class sets up an OpenLDAP server.
 #
 # It installs the server if not already installed and bootstraps it if
@@ -29,60 +26,42 @@
 # file at /etc/openldap/puppet_bootstrapped.lock *and* remove the
 # database files in /var/lib/ldap/db/*.
 #
-# == Parameters:
-#
-# [*schema_sync*]
-# Type: Boolean
-# Default: true
+# @param schema_sync
 #   Synchronize all schemas from $schema_source.
 #
-# [*schema_source*]
-# Type: URI
-# Default: puppet:///modules/openldap/etc/openldap/schema
+# @param schema_source
 #   The location from which to download the schemas.
 #
-# [*allow_sync*]
-# Type: Boolean
-# Default: true
+# @param allow_sync
 #   If true, provide the ability for other hosts to use LDAP
 #   synchronization as clients to this server.
 #
 #   Class variables will need to be set in hiera according to the
 #   openldap::slapo::syncprov class requirements.
 #
-# [*sync_dn*]
-# Type: LDAP DN
-# Default: hiera('ldap::sync_dn',"LDAPSync,ou=People,${::openldap::base_dn}")
+# @param sync_dn
 #   The DN that is allowed to synchronize from the LDAP server.
 #
-# [*host_auth_user*]
-# Type: String
-# Default: hostAuth
+# @param host_auth_user
 #   The LDAP username that will be used by the various hosts to bind
 #   to the LDAP server.
 #
-# [*use_ppolicy*]
-# Type: Boolean
-# Default: true
+# @param use_ppolicy
 #   If true, include the default password policy overlay.
 #
-# [*use_tcpwrappers*]
-# Type: Boolean
-# Default: true
+# @param use_tcpwrappers
 #   If true, enable tcpwrappers for slapd.
 #
-# == Authors:
-#
-#   * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server (
-  Boolean    $schema_sync = true,
-  String     $schema_source = 'puppet:///modules/openldap/etc/openldap/schema',
-  Boolean    $allow_sync = true,
-  String     $sync_dn = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,%{hiera('simp_options::ldap::sync_dn')}", 'value_type' => String }),
-  String     $host_auth_user = 'hostAuth',
-  Boolean    $use_ppolicy = true,
-  Boolean    $tcpwrappers = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false, 'value_type' => Boolean })
+  Boolean $schema_sync    = true,
+  String  $schema_source  = 'puppet:///modules/openldap/etc/openldap/schema',
+  Boolean $allow_sync     = true,
+  String  $sync_dn        = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,%{hiera('simp_options::ldap::sync_dn')}" }),
+  String  $host_auth_user = 'hostAuth',
+  Boolean $use_ppolicy    = true,
+  Boolean $tcpwrappers    = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })
 ) inherits ::openldap {
 
   include '::openldap::client'

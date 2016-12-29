@@ -1,22 +1,18 @@
-# == Class: openldap::server:;syncrepl
-#
 # This define configures the sycnrepl functionality of OpenLDAP which allows
 # for directory synchronization pulls from a master server.
 #
-# All variables are defined in the 'syncrepl' section of slapd.conf(5).
+# @see slapd.conf(5)
 #
 # $name should be the 'rid' of the syncrepl instance and must be
 # between 0 and 1000 non-inclusive.
 #
-# == Authors
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 define openldap::server::syncrepl (
   String     $syncrepl_retry    = '60 10 600 +',
   String     $provider          = simplib::lookup('simp_options::ldap::master',
                                     { 'default_value' => "ldap://%{hiera('simp_options::puppet::server')}" }),
-  String     $searchbase        = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "", 'value_type' => String }),
+  String     $searchbase        = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "" }),
   String     $syncrepl_type     = 'refreshAndPersist',
   String     $interval          = '',
   String     $filter            = '',

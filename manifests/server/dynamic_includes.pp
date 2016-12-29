@@ -1,8 +1,4 @@
-#
-# == Class: openldap::server::dynamic_includes
-#
 # This is a helper class for adding dynamic includes to the slapd server.
-# ---
 #
 class openldap::server::dynamic_includes {
   include '::openldap::server'

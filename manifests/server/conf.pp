@@ -433,7 +433,7 @@ class openldap::server::conf (
       notify => Class['openldap::server::service'],
       pki    => $pki
     }
-  } 
+  }
 
   if $::hardwaremodel == 'x86_64' {
       $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']

@@ -1,3 +1,5 @@
+# == Class: openldap::server::conf
+#
 # This class configures the brunt of the /etc/openldap space.
 #
 # It should only be included by the openldap::server class and is not
@@ -50,6 +52,7 @@
 #
 # @param auditlog_rotate
 # Type: One of daily, weekly, monthly, or yearly
+# Default: 'daily'
 #   The frequency with which the slapd audit logs should be rotated.
 #
 # @param auditlog_preserve
@@ -108,6 +111,7 @@
 #
 # @param password_hash
 # Type: One of 'SSHA', 'SHA', 'SMD5', 'MD5', 'CRYPT', or 'CLEARTEXT'
+# Default: SSHA
 #   The hash algorithm to use for
 #
 # @param sizelimit
@@ -130,6 +134,7 @@
 #
 # @param threads
 # Type: Integer or 'dynamic'
+# Default: 'dynamic'
 #   Set the number of threads to run. If not set to a number, will be assumed to
 #   be dynamic with 4 * the number of cpus. It also has a minimum of 8 and a max
 #   of 16, unless overridden.
@@ -150,6 +155,7 @@
 #
 # @param tlsVerifyClient
 # Type: One of 'never', 'allow', 'try', 'demand', 'hard', or 'true'
+# Default: 'try'
 #   Do not set this more restrictive than 'try' unless you *really*
 #   know what you are doing and have exensively tested it in your
 #   environment!
@@ -335,16 +341,16 @@ class openldap::server::conf (
   }
 
   if $::hardwaremodel == 'x86_64' {
-      $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']
+    $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']
   }
   else {
-      $modulepath = ['/usr/lib/openldap']
+    $modulepath = ['/usr/lib/openldap']
   }
 
   if $force_log_quick_kill {
-    include '::incron'
+    include '::simplib::incron'
 
-    incron::system_table { 'nuke_openldap_log_files':
+    simplib::incron::add_system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'

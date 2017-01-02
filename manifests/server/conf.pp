@@ -1,5 +1,3 @@
-# == Class: openldap::server::conf
-#
 # This class configures the brunt of the /etc/openldap space.
 #
 # It should only be included by the openldap::server class and is not
@@ -52,7 +50,6 @@
 #
 # @param auditlog_rotate
 # Type: One of daily, weekly, monthly, or yearly
-# Default: 'daily'
 #   The frequency with which the slapd audit logs should be rotated.
 #
 # @param auditlog_preserve
@@ -111,7 +108,6 @@
 #
 # @param password_hash
 # Type: One of 'SSHA', 'SHA', 'SMD5', 'MD5', 'CRYPT', or 'CLEARTEXT'
-# Default: SSHA
 #   The hash algorithm to use for
 #
 # @param sizelimit
@@ -134,7 +130,6 @@
 #
 # @param threads
 # Type: Integer or 'dynamic'
-# Default: 'dynamic'
 #   Set the number of threads to run. If not set to a number, will be assumed to
 #   be dynamic with 4 * the number of cpus. It also has a minimum of 8 and a max
 #   of 16, unless overridden.
@@ -155,7 +150,6 @@
 #
 # @param tlsVerifyClient
 # Type: One of 'never', 'allow', 'try', 'demand', 'hard', or 'true'
-# Default: 'try'
 #   Do not set this more restrictive than 'try' unless you *really*
 #   know what you are doing and have exensively tested it in your
 #   environment!
@@ -197,12 +191,12 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::conf (
-  String                $rootdn                     = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
+  Optional[String]      $rootdn                     = simplib::lookup('simp_options::ldap::rootdn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
   Optional[String]      $rootpw                     = simplib::lookup('simp_options::ldap::root_hash', { 'default_value' => undef }),
-  String                $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}" }),
-  Optional[String]      $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash',{ 'default_value' => undef }),
-  String                $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "${::openldap::base_dn}" }),
+  Optional[String]      $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash', { 'default_value' => undef }),
   Optional[String]      $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
+  String                $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}" }),
+  String                $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "${::openldap::base_dn}" }),
   Optional[String]      $suffix                     = $::openldap::base_dn,
   Stdlib::Absolutepath  $argsfile                   = '/var/run/openldap/slapd.args',
   Boolean               $audit_transactions         = true,
@@ -223,10 +217,10 @@ class openldap::server::conf (
   Integer               $conn_max_pending           = 100,
   Integer               $conn_max_pending_auth      = 100,
   Array[String]         $default_schemas            = [ 'openssh-lpk', 'freeradius', 'autofs' ],
-  String                $default_searchbase         = '',
+  Optional[String]      $default_searchbase          = undef,
   Array[String]         $disallow                   = ['bind_anon','tls_2_anon'],
   Boolean               $force_log_quick_kill       = false,
-  String                $ditcontentrule             = '',
+  Optional[String]      $ditcontentrule             = undef,
   Boolean               $gentlehup                  = false,
   Integer               $idletimeout                = 0,
   Boolean               $include_chain_overlay      = false,
@@ -267,7 +261,7 @@ class openldap::server::conf (
   Stdlib::Absolutepath  $app_pki_ca_dir             = "${::openldap::app_pki_dir}/pki/cacerts",
   Stdlib::Absolutepath  $app_pki_cert               = "${::openldap::app_pki_dir}/pki/public/${::fqdn}.pub",
   Stdlib::Absolutepath  $app_pki_key                = "${::openldap::app_pki_dir}/pki/private/${::fqdn}.pem",
-  Array[String]         $tlsCipherSuite             = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT', '!MEDIUM'] }),
+  Array[String]         $tlsCipherSuite             = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
   String                $tlsCRLCheck                = 'none',
   Optional[Stdlib::Absolutepath] $tlsCRLFil         = undef,
   String                $tlsVerifyClient            = 'try',
@@ -329,9 +323,6 @@ class openldap::server::conf (
   include '::openldap::server::conf::default_ldif'
 
   if $pki {
-
-    if $pki == 'simp' { Class['pki'] -> Class['openldap'] }
-
     pki::copy { "${app_pki_dir}":
       group  => 'ldap',
       source => "${app_pki_cert_source}",
@@ -348,9 +339,9 @@ class openldap::server::conf (
   }
 
   if $force_log_quick_kill {
-    include '::simplib::incron'
+    include '::incron'
 
-    simplib::incron::add_system_table { 'nuke_openldap_log_files':
+    incron::system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'

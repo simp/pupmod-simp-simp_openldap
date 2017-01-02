@@ -152,13 +152,13 @@ concurrency <%= @concurrency %>
 <% end -%>
 conn_max_pending <%= @conn_max_pending %>
 conn_max_pending_auth <%= @conn_max_pending_auth %>
-<% if not @default_searchbase.empty? then -%>
+<% if @default_searchbase then -%>
 defaultsearchbase <%= @default_searchbase %>
 <% end -%>
 <% if @disallow and not @disallow.empty? -%>
 disallow <%= @disallow.join(' ') %>
 <% end -%>
-<% if not @ditcontentrule.empty? then -%>
+<% if @ditcontentrule then -%>
 ditcontentrule <%= @ditcontentrule %>
 <% end -%>
 <% if @gentlehup then -%>
@@ -176,7 +176,7 @@ sockbuf_max_incoming_auth <%= @sockbuf_max_incoming_auth %>
 loglevel <%= @slapd_logLevel.join(' ') %>
 
 reverse-lookup <%= @reverse_lookup ? 'on' : 'off' %>
-<% if not @sortvals.empty? then -%>
+<% if @sortvals then -%>
 sortvals <%= @sortvals.join(' ') -%>
 <% end -%>
 <% if defined?(@tcp_buffer) then -%>

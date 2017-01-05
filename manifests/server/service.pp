@@ -1,18 +1,20 @@
-# This class manages the OpenLDAP service.
+# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
+#
+# Manage the OpenLDAP service
 #
 # @param slapd_svc
+#   The actual service name
 #
 class openldap::server::service (
-  String  $slapd_svc = 'slapd'
+  String[1]  $slapd_svc = 'slapd'
 ){
   assert_private()
 
   include '::openldap::server::fix_bad_upgrade'
 
-  # This is a very crude attempt to not bootstrap if the executing
-  # node is a slave node. Bootstrapping slave nodes causes the
-  # 'administrators' group to become unable to sync if it doesn't
-  # start identical to the master.
+  # This is a very crude attempt to not bootstrap if the executing node is a
+  # slave node. Bootstrapping slave nodes causes the ``administrators`` group
+  # to become unable to sync if it doesn't start identically to the master
   exec { 'bootstrap_ldap':
     command   => "/sbin/service ${slapd_svc} stop; \
         /bin/find /var/lib/ldap -type f -name \"__db*\" -exec /bin/rm {} \\;; \
@@ -47,9 +49,6 @@ class openldap::server::service (
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => [
-      Package["openldap-servers.${::hardwaremodel}"],
-      Class['openldap::server::fix_bad_upgrade']
-    ]
+    require    => Class['openldap::server::fix_bad_upgrade']
   }
 }

@@ -1,6 +1,6 @@
-# Configure the password policy for a site.
+# Configure the password policy for a site
 #
-# See slapo-ppolicy(5) for details of any option not defined below.
+# @see slapo-ppolicy(5)
 #
 # This also includes the options for configuring the password checking plugin
 # that's included with SIMP.
@@ -38,43 +38,31 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::slapo::ppolicy (
-    String    $suffix                    = simplib::lookup('simp_options::ldap::basedn', { 'default_value' => "" }),
-    String    $ppolicy_default           = '',
-    String    $ppolicy_hash_cleartext    = '',
-    String    $ppolicy_use_lockout       = '',
-    Integer   $min_points                = 3,
-    Boolean   $use_cracklib              = true,
-    Integer   $min_upper                 = 0,
-    Integer   $min_lower                 = 0,
-    Integer   $min_digit                 = 0,
-    Integer   $min_punct                 = 0,
-    Integer   $max_consecutive_per_class = 3
-) {
-  include '::openldap::server::dynamic_includes'
-
-  $_simp_version = simp_version() ? {
-    /undefined/ => '0',
-    default     => simp_version()
-  }
-
-  # This is used by the default template.
-  # This should be cleaned up all around.
-  $check_password = versioncmp($_simp_version, '4.2.0') ? {
-    '-1'    => 'check_password',
-    default => 'simp_check_password'
-  }
+  Optional[String[1]] $suffix                    = $::openldap::base_dn,
+  Optional[String[1]] $ppolicy_default           = undef,
+  Optional[String[1]] $ppolicy_hash_cleartext    = undef,
+  Optional[String[1]] $ppolicy_use_lockout       = undef,
+  Integer[0]          $min_points                = 3,
+  Boolean             $use_cracklib              = true,
+  Integer[0]          $min_upper                 = 0,
+  Integer[0]          $min_lower                 = 0,
+  Integer[0]          $min_digit                 = 0,
+  Integer[0]          $min_punct                 = 0,
+  Integer[0]          $max_consecutive_per_class = 3
+) inherits ::openldap {
+  $_check_password = 'simp_check_password'
 
   package { 'simp-ppolicy-check-password': ensure => 'latest' }
 
-  openldap::server::dynamic_includes::add { 'ppolicy':
+  openldap::server::dynamic_include { 'ppolicy':
     order   => 1000,
-    content => template('openldap/slapo/ppolicy.erb')
+    content => template("${module_name}/slapo/ppolicy.erb")
   }
 
-  file { "/etc/openldap/${check_password}.conf":
+  file { "/etc/openldap/${_check_password}.conf":
     owner   => 'root',
     group   => 'ldap',
     mode    => '0640',
-    content => template('openldap/etc/openldap/check_password.conf.erb')
+    content => template("${module_name}/etc/openldap/check_password.conf.erb")
   }
 }

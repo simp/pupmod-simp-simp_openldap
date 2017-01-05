@@ -5,16 +5,18 @@ describe 'openldap::slapo::syncprov' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
+          facts[:server_facts] = {
+            :servername => facts[:fqdn],
+            :serverip   => facts[:ipaddress]
+          }
           facts
         end
 
-        it { is_expected.to create_class('openldap::server::dynamic_includes') }
-
-        it { is_expected.to create_openldap__server__dynamic_includes__add('syncprov').with_content(
+        it { is_expected.to create_openldap__server__dynamic_include('syncprov').with_content(
           /syncprov-nopresent FALSE/
         )}
 
-        it { is_expected.to create_openldap__server__add_limits('Allow Sync User Unlimited').with_limits([
+        it { is_expected.to create_openldap__server__limits('Allow Sync User Unlimited').with_limits([
             'size.soft=unlimited',
             'size.hard=unlimited',
             'time.soft=unlimited',
@@ -27,7 +29,7 @@ describe 'openldap::slapo::syncprov' do
 
           it do
             expect {
-              is_expected.to create_openldap__server__dynamic_includes__add('syncprov').with_content(
+              is_expected.to create_openldap__server__dynamic_include('syncprov').with_content(
                 /syncprov-checkpoint #{params[:checkpoint]}/
               )
             }.to_not raise_error

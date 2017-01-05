@@ -40,16 +40,24 @@ ldap_conf_content = {
 
 ldaprc_content = {
   :default =>
+    "# This file placed by Puppet, but may be modified\n" +
+    "#\n" +
+    "# If you need a fresh copy, simply delete the file and Puppet will regenerate\n" +
+    "# it\n\n" +
     "TLS_CACERTDIR /etc/openldap/pki/cacerts\n" +
     "TLS_CERT /etc/openldap/pki/public/myserver.test.local.pub\n" +
     "TLS_KEY /etc/openldap/pki/private/myserver.test.local.pem\n",
 
   :with_crlfile =>
+    "# This file placed by Puppet, but may be modified\n" +
+    "#\n" +
+    "# If you need a fresh copy, simply delete the file and Puppet will regenerate\n" +
+    "# it\n\n" +
     "TLS_CACERTDIR /etc/openldap/pki/cacerts\n" +
     "TLS_CERT /etc/openldap/pki/public/myserver.test.local.pub\n" +
     "TLS_KEY /etc/openldap/pki/private/myserver.test.local.pem\n",
 
-  :without_tls => ""
+  :without_tls => ''
 }
 
 shared_examples_for "a ldap config generator" do
@@ -67,59 +75,44 @@ describe 'openldap::client' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let(:facts) { facts.merge({ :fqdn => 'myserver.test.local' }) }
-        let(:params) { { :use_tls => false }}
-        context 'Generates files without TLS' do
-          let(:content_option) { :without_tls }
-          it_should_behave_like "a ldap config generator"
-          it { is_expected.to_not create_pki__copy('/etc/openldap') }
-        end
-        let(:pre_condition) {
-          %(
-            class { "::openldap":
-              base_dn   => "dc=host,dc=net",
-              is_server => false,
-            }
-          )
+        let(:facts) {
+          facts[:server_facts] = {
+            :servername => facts[:fqdn],
+            :serverip   => facts[:ipaddress]
+          }
+          facts[:fqdn] = 'myserver.test.local'
+          facts
         }
 
-        context 'Generates files with TLS but without CRL file by default' do
-          let(:params) { {
-            :pki => false,
-          } }
-          let(:content_option) { :default }
+        context 'Generates files without TLS' do
+          let(:params) {{
+            :use_tls => false
+          }}
+
+          let(:content_option) { :without_tls }
           it_should_behave_like "a ldap config generator"
-          it { is_expected.to_not create_pki__copy('/etc/openldap') }
         end
 
-        context 'Generates files with TLS, without CRL, with pki = simp' do
-          let(:params) { {
-            :pki => 'simp',
-          } }
+        context 'Generates files with TLS but without CRL file by default' do
           let(:content_option) { :default }
+
           it_should_behave_like "a ldap config generator"
-          it { is_expected.to create_pki__copy('/etc/openldap') }
-          it { is_expected.to contain_class('pki') }
         end
 
         context 'Generates files with TLS and specified CRL file' do
           let(:content_option) { :with_crlfile }
-          let(:params) { {
+          let(:params) {{
             :tls_crlfile => '/some/path/my_crlfile',
-            :pki => true
-          } }
+          }}
+
           it_should_behave_like "a ldap config generator"
-          it { is_expected.to create_pki__copy('/etc/openldap') }
-          it { is_expected.to_not contain_class('pki') }
         end
 
         context 'Generates files without TLS' do
           let(:content_option) { :without_tls }
           let(:params) { {
-             :pki => false,
              :use_tls => false } }
           it_should_behave_like "a ldap config generator"
-          it { is_expected.to_not create_pki__copy('/etc/openldap') }
         end
       end
     end

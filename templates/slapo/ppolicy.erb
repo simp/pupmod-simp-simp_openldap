@@ -1,14 +1,14 @@
 include     /etc/openldap/schema/ppolicy.schema
 moduleload  ppolicy.la
 overlay ppolicy
-<% if @ppolicy_default.empty? then -%>
-ppolicy_default "cn=default,ou=pwpolicies,<%= @suffix %>"
-<% else -%>
+<% if @ppolicy_default -%>
 ppolicy_default <%= @ppolicy_default %>
+<% else -%>
+ppolicy_default "cn=default,ou=pwpolicies,<%= @suffix %>"
 <% end -%>
-<% if !@ppolicy_hash_cleartext.empty? then -%>
+<% if @ppolicy_hash_cleartext -%>
 ppolicy_hash_cleartext
 <% end -%>
-<% if !@ppolicy_use_lockout.empty? then -%>
+<% if @ppolicy_use_lockout -%>
 ppolicy_use_lockout
 <% end -%>

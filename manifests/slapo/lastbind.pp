@@ -9,9 +9,9 @@
 # @author Kendall Moore <kmoore@keywcorp.com>
 #
 class openldap::slapo::lastbind (
-  Integer $lastbind_precision = 3600
+  Integer[0] $lastbind_precision = 3600
 ) {
-  include 'openldap::server::dynamic_includes'
+  package { 'simp-lastbind': ensure => 'latest' }
 
   file { '/etc/openldap/lastbind.conf':
     owner   => 'root',
@@ -21,11 +21,9 @@ class openldap::slapo::lastbind (
     require => Package['simp-lastbind']
   }
 
-  openldap::server::dynamic_includes::add { 'lastbind':
+  openldap::server::dynamic_include { 'lastbind':
     order   => 1000,
     content => "moduleload lastbind.so\noverlay lastbind\n",
     require => Package['simp-lastbind']
   }
-
-  package { 'simp-lastbind': ensure => 'latest' }
 }

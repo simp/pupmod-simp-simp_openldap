@@ -5,8 +5,7 @@ HOSTS:
       - server
     yum_repos:
       simp:
-        name: simp-project_6_X_Alpha
-        url: https://dl.bintray.com/simp/5.1.X-Ext
+        baseurl: https://packagecloud.io/simp-project/6_X_Alpha_Dependencies/el/7/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
     platform:   el-7-x86_64

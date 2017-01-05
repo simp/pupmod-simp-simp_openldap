@@ -1,10 +1,18 @@
 require 'spec_helper'
 
-describe 'openldap::server::access::add' do
+describe 'openldap::server::access' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
+        let(:pre_condition) {
+          'class { "openldap": is_server => true }'
+        }
+
         let(:facts) do
+          facts[:server_facts] = {
+            :servername => facts[:fqdn],
+            :serverip   => facts[:ipaddress]
+          }
           facts
         end
 
@@ -13,25 +21,22 @@ describe 'openldap::server::access::add' do
         let(:params) {{
           :what  => 'on_second',
           :who   => 'on_first',
-          :order => '50'
+          :order => 50
         }}
 
-        it { should compile.with_all_deps }
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to create_concat('/etc/openldap/slapd.access') }
 
         it {
-          should create_simpcat_fragment("slapd_access+#{params[:order]}_#{title}.inc").with_content(
-            /Who: #{params[:who]}/
-          )
-          should create_simpcat_fragment("slapd_access+#{params[:order]}_#{title}.inc").with_content(
-            /What: #{params[:what]}/
+          is_expected.to create_concat__fragment("openldap_access_#{title}").with_content(
+            %r{(?m)access to #{params[:what]}\s+by #{params[:who]}}
           )
         }
 
         context 'no_who_no_content' do
           let(:params) {{
-            :what     => 'on_second',
-            :who      => '',
-            :content  => ''
+            :what     => 'on_second'
           }}
 
           it do

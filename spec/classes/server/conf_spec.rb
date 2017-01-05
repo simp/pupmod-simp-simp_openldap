@@ -5,6 +5,10 @@ describe 'openldap::server::conf' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
+          facts[:server_facts] = {
+            :servername => facts[:fqdn],
+            :serverip   => facts[:ipaddress]
+          }
           facts
         end
 
@@ -50,13 +54,8 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params) {{
-            :pki => 'simp',
+            :use_tls => true
           }}
-          it { is_expected.to contain_class('pki') }
-          it { is_expected.to create_pki__copy('/etc/openldap').with({
-            :notify => 'Class[Openldap::Server::Service]'
-            })
-          }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
             :notify => 'Class[Openldap::Server::Service]',
             :content => /TLSCertificateFile/
@@ -69,7 +68,7 @@ describe 'openldap::server::conf' do
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params) {{
-            :pki    => true,
+            :use_tls => true,
             :syslog => false,
            }}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
@@ -77,11 +76,6 @@ describe 'openldap::server::conf' do
               :content => /TLSCertificateFile/
             })
           }
-          it { is_expected.to create_pki__copy('/etc/openldap').with({
-            :notify => 'Class[Openldap::Server::Service]'
-            })
-          }
-          it { is_expected.to_not contain_class('pki') }
         end
 
         context 'x86_64' do
@@ -92,6 +86,10 @@ describe 'openldap::server::conf' do
 
         context 'i386' do
           let(:facts){
+            facts[:server_facts] = {
+              :servername => facts[:fqdn],
+              :serverip   => facts[:ipaddress]
+            }
             facts[:hardwaremodel] = 'i386'
 
             facts
@@ -187,7 +185,7 @@ describe 'openldap::server::conf' do
               :rotate        => params[:auditlog_preserve]
             })
           }
-          it { is_expected.to create_openldap__server__dynamic_includes__add('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
+          it { is_expected.to create_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
           it { is_expected.to create_rsyslog__rule__data_source('openldap_audit').with_rule(/File="#{params[:auditlog]}"/) }
           it { is_expected.to create_rsyslog__rule__drop('1_drop_openldap_passwords').with_rule(/contains\s+'Password::\s+'/) }
         end
@@ -214,7 +212,7 @@ describe 'openldap::server::conf' do
               :rotate        => params[:auditlog_preserve]
             })
           }
-          it { is_expected.to create_openldap__server__dynamic_includes__add('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
+          it { is_expected.to create_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
           it { is_expected.to_not create_rsyslog__add_conf('openldap_audit') }
           it { is_expected.to_not create_rsyslog__rule__drop('1_drop_openldap_passwords') }
         end
@@ -253,6 +251,10 @@ describe 'openldap::server::conf' do
 
         context 'threads_is_dynamic' do
           let(:facts){
+            facts[:server_facts] = {
+              :servername => facts[:fqdn],
+              :serverip   => facts[:ipaddress]
+            }
             facts[:processorcount] = 4
 
             facts

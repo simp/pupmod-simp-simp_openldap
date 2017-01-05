@@ -1,4 +1,9 @@
 <% if @use_tls -%>
+# This file placed by Puppet, but may be modified
+#
+# If you need a fresh copy, simply delete the file and Puppet will regenerate
+# it
+
 TLS_CACERTDIR <%= @app_pki_ca_dir %>
 TLS_CERT <%= @app_pki_cert %>
 TLS_KEY <%= @app_pki_key %>

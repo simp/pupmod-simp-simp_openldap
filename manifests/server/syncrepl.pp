@@ -3,53 +3,55 @@
 #
 # @see slapd.conf(5)
 #
-# $name should be the 'rid' of the syncrepl instance and must be
-# between 0 and 1000 non-inclusive.
+# $name should be the 'rid' of the syncrepl instance and must be between 0 and
+# 1000, non-inclusive.
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 define openldap::server::syncrepl (
-  String     $syncrepl_retry    = '60 10 600 +',
-  String     $provider          = simplib::lookup('simp_options::ldap::master',
-                                    { 'default_value' => "ldap://%{hiera('simp_options::puppet::server')}" }),
-  String     $searchbase        = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => "" }),
-  String     $syncrepl_type     = 'refreshAndPersist',
-  String     $interval          = '',
-  String     $filter            = '',
-  String     $syncrepl_scope    = 'sub',
-  String     $attrs             = '*,+',
-  String     $attrsonly         = '',
-  String     $sizelimit         = 'unlimited',
-  String     $timelimit         = 'unlimited',
-  String     $schemachecking    = 'off',
-  String     $starttls          = 'critical',
-  String     $bindmethod        = 'simple',
-  String     $binddn            = simplib::lookup('simp_options::ldap::sync_dn', {'default_value' => '' }),
-  String     $saslmech          = '',
-  String     $authcid           = '',
-  String     $authzid           = '',
-  String     $credentials       = simplib::lookup('simp_options::ldap::sync_pw', { 'default_value' => '' }),
-  String     $realm             = '',
-  String     $secprops          = '',
-  String     $logbase           = '',
-  String     $logfilter         = '',
-  String     $syncdata          = 'default',
-  String     $updateref         = ''
+  String[1]                               $syncrepl_retry = '60 10 600 +',
+  Optional[String[1]]                     $provider       = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
+  Optional[String[1]]                     $searchbase     = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef }),
+  Enum['refreshOnly','refreshAndPersist'] $syncrepl_type  = 'refreshAndPersist',
+  Optional[String[1]]                     $interval       = undef,
+  Optional[String[1]]                     $filter         = undef,
+  String[1]                               $syncrepl_scope = 'sub',
+  String[1]                               $attrs          = '*,+',
+  Optional[String[1]]                     $attrsonly      = undef,
+  Variant[Enum['unlimited'], Integer[0]]  $sizelimit      = 'unlimited',
+  Variant[Enum['unlimited'], Integer[0]]  $timelimit      = 'unlimited',
+  Enum['on','off']                        $schemachecking = 'off',
+  Variant[Enum['critical'], Boolean]      $starttls       = 'critical',
+  Enum['simple','sasl']                   $bindmethod     = 'simple',
+  Optional[String[1]]                     $binddn         = simplib::lookup('simp_options::ldap::sync_dn', {'default_value'  => undef }),
+  Optional[String[1]]                     $saslmech       = undef,
+  Optional[String[1]]                     $authcid        = undef,
+  Optional[String[1]]                     $authzid        = undef,
+  Optional[String[1]]                     $credentials    = simplib::lookup('simp_options::ldap::sync_pw', { 'default_value' => undef }),
+  Optional[String[1]]                     $realm          = undef,
+  Optional[String[1]]                     $secprops       = undef,
+  Optional[String[1]]                     $logbase        = undef,
+  Optional[String[1]]                     $logfilter      = undef,
+  Enum['default','accesslog']             $syncdata       = 'default',
+  Optional[String[1]]                     $updateref      = undef
 ) {
-  validate_between($name,'0','1000')
+  if to_integer($name) !~ Integer[1,999] {
+    fail('$name must be an integer between `1` and `999`')
+  }
+
+  if $provider {
+    $_provider = $provider
+  }
+  elsif $server_facts {
+    $_provider = "ldap://${server_facts['servername']}"
+  }
+  else {
+    fail('You must provide a valie for `$provider`')
+  }
+
   validate_re_array(split($syncrepl_retry,'(\d+ \d+)'),'^(\s*(\d+ (\d+|\+)\s*)|\s*)$')
-  validate_array_member($syncrepl_type,['refreshOnly','refreshAndPersist'])
-  if !empty($interval) { validate_integer($interval) }
-#  validate_re($sizelimit,'^(\d+|unlimited)$')
-#  validate_re($timelimit,'^(\d+|unlimited)$')
-  validate_array_member($schemachecking,['on','off'])
-  if !empty($starttls) { validate_array_member($starttls,['yes','critical']) }
-  if !empty($bindmethod) { validate_array_member($bindmethod,['simple','sasl']) }
-  validate_array_member($syncdata,['default','accesslog','changelog'])
 
-  include '::openldap::server::dynamic_includes'
-
-  openldap::server::dynamic_includes::add { 'syncrepl':
-    content => template('openldap/syncrepl.erb')
+  openldap::server::dynamic_include { 'syncrepl':
+    content => template("${module_name}/syncrepl.erb")
   }
 }

@@ -20,11 +20,8 @@ describe 'openldap class' do
     EOS
   }
 
-
   context 'default parameters (no pki)' do
     it 'should configure server with tls disabled and with no errors' do
-      install_package(server, 'simp-ppolicy-check-password')
-      install_package(server, 'openldap-clients')
       echo_on(server, domains)
 
       on(server, 'mkdir -p /usr/local/sbin/simp')
@@ -36,10 +33,10 @@ describe 'openldap class' do
       # reboot to apply auditd changes
       # shell( 'shutdown -r now', { :expect_connection_failure => true } )
     end
+
     it 'should be idempotent' do
       apply_manifest(server_manifest, {:catch_changes => true})
     end
-
 
     context 'user management' do
       it 'should be able to connect and use ldapsearch' do
@@ -100,8 +97,6 @@ describe 'openldap class' do
 
     context 'with tls enabled' do
       it 'should be able to connect using tls and use ldapsearch' do
-        install_package(server, 'simp-ppolicy-check-password')
-        install_package(server, 'openldap-clients')
         on(server, 'rm /root/.ldaprc', :accept_all_exit_codes => true)
         on(server, 'mkdir -p /usr/local/sbin/simp', :accept_all_exit_codes => true)
 
@@ -122,6 +117,5 @@ describe 'openldap class' do
         on(server, "ldapsearch -LLL -D cn=LDAPAdmin,ou=People,#{domains} -H ldap://#{server_fqdn} -x -w suP3rP@ssw0r!", :acceptable_exit_codes=> [13])
       end
     end
-
   end
 end

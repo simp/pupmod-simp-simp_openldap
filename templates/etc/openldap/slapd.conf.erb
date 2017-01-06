@@ -62,8 +62,6 @@ chain-tls start
 chain-idassert-authzFrom "*"
 <% end -%>
 
-modulepath <%= Array(@modulepath).join(':') %>
-
 authz-policy <%= @authz_policy %>
 <%
 unless @authz_regexp.empty?
@@ -81,7 +79,7 @@ end
 <% if @use_tls -%>
 TLSCertificateFile <%= @app_pki_cert %>
 TLSCertificateKeyFile <%= @app_pki_key %>
-TLSCipherSuite <%= @tls_cipher_suite %>
+TLSCipherSuite <%= @tls_cipher_suite.join(':') %>
 TLSVerifyClient <%= @tls_verify_client %>
 TLSCRLCheck <%= @tls_crl_check %>
 <%   if @tls_crl_file -%>
@@ -117,8 +115,8 @@ gentlehup on
 <% end -%>
 idletimeout <%= @idletimeout %>
 
-sizelimit <%= _sizelimit %>
-timelimit <%= _timelimit %>
+sizelimit <%= _sizelimit[0] %>
+timelimit <%= _timelimit[0] %>
 writetimeout <%= @writetimeout %>
 
 sockbuf_max_incoming <%= @sockbuf_max_incoming %>

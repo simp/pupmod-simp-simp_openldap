@@ -23,7 +23,7 @@
 #
 define openldap::server::limits (
   String                        $who,
-  Variant[Array[String], String] $limits
+  Variant[Array[String],String] $limits
 ) {
   if $limits =~ Array {
     $_limits = join($limits,' ')

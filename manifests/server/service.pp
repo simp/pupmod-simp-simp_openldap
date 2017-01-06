@@ -6,7 +6,7 @@
 #   The actual service name
 #
 class openldap::server::service (
-  String[1]  $slapd_svc = 'slapd'
+  String[1] $slapd_svc = 'slapd'
 ){
   assert_private()
 

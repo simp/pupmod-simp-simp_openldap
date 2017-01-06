@@ -49,12 +49,12 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server (
-  Boolean $schema_sync    = true,
-  String  $schema_source  = "puppet:///modules/${module_name}/etc/openldap/schema",
-  Boolean $allow_sync     = true,
-  String  $sync_dn        = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::openldap::base_dn}" }),
-  Boolean $use_ppolicy    = true,
-  Boolean $tcpwrappers    = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })
+  Boolean $schema_sync   = true,
+  String  $schema_source = "puppet:///modules/${module_name}/etc/openldap/schema",
+  Boolean $allow_sync    = true,
+  String  $sync_dn       = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::openldap::base_dn}" }),
+  Boolean $use_ppolicy   = true,
+  Boolean $tcpwrappers   = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })
 ) inherits ::openldap {
 
   include '::openldap::client'
@@ -159,6 +159,13 @@ class openldap::server (
     shell      => '/sbin/nologin',
     require    => Class['openldap::server::install'],
     notify     => Class['openldap::server::service']
+  }
+
+  concat { '/etc/openldap/access.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'ldap',
+    mode    => '0640',
   }
 
   # This adds the default entries to LDAP in a wide spacing for other users

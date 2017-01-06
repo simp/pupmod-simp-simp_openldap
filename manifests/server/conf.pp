@@ -181,6 +181,9 @@
 # @param syslog
 #   Enable the SIMP logging infrastructure
 #
+# @param logrotate
+#   Enable the SIMP log rotate infrastructure
+#
 # @param log_to_file
 #   Send the output logs to the file specified in ``$log_file``
 #
@@ -207,6 +210,7 @@ class openldap::server::conf (
   Optional[String[1]]                                 $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
   String[1]                                           $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}" }),
   String[1]                                           $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $::openldap::bind_dn }),
+  Optional[String[1]]                                 $rootdn                     = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
   String[1]                                           $suffix                     = $::openldap::base_dn,
   Stdlib::Absolutepath                                $argsfile                   = '/var/run/openldap/slapd.args',
   Boolean                                             $audit_transactions         = true,
@@ -216,16 +220,13 @@ class openldap::server::conf (
   Integer[0]                                          $auditlog_preserve          = 7,
   Enum['none','from','to','any']                      $authz_policy               = 'to',
   Boolean                                             $bind_anon                  = false,
-  Array[
-    Struct[{
+  Array[Struct[{
       match   => String[1],
       replace => String[1]
-    }]
-  ]                                                   $authz_regexp               = [{
+  }] ]                                                $authz_regexp               = [{
                                                           'match'   => '^uid=([^,]+),.*',
                                                           'replace' => "uid=\$1,ou=People,${::openldap::base_dn}"
                                                         }],
-  Optional[String[1]]                                 $rootdn                     = simplib::lookup('simp_options::ldap::rootdn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
   Integer[1]                                          $cachesize                  = 10000,
   Pattern['(^\d+\s\d+$|^$)']                          $checkpoint                 = '1024 5',
   Simplib::Netlist                                    $trusted_nets               = simplib::lookup('simp_options::trusted_nets', { 'default_value' => ['127.0.0.1'] }),
@@ -275,11 +276,11 @@ class openldap::server::conf (
   Stdlib::Absolutepath                                $app_pki_ca_dir             = "${::openldap::app_pki_dir}/pki/cacerts",
   Stdlib::Absolutepath                                $app_pki_cert               = "${::openldap::app_pki_dir}/pki/public/${facts['fqdn']}.pub",
   Stdlib::Absolutepath                                $app_pki_key                = "${::openldap::app_pki_dir}/pki/private/${facts['fqdn']}.pem",
-  Array[String[1]]                                    $tls_cipher_suite             = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
-  Enum['none','peer','all']                           $tls_crl_check                = 'none',
-  Optional[Stdlib::Absolutepath]                      $tls_crl_file                 = undef,
+  Array[String[1]]                                    $tls_cipher_suite           = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
+  Enum['none','peer','all']                           $tls_crl_check              = 'none',
+  Optional[Stdlib::Absolutepath]                      $tls_crl_file               = undef,
   # lint:ignore:quoted_booleans
-  Enum['never','allow','try','demand','hard','true']  $tls_verify_client            = 'allow',
+  Enum['never','allow','try','demand','hard','true']  $tls_verify_client          = 'allow',
   # lint:endignore
   String[1]                                           $database                   = 'bdb',
   Stdlib::Absolutepath                                $directory                  = '/var/lib/ldap',
@@ -298,6 +299,7 @@ class openldap::server::conf (
   Boolean                                             $db_log_autoremove          = true,
   Integer[1024]                                       $ulimit_max_open_files      = 81920,
   Boolean                                             $syslog                     = simplib::lookup('simp_options::syslog', {'default_value' => false }),
+  Boolean                                             $logrotate                  = simplib::lookup('simp_options::logrotate', {'default_value' => false }),
   Boolean                                             $log_to_file                = false,
   Stdlib::Absolutepath                                $log_file                   = '/var/log/slapd.log',
   Boolean                                             $forward_all_logs           = false,
@@ -305,13 +307,6 @@ class openldap::server::conf (
 ) inherits ::openldap {
 
   include '::openldap::server::conf::default_ldif'
-
-  if $facts['hardwaremodel'] == 'x86_64' {
-    $_modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']
-  }
-  else {
-    $_modulepath = ['/usr/lib/openldap']
-  }
 
   if $force_log_quick_kill {
     include '::incron'
@@ -321,13 +316,6 @@ class openldap::server::conf (
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'
     }
-  }
-
-  file { $_modulepath:
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    recurse => true
   }
 
   file { '/etc/openldap/slapd.conf':
@@ -444,10 +432,12 @@ class openldap::server::conf (
         target_log_file => $log_file
       }
 
-      logrotate::rule { 'slapd':
-        log_files  => [ $log_file ],
-        missingok  => true,
-        lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
+      if $logrotate {
+        logrotate::rule { 'slapd':
+          log_files  => [ $log_file ],
+          missingok  => true,
+          lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
+        }
       }
     }
 

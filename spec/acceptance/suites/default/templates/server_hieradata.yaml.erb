@@ -1,8 +1,9 @@
 ---
 simp_options::trusted_nets:
   - 'ALL'
-simp_options::use_simp_pki: false
+simp_options::pki: false
 simp_options::firewall: false
+simp_options::tcpwrappers: false
 simp_options::sssd: false
 simp_options::syslog: false
 
@@ -11,17 +12,15 @@ openldap::server::conf::default_ldif::ppolicy_pwd_failure_count_interval: 4
 
 simp_options::ldap::uri:
   - 'ldap://<%= server_fqdn %>'
-simp_options::ldap::base_dn: '<%= domains %>'
-simp_options::ldap::bind_dn: 'cn=hostAuth,ou=Hosts,<%= domains %>'
+simp_options::ldap::base_dn: '<%= base_dn %>'
+simp_options::ldap::bind_dn: 'cn=hostAuth,ou=Hosts,<%= base_dn %>'
 simp_options::ldap::bind_pw: 'foobarbaz'
 simp_options::ldap::bind_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
-simp_options::ldap::sync_dn: 'cn=LDAPSync,ou=Hosts,<%= domains %>'
+simp_options::ldap::sync_dn: 'cn=LDAPSync,ou=Hosts,<%= base_dn %>'
 simp_options::ldap::sync_pw: 'foobarbaz'
 simp_options::ldap::sync_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
-simp_options::ldap::root_dn: 'cn=LDAPAdmin,ou=People,<%= domains %>'
+simp_options::ldap::root_dn: 'cn=LDAPAdmin,ou=People,<%= base_dn %>'
 simp_options::ldap::root_hash: '{SSHA}BNPDR0qqE6HyLTSlg13T0e/+yZnSgYQz'
 simp_options::ldap::master: 'ldap://<%= server_fqdn %>'
 # suP3rP@ssw0r!
 simp_options::ldap::root_hash: "{SSHA}ZcqPNbcqQhDNF5jYTLGl+KAGcrHNW9oo"
-
-simp_options::tcpwrappers: false

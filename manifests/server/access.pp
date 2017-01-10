@@ -1,4 +1,4 @@
-# Manage access control entries in ``access.conf``
+# Manage access control entries in ``slapd.access``
 #
 # Remember that **order matters**! Entries will be listed in alphanumeric order
 # after the ``$order`` parameter is processed.
@@ -18,6 +18,7 @@
 #   the **entire* content under ``$what``
 #
 #   * If you do not specify this, ``$who`` is a required variable
+#   * If you do specify this, ``$who`` will be ignored
 #
 # @param order
 #   The default sort order of the entry to be added
@@ -47,7 +48,7 @@ define openldap::server::access (
   }
 
   if $content {
-    $_content = $content
+    $_content = "access to ${what} ${content}"
   }
   else {
     if $comment {
@@ -75,7 +76,7 @@ define openldap::server::access (
   }
 
   concat::fragment { "openldap_access_${name}":
-    target  => '/etc/openldap/access.conf',
+    target  => '/etc/openldap/slapd.access',
     content => $_content,
     order   => $order
   }

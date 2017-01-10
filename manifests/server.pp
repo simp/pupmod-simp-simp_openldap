@@ -161,13 +161,6 @@ class openldap::server (
     notify     => Class['openldap::server::service']
   }
 
-  concat { '/etc/openldap/access.conf':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'ldap',
-    mode    => '0640',
-  }
-
   # This adds the default entries to LDAP in a wide spacing for other users
   # to usefully add their own materials.
   openldap::server::access { 'simp_userpassword_access':
@@ -177,8 +170,7 @@ class openldap::server (
       by dn.exact=\"${::openldap::bind_dn}\" auth
       by anonymous auth
       by self write
-      by * none
-    ",
+      by * none",
     order   => 1000
   }
 
@@ -194,8 +186,7 @@ class openldap::server (
       by dn.exact=\"${::openldap::bind_dn}\" read
       by anonymous auth
       by self write
-      by * none
-    ",
+      by * none",
     order   => 2000
   }
 
@@ -204,8 +195,7 @@ class openldap::server (
     content => "
       by self write
       by * read
-      by * none
-    ",
+      by * none",
     order   => 3000
   }
 

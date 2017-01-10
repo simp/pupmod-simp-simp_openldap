@@ -26,15 +26,15 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap (
-  Array[Simplib::URI]            $ldap_uri            = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
-  String                         $base_dn             = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => openldap::domain_to_dn() }),
-  String                         $bind_dn             = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', openldap::domain_to_dn()) }),
-  String                         $ldap_master         = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
-  Boolean                        $is_server           = false,
-  Boolean                        $sssd                = simplib::lookup('simp_options::sssd', { 'default_value' => false }),
-  Variant[Boolean, Enum['simp']] $pki                 = simplib::lookup('simp_options::pki', { 'default_value' => false }),
-  Stdlib::Absolutepath           $app_pki_dir         = '/etc/openldap',
-  Stdlib::Absolutepath           $app_pki_cert_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp' })
+  Array[Simplib::URI]            $ldap_uri                = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
+  String                         $base_dn                 = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => openldap::domain_to_dn() }),
+  String                         $bind_dn                 = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', openldap::domain_to_dn()) }),
+  String                         $ldap_master             = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
+  Boolean                        $is_server               = false,
+  Boolean                        $sssd                    = simplib::lookup('simp_options::sssd', { 'default_value' => false }),
+  Variant[Boolean, Enum['simp']] $pki                     = simplib::lookup('simp_options::pki', { 'default_value' => false }),
+  Stdlib::Absolutepath           $app_pki_dir             = '/etc/pki/simp_apps/openldap/pki',
+  Stdlib::Absolutepath           $app_pki_external_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp' })
 ) {
   if $ldap_uri {
     $_ldap_uri = $ldap_uri
@@ -64,16 +64,9 @@ class openldap (
   contain '::openldap::client'
 
   if $pki {
-    file { $app_pki_dir:
-      ensure => 'directory',
-      owner  => 'root',
+    pki::copy { $module_name:
       group  => 'ldap',
-      mode   => '0640'
-    }
-
-    pki::copy { $app_pki_dir:
-      group  => 'ldap',
-      source => $app_pki_cert_source,
+      source => $app_pki_external_source,
       pki    => $pki
     }
   }

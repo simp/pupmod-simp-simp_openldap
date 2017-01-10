@@ -4,6 +4,21 @@ require 'erb'
 test_name 'openldap class'
 
 describe 'openldap class' do
+  before(:context) do
+    hosts.each do |host|
+      interfaces = fact_on(host, 'interfaces').strip.split(',')
+      interfaces.delete_if do |x|
+        x =~ /^lo/
+      end
+
+      interfaces.each do |iface|
+        if fact_on(host, "ipaddress_#{iface}").strip.empty?
+          on(host, "ifup #{iface}", :accept_all_exit_codes => true)
+        end
+      end
+    end
+  end
+
   servers = hosts_with_role(hosts, 'server')
   # slaves = hosts_with_role(hosts, 'slave')
 
@@ -13,8 +28,8 @@ describe 'openldap class' do
     EOS
   }
 
-  context 'openldap::server' do
-    servers.each do |server|
+  servers.each do |server|
+    context "openldap::server #{server}" do
       let(:server_fqdn) { fact_on(server, 'fqdn') }
       let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
 
@@ -113,7 +128,7 @@ describe 'openldap class' do
             apply_manifest_on(server, server_manifest, :catch_failures => true)
             apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
 
-            on(server, "ldapsearch -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -Z -x -w suP3rP@ssw0r!")
+            on(server, "ldapsearch -ZZ -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -x -w suP3rP@ssw0r!")
           end
 
           it 'should reject non-tls connections' do
@@ -121,7 +136,6 @@ describe 'openldap class' do
           end
         end
       end
-
     end
   end
 end

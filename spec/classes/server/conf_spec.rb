@@ -78,26 +78,6 @@ describe 'openldap::server::conf' do
           }
         end
 
-        context 'x86_64' do
-          ['/usr/lib64/openldap','/usr/lib/openldap'].each do |file|
-            it { is_expected.to create_file(file).with_recurse(true) }
-          end
-        end
-
-        context 'i386' do
-          let(:facts){
-            facts[:server_facts] = {
-              :servername => facts[:fqdn],
-              :serverip   => facts[:ipaddress]
-            }
-            facts[:hardwaremodel] = 'i386'
-
-            facts
-          }
-
-          it { is_expected.to create_file('/usr/lib/openldap').with_recurse(true) }
-        end
-
         context 'force_log_quick_kill' do
           let(:pre_condition) {
             %( class { "::openldap": base_dn => "dc=host,dc=net" })
@@ -171,7 +151,8 @@ describe 'openldap::server::conf' do
             :auditlog          => '/var/log/ldap_audit.log',
             :auditlog_rotate   => 'daily',
             :auditlog_preserve => 7,
-            :syslog            => true
+            :syslog            => true,
+            :logrotate         => true
           }}
 
           it { is_expected.to create_class('logrotate') }
@@ -199,7 +180,8 @@ describe 'openldap::server::conf' do
             :auditlog_rotate   => 'daily',
             :auditlog_preserve => 7,
             :audit_to_syslog   => false,
-            :syslog            => true
+            :syslog            => true,
+            :logrotate         => true
           }}
 
           it { is_expected.to create_class('logrotate') }
@@ -224,7 +206,8 @@ describe 'openldap::server::conf' do
           let(:params){{
             :syslog      => true,
             :log_to_file => true,
-            :log_file    => '/foo/bar'
+            :log_file    => '/foo/bar',
+            :logrotate   => true
           }}
 
           it { is_expected.to create_class('logrotate') }

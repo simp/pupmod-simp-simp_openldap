@@ -24,7 +24,7 @@
     },
     {
       "name": "simp/iptables",
-      "version_requirement": ">= 5.0.0 < 6.0.0"
+      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/logrotate",
@@ -32,7 +32,7 @@
     },
     {
       "name": "simp/pki",
-      "version_requirement": ">= 5.0.0 < 6.0.0"
+      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/rsyslog",
@@ -48,7 +48,7 @@
     },
     {
       "name": "simp/sssd",
-      "version_requirement": ">= 5.0.0 < 6.0.0"
+      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/tcpwrappers",

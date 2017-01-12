@@ -37,25 +37,22 @@ describe 'openldap::server::conf' do
           end
         }
 
-        context 'without_tls' do
-          let(:pre_condition) {
-            %(
-              class { "::openldap": base_dn => "dc=host,dc=net" }
-            )
-          }
-          let(:params) {{ :use_tls => false }}
-          it { is_expected.to_not create_pki__copy('/etc/openldap') }
+        context 'with pki = false' do
+          let(:pre_condition) { "include 'openldap'" }
+          let(:hieradata) { 'pki_false' }
+          it { is_expected.to_not contain_class('pki') }
+          it { is_expected.to_not create_pki__copy('openldap') }
+          it { is_expected.to_not create_file('/etc/pki/simp_apps/openldap/x509')}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Openldap::Server::Service]') }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSCertificateFile/) }
         end
 
-        context 'with_tls' do
-          let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
-          }
-          let(:params) {{
-            :use_tls => true
-          }}
+        context 'with pki = true' do
+          let(:pre_condition) { "include 'openldap'" }
+          let(:hieradata) { 'pki_true' }
+          it { is_expected.to_not contain_class('pki') }
+          it { is_expected.to create_pki__copy('openldap') }
+          it { is_expected.to create_file('/etc/pki/simp_apps/openldap/x509')}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
             :notify => 'Class[Openldap::Server::Service]',
             :content => /TLSCertificateFile/
@@ -63,14 +60,13 @@ describe 'openldap::server::conf' do
           }
         end
 
-        context 'with_tls_but_not_simp_managed' do
-          let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
-          }
-          let(:params) {{
-            :use_tls => true,
-            :syslog => false,
-           }}
+        context 'with pki = simp' do
+          let(:pre_condition) { "include 'openldap'" }
+          let(:hieradata) { 'pki_simp' }
+          let(:params) {{ :syslog => false }}
+          it { is_expected.to contain_class('pki') }
+          it { is_expected.to create_pki__copy('openldap') }
+          it { is_expected.to create_file('/etc/pki/simp_apps/openldap/x509')}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
               :notify => 'Class[Openldap::Server::Service]',
               :content => /TLSCertificateFile/

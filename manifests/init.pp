@@ -23,6 +23,42 @@
 # @param sssd
 #   Whether or not to use SSSD in the installation
 #
+# @param pki
+#   * If 'simp', include SIMP's pki module and use pki::copy to manage
+#     application certs in /etc/pki/simp_apps/openldap/x509
+#   * If true, do *not* include SIMP's pki module, but still use pki::copy
+#     to manage certs in /etc/pki/simp_apps/openldap/x509
+#   * If false, do not include SIMP's pki module and do not use pki::copy
+#     to manage certs.  You will need to appropriately assign a subset of:
+#     * app_pki_dir
+#     * app_pki_key
+#     * app_pki_cert
+#     * app_pki_ca
+#     * app_pki_ca_dir
+#
+# @param app_pki_external_source
+#   * If pki = 'simp' or true, this is the directory from which certs will be
+#     copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
+#
+#   * If pki = false, this variable has no effect.
+#
+# @param app_pki_dir
+#   This variable controls the basepath of $app_pki_key, $app_pki_cert,
+#   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
+#   It defaults to /etc/pki/simp_apps/openldap/x509.
+#
+# @param app_pki_key
+#   Path and name of the private SSL key file.
+#
+# @param app_pki_cert
+#   Path and name of the public SSL certificate.
+#
+# @param app_pki_ca_dir
+#   Path to the CA.
+#
+# @param app_pki_crl
+#   Path to the CRL file.
+#
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap (
@@ -33,8 +69,12 @@ class openldap (
   Boolean                        $is_server               = false,
   Boolean                        $sssd                    = simplib::lookup('simp_options::sssd', { 'default_value' => false }),
   Variant[Boolean, Enum['simp']] $pki                     = simplib::lookup('simp_options::pki', { 'default_value' => false }),
-  Stdlib::Absolutepath           $app_pki_dir             = '/etc/pki/simp_apps/openldap/pki',
-  Stdlib::Absolutepath           $app_pki_external_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp' })
+  Stdlib::Absolutepath           $app_pki_external_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
+  Stdlib::Absolutepath           $app_pki_dir             = '/etc/pki/simp_apps/openldap/x509',
+  Stdlib::AbsolutePath           $app_pki_cert            = "${app_pki_dir}/public/${facts['fqdn']}.pub",
+  Stdlib::AbsolutePath           $app_pki_key             = "${app_pki_dir}/private/${facts['fqdn']}.pem",
+  Stdlib::AbsolutePath           $app_pki_ca_dir          = "${app_pki_dir}/cacerts",
+  Optional[Stdlib::Absolutepath] $app_pki_crl             = undef,
 ) {
   if $ldap_uri {
     $_ldap_uri = $ldap_uri
@@ -64,10 +104,10 @@ class openldap (
   contain '::openldap::client'
 
   if $pki {
-    pki::copy { $module_name:
-      group  => 'ldap',
+    pki::copy { 'openldap':
       source => $app_pki_external_source,
-      pki    => $pki
+      pki    => $pki,
+      group  => 'ldap'
     }
   }
 }

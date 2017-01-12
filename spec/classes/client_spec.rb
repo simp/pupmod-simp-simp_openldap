@@ -9,7 +9,7 @@ ldap_conf_content = {
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
     "DEREF               never\n" +
-    "TLS_CACERTDIR       /etc/openldap/pki/cacerts\n" +
+    "TLS_CACERTDIR       /etc/pki/simp_apps/openldap/x509/cacerts\n" +
     "TLS_CIPHER_SUITE    DEFAULT:!MEDIUM\n" +
     "TLS_REQCERT         allow\n" +
     "TLS_CRLCHECK        none\n",
@@ -22,7 +22,7 @@ ldap_conf_content = {
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
     "DEREF               never\n" +
-    "TLS_CACERTDIR       /etc/openldap/pki/cacerts\n" +
+    "TLS_CACERTDIR       /etc/pki/simp_apps/openldap/x509/cacerts\n" +
     "TLS_CIPHER_SUITE    DEFAULT:!MEDIUM\n" +
     "TLS_REQCERT         allow\n" +
     "TLS_CRLCHECK        none\n" +
@@ -44,18 +44,18 @@ ldaprc_content = {
     "#\n" +
     "# If you need a fresh copy, simply delete the file and Puppet will regenerate\n" +
     "# it\n\n" +
-    "TLS_CACERTDIR /etc/openldap/pki/cacerts\n" +
-    "TLS_CERT /etc/openldap/pki/public/myserver.test.local.pub\n" +
-    "TLS_KEY /etc/openldap/pki/private/myserver.test.local.pem\n",
+    "TLS_CACERTDIR /etc/pki/simp_apps/openldap/x509/cacerts\n" +
+    "TLS_CERT /etc/pki/simp_apps/openldap/x509/public/myserver.test.local.pub\n" +
+    "TLS_KEY /etc/pki/simp_apps/openldap/x509/private/myserver.test.local.pem\n",
 
   :with_crlfile =>
     "# This file placed by Puppet, but may be modified\n" +
     "#\n" +
     "# If you need a fresh copy, simply delete the file and Puppet will regenerate\n" +
     "# it\n\n" +
-    "TLS_CACERTDIR /etc/openldap/pki/cacerts\n" +
-    "TLS_CERT /etc/openldap/pki/public/myserver.test.local.pub\n" +
-    "TLS_KEY /etc/openldap/pki/private/myserver.test.local.pem\n",
+    "TLS_CACERTDIR /etc/pki/simp_apps/openldap/x509/cacerts\n" +
+    "TLS_CERT /etc/pki/simp_apps/openldap/x509/public/myserver.test.local.pub\n" +
+    "TLS_KEY /etc/pki/simp_apps/openldap/x509/private/myserver.test.local.pem\n",
 
   :without_tls => ''
 }
@@ -84,34 +84,24 @@ describe 'openldap::client' do
           facts
         }
 
-        context 'Generates files without TLS' do
-          let(:params) {{
-            :use_tls => false
-          }}
-
+        context 'Generates files with pki = false' do
+          let(:hieradata) { 'pki_false' }
           let(:content_option) { :without_tls }
           it_should_behave_like "a ldap config generator"
         end
 
-        context 'Generates files with TLS but without CRL file by default' do
+        context 'Generates files with pki = true but without CRL file by default' do
+          let(:hieradata) { 'pki_true' }
           let(:content_option) { :default }
-
           it_should_behave_like "a ldap config generator"
         end
 
-        context 'Generates files with TLS and specified CRL file' do
+        context 'Generates files with use_tls = true and specified CRL file' do
           let(:content_option) { :with_crlfile }
           let(:params) {{
-            :tls_crlfile => '/some/path/my_crlfile',
+            :app_pki_crl => '/some/path/my_crlfile',
+            :use_tls     => true
           }}
-
-          it_should_behave_like "a ldap config generator"
-        end
-
-        context 'Generates files without TLS' do
-          let(:content_option) { :without_tls }
-          let(:params) { {
-             :use_tls => false } }
           it_should_behave_like "a ldap config generator"
         end
       end

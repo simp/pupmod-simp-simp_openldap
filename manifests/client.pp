@@ -13,7 +13,21 @@
 # connect with TLSv1 if possible.
 #
 # @param use_tls
-#   Use TLS when connecting to the ldap server
+#   Use TLS when connecting to the ldap server. By default this will mirror
+#   simp_options::pki, but needs to be distinct as the client and server
+#   configurations could vary.
+#
+# @param app_pki_key
+#   Path and name of the private SSL key file
+#
+# @param app_pki_cert
+#   Path and name of the public SSL certificate
+#
+# @param app_pki_ca_dir
+#   Path to the CA.
+#
+# @param app_pki_crl
+#   Path to the CRL file.
 #
 class openldap::client (
   Array[Simplib::URI]                          $uri                 = $::openldap::_ldap_uri,
@@ -22,13 +36,13 @@ class openldap::client (
   Enum['on','off']                             $referrals           = 'on',
   Integer                                      $sizelimit           = 0,
   Integer                                      $timelimit           = 15,
-  Boolean                                      $use_tls             = true,
-  Optional[Stdlib::Absolutepath]               $app_pki_ca_dir      = "${::openldap::app_pki_dir}/cacerts",
-  Stdlib::Absolutepath                         $app_pki_cert        = "${::openldap::app_pki_dir}/public/${facts['fqdn']}.pub",
-  Stdlib::Absolutepath                         $app_pki_key         = "${::openldap::app_pki_dir}/private/${facts['fqdn']}.pem",
+  Variant[Enum['simp'],Boolean]                $use_tls             = $::openldap::pki,
+  Stdlib::Absolutepath                         $app_pki_ca_dir      = $::openldap::app_pki_ca_dir,
+  Stdlib::Absolutepath                         $app_pki_cert        = $::openldap::app_pki_cert,
+  Stdlib::Absolutepath                         $app_pki_key         = $::openldap::app_pki_key,
+  Optional[Stdlib::Absolutepath]               $app_pki_crl         = $::openldap::app_pki_crl,
   Array[String[1]]                             $tls_cipher_suite    = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT','!MEDIUM'] }),
   Enum['none','peer','all']                    $tls_crlcheck        = 'none',
-  Optional[Stdlib::Absolutepath]               $tls_crlfile         = undef,
   Enum['never','searching','finding','always'] $deref               = 'never',
   Enum['never','allow','try','demand','hard']  $tls_reqcert         = 'allow'
 ) inherits ::openldap {

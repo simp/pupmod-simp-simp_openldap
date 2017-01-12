@@ -82,8 +82,8 @@ TLSCertificateKeyFile <%= @app_pki_key %>
 TLSCipherSuite <%= @tls_cipher_suite.join(':') %>
 TLSVerifyClient <%= @tls_verify_client %>
 TLSCRLCheck <%= @tls_crl_check %>
-<%   if @tls_crl_file -%>
-TLSCRLFile <%= @tls_crl_file %>
+<%   if @app_pki_crl -%>
+TLSCRLFile <%= @app_pki_crl %>
 <%   end -%>
 <%   if @app_pki_ca_dir -%>
 TLSCACertificatePath <%= @app_pki_ca_dir %>

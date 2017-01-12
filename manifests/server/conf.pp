@@ -154,9 +154,6 @@
 # @param timelimit_hard
 #   Corresponds to ``time.hard`` in ``slapd.conf``
 #
-# @param use_tls
-#   Enable TLS for OpenLDAP
-#
 # @param tlsVerifyClient
 #   TLS client verification level
 #
@@ -201,6 +198,22 @@
 #
 # @param firewall
 #   Enable the SIMP firewall
+#
+# @param use_tls
+#   Enable TLS in openldap. By default this will mirror simp_options::pki,
+#   but needs to be distinct as the client and server configurations could vary.
+#
+# @param app_pki_key
+#   Path and name of the private SSL key file
+#
+# @param app_pki_cert
+#   Path and name of the public SSL certificate
+#
+# @param app_pki_ca_dir
+#   Path to the CA.
+#
+# @param app_pki_crl
+#   Path to the CRL file.
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
@@ -272,13 +285,13 @@ class openldap::server::conf (
   Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_soft             = undef,
   Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_hard             = undef,
   Integer[0]                                          $writetimeout               = 0,
-  Variant[Boolean,Enum['simp']]                       $use_tls                    = $::openldap::pki,
-  Stdlib::Absolutepath                                $app_pki_ca_dir             = "${::openldap::app_pki_dir}/cacerts",
-  Stdlib::Absolutepath                                $app_pki_cert               = "${::openldap::app_pki_dir}/public/${facts['fqdn']}.pub",
-  Stdlib::Absolutepath                                $app_pki_key                = "${::openldap::app_pki_dir}/private/${facts['fqdn']}.pem",
+  Variant[Enum['simp'],Boolean]                       $use_tls                    = $::openldap::pki,
+  Stdlib::Absolutepath                                $app_pki_ca_dir             = $::openldap::app_pki_ca_dir,
+  Stdlib::Absolutepath                                $app_pki_cert               = $::openldap::app_pki_cert,
+  Stdlib::Absolutepath                                $app_pki_key                = $::openldap::app_pki_key,
+  Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $::openldap::app_pki_crl,
   Array[String[1]]                                    $tls_cipher_suite           = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
   Enum['none','peer','all']                           $tls_crl_check              = 'none',
-  Optional[Stdlib::Absolutepath]                      $tls_crl_file               = undef,
   # lint:ignore:quoted_booleans
   Enum['never','allow','try','demand','hard','true']  $tls_verify_client          = 'allow',
   # lint:endignore

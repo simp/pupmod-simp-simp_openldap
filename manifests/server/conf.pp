@@ -1,519 +1,334 @@
-# == Class: openldap::server::conf
+# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 #
-# This class configures the brunt of the /etc/openldap space.
-#
-# It should only be included by the openldap::server class and is not
-# meant to be used alone.
+# This class configures the brunt of the ``/etc/openldap`` configuration files
 #
 # Regarding: POODLE - CVE-2014-3566
 #
-# The tls_cipher_suite variable is set to HIGH:-SSLv2 because OpenLDAP
-# cannot set the SSL provider natively. By default, it will run TLSv1
-# but cannot handle TLSv1.2 therefore the SSLv3 ciphers cannot be
-# eliminated. Take care to ensure that your clients only connect with
-# TLSv1 if possible.
+# The ``tls_cipher_suite`` parameter is set to ``HIGH:-SSLv2`` because OpenLDAP
+# cannot set the SSL provider natively.
 #
-# == Parameters
+# By default, it will run TLSv1 but cannot handle TLSv1.2 therefore the SSLv3
+# ciphers cannot be eliminated. Take care to ensure that your clients only
+# connect with TLSv1 if possible.
 #
-# See slapd.conf(5) and slapd-bdb(5) for any variable that is not
-# explicitly defined below.
+# @see slapd.conf(5)
+# @see slapd-bdb(5)
 #
-# [*rootdn*]
-# Type: LDAP DN
-# Default: hiera('ldap::root_dn',"LDAPAdmin,ou=People,${::openldap::base_dn}")
-#   The username of the administrative LDAP user
+# @param rootdn
+#   The DN of the administrative LDAP user
 #
-# [*rootpw*]
-# Type: 'slappasswd' generated hash
-# Default: hiera('ldap::root_hash')
-#   This is the output of 'slappasswd' for your LDAP root account.
+# @param rootpw
+#   This is the output of ``slappasswd`` for your LDAP administrative account
 #
-# [*syncdn*]
-# Type: LDAP DN
-# Default: hiera('ldap::sync_dn',"LDAPSync,ou=People,${::openldap::base_dn}")
-#   The username of the LDAP synchronization user. Used for DB replication.
+# @param syncdn
+#   The DN of the LDAP synchronization user
 #
-# [*syncpw*]
-# Type: 'slappasswd' generated hash
-# Default: hiera('ldap::sync_hash')
-#   This is the output of 'slappasswd' for your LDAP sync account.
+#   * Used for DB replication
 #
-# [*binddn*]
-# Type: LDAP DN
-# Default: hiera('ldap::bind_dn',"hostAuth,ou=Hosts,${::openldap::base_dn}")
-#   The username of the LDAP host authorization user. This user should not have
-#   the ability to do anything besides bind to the LDAP system for further
-#   authentication.
+# @param syncpw
+#   This is the output of ``slappasswd`` for your LDAP sync account
 #
-# [*bindpw*]
-# Type: 'slappasswd' generated hash
-# Default: hiera('ldap::bind_hash')
-#   This is the output of 'slappasswd' for your LDAP bind account.
+# @param binddn
+#   The DN of the LDAP host authorization user
 #
-# [*audit_transactions*]
-# Type: Boolean
-# Default: true
-#   If true, will cause OpenLDAP to audit all transactions in the
-#   database. This will output an LDIF file with all details of what
-#   changed on the system and may contain sensitive information.
+#   This user should not have the ability to do anything besides bind to the
+#   LDAP system for further authentication
 #
-# [*audit_to_syslog*]
-# Type: Boolean
-# Default: true
-#   If true, will forward all audit logs to syslog. Like above, this
-#   will forward all information to syslog and may contain sensitive
-#   information.
+# @param bindpw
+#   This is the output of ``slappasswd`` for your LDAP bind account
 #
-# [*auditlog*]
-# Type: Absolute Path
-# Default: '/var/log/slapd.audit'
-#   The path to the slapd audit log. Only effective if
-#   audit_transactions is true.
+# @param audit_transactions
+#   Set OpenLDAP to audit **all** transactions in the database
 #
-# [*auditlog_rotate*]
-# Type: One of daily, weekly, monthly, or yearly
-# Default: 'daily'
-#   The frequency with which the slapd audit logs should be rotated.
+#   * This will output an LDIF file with all details of what changed on the
+#     system and may contain sensitive information
 #
-# [*auditlog_preserve*]
-# Type: Integer
-# Default: '7'
-#   The number of rotated audit logs to preserve.
+# @param audit_to_syslog
+#   Forward all audit logs to syslog
 #
-# [*authz_policy*]
-# Type: String
-# Default: 'to'
-#   Set the appropriate authz-policy entry.
-#   May be one of 'none', 'from', 'to', or 'any'
+#   * This may contain sensitive information
 #
-# [*authz_regexp*]
-# Type: Array of Hashes
-# Default:
-#   [{
-#     'match'   => '^uid=([^,]+),.*',
-#     'replace' => "uid=\$1,ou=People,${::basedn}"
-#   }]
+# @param auditlog
+#   The path to the slapd audit log
 #
-#   Used to convert simple usernames to an LDAP DN for authorization.
-#   Set to an empty array '[]' to have this value ignored.
+#   * Only effective if ``$audit_transactions`` is enabled
 #
-#   Entries will be added to the configuration file in order so order
-#   them from most strict to least strict.
+# @param auditlog_rotate
+#   The frequency with which the slapd audit logs should be rotated
 #
-#   Note: The default is fairly lenient and you may want to tighten
-#   this up.
+# @param auditlog_preserve
+#   The number of rotated audit logs to preserve
 #
-# [*default_schemas*]
-# Type: Array of Strings
-# Default:
-#   [
-#     'openssh-lpk',
-#     'freeradius',
-#     'autofs'
-#   ]
+# @param authz_policy
+#   Set the appropriate ``authz-policy`` entry
 #
-#   The default schemas from /etc/openldap/schema to include.
-#   /etc/openldap/schema will be prepended and '.schema' will be
-#   appended. It is highly recommended that you keep this list if you
-#   decide to override, however, these defaults will *not* be merged
-#   with what you provide.
+# @param authz_regexp
+#   Used to convert simple usernames to an LDAP DN for authorization
 #
-#   Core, Cosine, InetOrgPerson, and NIS will always be included.
+#   * Set to an empty Array ``[]`` to have this value ignored
+#   * Entries will be added to the configuration file in order so order them
+#     from most strict to least strict in your Array
+#   * **NOTE:** The default is fairly lenient
 #
-# [*client_nets*]
-# Type: Array of Networks
-# Default: hiera('client_nets')
-#   The networks that should be allowed into the server.
+# @param default_schemas
+#   The default schemas from ``/etc/openldap/schema`` to include
 #
-# [*force_log_quick_kill*]
-# Type: Boolean
-# Default: false
-#   If true, create an incron job that will *immediately* destroy any
-#   recovery log file written to the log directory. Setting this to
-#   'true' is not recommended but can be used on systems where you
-#   have issues with recovery log size and the way that OpenLDAP
-#   manages them.
+#   * ``/etc/openldap/schema`` will be **prepended** and ``.schema`` will be
+#     **appended**
+#   * It is highly recommended that you keep the default list
+#   * If you decide to override, these defaults will *not* be merged with what
+#     you provide
+#   * ``Core``, ``Cosine``, ``InetOrgPerson``, and ``NIS`` will always be
+#     included
 #
-# [*include_chain_overlay*]
-# Type: Boolean
-# Default: true
-#   If true, includes a chain overlay to allow for referral chaining.
-#   This is only needed on slave nodes.
+# @param trusted_nets
+#   The networks that should be allowed into the server
 #
-# [*listen_ldap*]
-# Type: Boolean
-# Default: true
-#   If true, listen on the default LDAP port for ldap:// conenctions.
+# @param force_log_quick_kill
+#   Create an ``incron`` job that will **immediately** destroy any recovery log
+#   file written to the log directory
 #
-# [*listen_ldapi*]
-# Type: Boolean
-# Default: false
-#   If true, listen on the default LDAP port for ldapi:// conenctions.
+#   * Setting this is not recommended but can be used on systems where you have
+#     issues with recovery log size and the way that OpenLDAP manages them
 #
-# [*listen_ldaps*]
-# Type: Boolean
-# Default: true
-#   If true, listen on the default LDAPS port for ldaps:// conenctions.
+# @param include_chain_overlay
+#   Include a chain overlay to allow for referral chaining
 #
-# [*custom_options*]
-# Type: Array
-# Default: []
-#   An array of command line options that will be placed into the openldap
-#   configuration file. These are in no way validated for correct
-#   functionality!
+#   * This is only needed on LDAP replicant nodes
 #
-# [*password_hash*]
-# Type: One of 'SSHA', 'SHA', 'SMD5', 'MD5', 'CRYPT', or 'CLEARTEXT'
-# Default: SSHA
-#   The hash algorithm to use for
+# @param master
+#   If ``include_chain_overlay`` is set, then this is the upstream master that
+#   will be used for referral chaining
 #
-# [*sizelimit*]
-# Type: Integer
-# Default: 500
-#   The default size limit for queries.
-#   If any of the $sizelimit_* options are set, this will be
-#   overridden in slapd.conf.
+# @param listen_ldap
+#   Listen on the default LDAP port for ``ldap://`` conenctions
 #
-# [*sizelimit_soft*]
-# Type: Integer
-# Default: 500
-#   Corresponds to size.soft in slapd.conf.
+# @param listen_ldapi
+#   Listen on the default LDAP port for ``ldapi://`` conenctions
 #
-# [*sizelimit_hard*]
-# Type: Integer
-# Default: 500
-#   Corresponds to size.hard in slapd.conf.
+# @param listen_ldaps
+#   Listen on the default LDAPS port for ``ldaps://`` conenctions
 #
-# [*sizelimit_unchecked*]
-# Type: Integer
-# Default: 500
-#   Corresponds to size.unchecked in slapd.conf.
+# @param custom_options
+#   Command line options that will be placed into the openldap configuration
+#   file
 #
-# [*slapd_shutdown_timeout*]
-# Type: Integer
-# Default: 3
-#   Maximum allowed time to wait for slapd shutdown on 'service ldap
-#   stop' (in seconds).
+#   * These are **not** validated for correct functionality!
 #
-# [*threads*]
-# Type: Integer or 'dynamic'
-# Default: 'dynamic'
-#   Set the number of threads to run. If not set to a number, will be assumed to
-#   be dynamic with 4 * the number of cpus. It also has a minimum of 8 and a max
-#   of 16, unless overridden.
+# @param password_hash
+#   The hash algorithm to use for passwords
 #
-# [*timelimit*]
-# Type: Integer
-# Default: 3600
-#   The default time limit for queries.
-#   If any of the $timelimit_* options are set, this will be
-#   overridden in slapd.conf.
+# @param sizelimit
+#   The default size limit for queries
 #
-# [*timelimit_soft*]
-# Type: Integer
-# Default: 3600
-#   Corresponds to time.soft in slapd.conf.
+#   * If any of the ``$sizelimit_*`` options are set, this will be overridden
+#     in ``slapd.conf``
 #
-# [*timelimit_hard*]
-# Type: Integer
-# Default: 3600
-#   Corresponds to time.hard in slapd.conf.
+# @param sizelimit_soft
+#   Corresponds to ``size.soft`` in ``slapd.conf``
 #
-# [*use_tls*]
-# Type: Boolean
-# Default: true
-#   If true, enable TLS.
+# @param sizelimit_hard
+#   Corresponds to ``size.hard`` in ``slapd.conf``
 #
-# [*use_simp_pki*]
-# Type: Boolean
-# Default: true
-#  If true, use the SIMP PKI module for key management.
+# @param sizelimit_unchecked
+#   Corresponds to ``size.unchecked`` in ``slapd.conf``
 #
-# [*tlsVerifyClient*]
-# Type: One of 'never', 'allow', 'try', 'demand', 'hard', or 'true'
-# Default: 'try'
-#   Do not set this more restrictive than 'try' unless you *really*
-#   know what you are doing and have exensively tested it in your
-#   environment!
+# @param slapd_shutdown_timeout
+#   Maximum allowed time to wait for slapd shutdown (in seconds)
 #
-# [*db_cachesize*]
-# Type: \d+ \d+ \d+
-# Default: '0 268435456 1'
-#   Set the BDB backend cache size. The format is <gigabytes> <bytes>
-#   <segements>.
+# @param threads
+#   Set the number of threads to run
 #
-# [*db_log_autoremove*]
-# Type: Boolean
-# Default: true
-#   This tells the OpenLDAP BDB back end database to automatically
-#   remove all recovery log files when possible.  Setting this to
-#   'true' (the default) means that you are responsible for backing up
-#   your database and that incremental recovery may not be possible!
+#   * ``dynamic`` sets the limit to ``4 * processorcount``
+#   * There is a default minimum of ``8`` and a max of ``16``
 #
-# [*ulimit_max_open_files*]
-# Type: Integer
-# Default: 81920
-#   OpenLDAP requires a great number of open file handles. Set this to
-#   something reasonable for your system. The default should suffice
-#   in most cases.
+# @param timelimit
+#   The default time limit for queries (in seconds)
 #
-# [*enable_logging*]
-# Type: Boolean
-# Default: false
-#   If true, enable the SIMP logging infrastructure
+#   * If any of the ``$timelimit_*`` options are set, this will be overridden
+#     in ``slapd.conf``
 #
-# [*log_to_file*]
-# Type: Boolean
-# Default: false
-#   If true, send the output logs to the file specified in $log_file.
-#   Has no effect if $enable_logging == false.
+# @param timelimit_soft
+#   Corresponds to ``time.soft`` in ``slapd.conf``
 #
-# [*log_file*]
-# Type: Absolute Path
-# Default: '/var/log/slapd.log'
-#   If $enable_logging is true, output all logs to this file via
-#   syslog.
-#   Has no effect if $enable_logging == false.
+# @param timelimit_hard
+#   Corresponds to ``time.hard`` in ``slapd.conf``
 #
-# [*forward_all_logs*]
-# Type: Boolean
-# Default: false
-#   If true, forward all OpenLDAP logs via rsyslog.
-#   Has no effect if $enable_logging == false.
+# @param tlsVerifyClient
+#   TLS client verification level
 #
-# [*enable_iptables*]
-# Type: Boolean
-# Default: true
-#   If true, enable the SIMP iptables for OpenLDAP.
+#   Do not set this more restrictive than 'try' unless you **really** know what
+#   you are doing and have exensively tested it in your environment
 #
-# == Authors
+# @param db_cachesize
+#   Set the BDB backend cache size
 #
-#   * Trevor Vaughan <tvaughan@onyxpoint.com>
+#   * The format is ``<gigabytes> <bytes> <segements>``
+#
+# @param db_log_autoremove
+#   Tells the OpenLDAP BDB back end database to automatically remove all
+#   recovery log files when possible
+#
+#   * Setting this means that you are responsible for backing up your database
+#     and that incremental recovery may not be possible
+#
+# @param ulimit_max_open_files
+#   Set the number of open file handles that OpenLDAP may use
+#
+# @param syslog
+#   Enable the SIMP logging infrastructure
+#
+# @param logrotate
+#   Enable the SIMP log rotate infrastructure
+#
+# @param log_to_file
+#   Send the output logs to the file specified in ``$log_file``
+#
+#   * Has no effect if ``$syslog`` is not set
+#
+# @param log_file
+#   Output all logs to this file via syslog
+#
+#   * Has no effect if ``$log_to_file`` is not set
+#
+# @param forward_all_logs
+#   Forward **all** OpenLDAP logs via syslog
+#
+#   * Has no effect if ``$syslog`` is not set
+#
+# @param firewall
+#   Enable the SIMP firewall
+#
+# @param use_tls
+#   Enable TLS in openldap. By default this will mirror simp_options::pki,
+#   but needs to be distinct as the client and server configurations could vary.
+#
+# @param app_pki_key
+#   Path and name of the private SSL key file
+#
+# @param app_pki_cert
+#   Path and name of the public SSL certificate
+#
+# @param app_pki_ca_dir
+#   Path to the CA.
+#
+# @param app_pki_crl
+#   Path to the CRL file.
+#
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap::server::conf (
-  $rootdn = hiera('ldap::root_dn',"LDAPAdmin,ou=People,${::openldap::base_dn}"),
-  $rootpw = hiera('ldap::root_hash'),
-  $syncdn = hiera('ldap::sync_dn',"LDAPSync,ou=People,${::openldap::base_dn}"),
-  $syncpw = hiera('ldap::sync_hash'),
-  $binddn = hiera('ldap::bind_dn',"hostAuth,ou=Hosts,${::openldap::base_dn}"),
-  $bindpw = hiera('ldap::bind_hash'),
-  $suffix = $::openldap::base_dn,
-  $argsfile = '/var/run/openldap/slapd.args',
-  $audit_transactions = true,
-  $audit_to_syslog = true,
-  $auditlog = '/var/log/slapd.audit',
-  $auditlog_rotate = 'daily',
-  $auditlog_preserve = '7',
-  $authz_policy = 'to',
-  $authz_regexp = [{
-    'match'   => '^uid=([^,]+),.*',
-    'replace' => "uid=\$1,ou=People,${::openldap::base_dn}"
-  }],
-  $bind_anon = false,
-  $cachesize = '10000',
-  $checkpoint = '1024 5',
-  $client_nets = hiera('client_nets'),
-  $concurrency = '',
-  $conn_max_pending = '100',
-  $conn_max_pending_auth = '100',
-  $default_schemas = [
-    'openssh-lpk',
-    'freeradius',
-    'autofs'
-  ],
-  $default_searchbase = '',
-  $disallow = ['bind_anon','tls_2_anon'],
-  $force_log_quick_kill = false,
-  $ditcontentrule = '',
-  $gentlehup = false,
-  $idletimeout = '0',
-  $include_chain_overlay = false,
-  $index_substr_any_step = '2',
-  $index_substr_any_len = '4',
-  $index_substr_if_maxlen = '4',
-  $index_substr_if_minlen = '2',
-  $index_intlen = '4',
-  $listen_ldap = true,
-  $listen_ldapi = true,
-  $listen_ldaps = true,
-  $custom_options = [],
-  $slapd_logLevel = ['stats', 'acl', 'sync'],
-  $password_crypt_salt_format = '%s',
-  $password_hash = 'SSHA',
-  $pidfile = '/var/run/openldap/slapd.pid',
-  $reverse_lookup = false,
-  $schemadn = 'cn=Subschema',
-  $security = 'ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256',
-  $sizelimit = '500',
-  $sizelimit_soft = '500',
-  $sizelimit_hard = '500',
-  $sizelimit_unchecked = '500',
-  $slapd_shutdown_timeout = '3',
-  $sockbuf_max_incoming = '262143',
-  $sockbuf_max_incoming_auth = '4194303',
-  $sortvals = [],
-  $tcp_buffer = '',
-  $threads = 'dynamic',
-  $timelimit = '3600',
-  $timelimit_soft = '3600',
-  $timelimit_hard = '3600',
-  $writetimeout = '0',
-  $use_tls = defined('$::enable_pki') ? { true => $::enable_pki, default => hiera('enable_pki', true) },
-  $use_simp_pki = defined('$::use_simp_pki') ? { true => $::use_simp_pki, default => hiera('use_simp_pki', true) },
-  $tlsCACertificatePath = '/etc/openldap/pki/cacerts',
-  $tlsCertificateFile = "/etc/openldap/pki/public/${::fqdn}.pub",
-  $tlsCertificateKeyFile = "/etc/openldap/pki/private/${::fqdn}.pem",
-  $tlsCipherSuite = 'DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-DSS-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA256:DHE-RSA-AES256-SHA:DHE-DSS-AES256-SHA:AECDH-AES256-SHA:ADH-AES256-GCM-SHA384:ADH-AES256-SHA256:ADH-AES256-SHA:ECDH-RSA-AES256-GCM-SHA384:ECDH-ECDSA-AES256-GCM-SHA384:ECDH-RSA-AES256-SHA384:ECDH-ECDSA-AES256-SHA384:ECDH-RSA-AES256-SHA:ECDH-ECDSA-AES256-SHA:AES256-GCM-SHA384:AES256-SHA256:AES256-SHA',
-  $tlsCRLCheck = 'none',
-  $tlsCRLFile = '',
-  $tlsVerifyClient = 'try',
-  $database = 'bdb',
-  $directory = '/var/lib/ldap',
-  $db_add_content_acl = false,
-  $db_lastmod = true,
-  $db_maxderefdepth = '15',
-  $db_mirrormode = false,
-  $db_monitoring = true,
-  $db_readonly = false,
-  $db_cachesize = '0 268435456 1',
-  $db_max_locks = '3000',
-  $db_max_lock_objects = '1500',
-  $db_max_lock_lockers = '1500',
-  $db_log_region_max_size = '262144',
-  $db_log_buffer_size = '2097152',
-  $db_log_autoremove = true,
-  $ulimit_max_open_files = '81920',
-  $enable_logging  = defined('$::enable_logging') ? { true => $::enable_logging,  default => hiera('enable_logging',true) },
-  $log_to_file = false,
-  $log_file = '/var/log/slapd.log',
-  $forward_all_logs = false,
-  $enable_iptables = defined('$::use_iptables') ? { true => $::use_iptables,  default => hiera('use_iptables',false) },
-) {
-  validate_absolute_path($argsfile)
-  validate_bool($audit_transactions)
-  validate_bool($audit_to_syslog)
-  validate_absolute_path($auditlog)
-  validate_integer($auditlog_preserve)
-  validate_array_member($authz_policy,['none','from','to','any'])
-  validate_array_of_hashes($authz_regexp)
-  validate_bool($bind_anon)
-  validate_integer($cachesize)
-  validate_re($checkpoint,'^\d+\s\d+$')
-  validate_net_list($client_nets)
-  validate_integer($conn_max_pending)
-  validate_integer($conn_max_pending_auth)
-  validate_array($default_schemas)
-  validate_array($disallow)
-  validate_bool($force_log_quick_kill)
-  validate_bool($gentlehup)
-  validate_integer($idletimeout)
-  validate_bool($include_chain_overlay)
-  validate_integer($index_substr_any_step)
-  validate_integer($index_substr_any_len)
-  validate_integer($index_substr_if_maxlen)
-  validate_integer($index_substr_if_minlen)
-  validate_integer($index_intlen)
-  validate_bool($listen_ldap)
-  validate_bool($listen_ldapi)
-  validate_bool($listen_ldaps)
-  validate_array($custom_options)
-  validate_array($slapd_logLevel)
-  validate_array_member($password_hash,['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'])
-  # Cast threads to a string so it can be regex against both
-  # digits and the string 'dynamic'
-  validate_re(to_string($threads),'^(\d+|dynamic)$')
-  validate_absolute_path($pidfile)
-  validate_bool($reverse_lookup)
-  validate_re($sizelimit,'^(\d+|unlimited)$')
-  validate_re($sizelimit_soft,'^(\d+|unlimited)$')
-  validate_re($sizelimit_hard,'^(\d+|unlimited)$')
-  validate_re($sizelimit_unchecked,'^(\d+|unlimited)$')
-  validate_integer($slapd_shutdown_timeout)
-  validate_integer($sockbuf_max_incoming)
-  validate_integer($sockbuf_max_incoming_auth)
-  validate_array($sortvals)
-  if ! empty($tcp_buffer) { validate_integer($tcp_buffer) }
-  validate_re($timelimit,'^(\d+|unlimited)$')
-  validate_re($timelimit_soft,'^(\d+|unlimited)$')
-  validate_re($timelimit_hard,'^(\d+|unlimited)$')
-  validate_integer($writetimeout)
-  validate_absolute_path($tlsCACertificatePath)
-  validate_absolute_path($tlsCertificateFile)
-  validate_absolute_path($tlsCertificateKeyFile)
-  if !empty($tlsCRLFile) {  validate_absolute_path($tlsCRLFile) }
-  validate_array_member($tlsCRLCheck,['none','peer','all'])
-  validate_array_member($tlsVerifyClient,['never','allow','try','demand','hard',true])
-  validate_array_member($database,[
-    'bdb',
-    'config',
-    'dnssrv',
-    'hdb',
-    'ldap',
-    'ldif',
-    'meta',
-    'monitor',
-    'null',
-    'passwd',
-    'perl',
-    'relay',
-    'shell',
-    'sql']
-  )
-  validate_absolute_path($directory)
-  validate_bool($db_add_content_acl)
-  validate_bool($db_lastmod)
-  validate_integer($db_maxderefdepth)
-  validate_bool($db_mirrormode)
-  validate_bool($db_monitoring)
-  validate_bool($db_readonly)
-  validate_re($db_cachesize,'^\d+ \d+ \d+$')
-  validate_integer($db_max_locks)
-  validate_integer($db_max_lock_objects)
-  validate_integer($db_max_lock_lockers)
-  validate_integer($db_log_region_max_size)
-  validate_integer($db_log_buffer_size)
-  validate_bool($db_log_autoremove)
-  validate_integer($ulimit_max_open_files)
-  validate_bool($enable_logging)
-  validate_bool($log_to_file)
-  validate_absolute_path($log_file)
-  validate_bool($forward_all_logs)
-  validate_bool($use_tls)
-  validate_bool($use_simp_pki)
-  validate_bool($enable_iptables)
-
+  Optional[String[1]]                                 $rootpw                     = simplib::lookup('simp_options::ldap::root_hash', { 'default_value' => undef }),
+  Optional[String[1]]                                 $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash', { 'default_value' => undef }),
+  Optional[String[1]]                                 $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
+  String[1]                                           $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}" }),
+  String[1]                                           $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $::openldap::bind_dn }),
+  Optional[String[1]]                                 $rootdn                     = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
+  String[1]                                           $suffix                     = $::openldap::base_dn,
+  Stdlib::Absolutepath                                $argsfile                   = '/var/run/openldap/slapd.args',
+  Boolean                                             $audit_transactions         = true,
+  Boolean                                             $audit_to_syslog            = true,
+  Stdlib::Absolutepath                                $auditlog                   = '/var/log/slapd.audit',
+  Enum['daily','weekly','monthly','yearly']           $auditlog_rotate            = 'daily',
+  Integer[0]                                          $auditlog_preserve          = 7,
+  Enum['none','from','to','any']                      $authz_policy               = 'to',
+  Boolean                                             $bind_anon                  = false,
+  Array[Struct[{
+      match   => String[1],
+      replace => String[1]
+  }] ]                                                $authz_regexp               = [{
+                                                          'match'   => '^uid=([^,]+),.*',
+                                                          'replace' => "uid=\$1,ou=People,${::openldap::base_dn}"
+                                                        }],
+  Integer[1]                                          $cachesize                  = 10000,
+  Pattern['(^\d+\s\d+$|^$)']                          $checkpoint                 = '1024 5',
+  Simplib::Netlist                                    $trusted_nets               = simplib::lookup('simp_options::trusted_nets', { 'default_value' => ['127.0.0.1'] }),
+  Optional[Integer[1]]                                $concurrency                = undef,
+  Integer[1]                                          $conn_max_pending           = 100,
+  Integer[1]                                          $conn_max_pending_auth      = 100,
+  Array[String[1]]                                    $default_schemas            = [ 'openssh-lpk', 'freeradius', 'autofs' ],
+  Optional[String[1]]                                 $default_searchbase         = undef,
+  Array[Openldap::SlapdConf::Disallow]                $disallow                   = ['bind_anon','tls_2_anon'],
+  Boolean                                             $force_log_quick_kill       = false,
+  Optional[String[1]]                                 $ditcontentrule             = undef,
+  Boolean                                             $gentlehup                  = false,
+  Integer[0]                                          $idletimeout                = 0,
+  Boolean                                             $include_chain_overlay      = false,
+  Optional[String[1]]                                 $master                     = $::openldap::_ldap_master,
+  Integer[0]                                          $index_substr_any_step      = 2,
+  Integer[0]                                          $index_substr_any_len       = 4,
+  Integer[0]                                          $index_substr_if_maxlen     = 4,
+  Integer[0]                                          $index_substr_if_minlen     = 2,
+  Integer[0]                                          $index_intlen               = 4,
+  Boolean                                             $listen_ldap                = true,
+  Boolean                                             $listen_ldapi               = true,
+  Boolean                                             $listen_ldaps               = true,
+  Array[String]                                       $custom_options             = [],
+  Array[Openldap::LogLevel]                           $slapd_log_level            = ['stats', 'acl', 'sync'],
+  String[1]                                           $password_crypt_salt_format = '%s',
+  Enum['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'] $password_hash              = 'SSHA',
+  Stdlib::Absolutepath                                $pidfile                    = '/var/run/openldap/slapd.pid',
+  Boolean                                             $reverse_lookup             = false,
+  String[1]                                           $schemadn                   = 'cn=Subschema',
+  Array[String[1]]                                    $security                   = ['ssf=256', 'tls=256', 'update_ssf=256', 'simple_bind=256', 'update_tls=256'],
+  Variant[Enum['unlimited'], Integer[1]]              $sizelimit                  = 500,
+  Optional[Variant[Enum['unlimited'], Integer[1]]]    $sizelimit_soft             = undef,
+  Optional[Variant[Enum['unlimited'], Integer[1]]]    $sizelimit_hard             = undef,
+  Optional[Variant[Enum['unlimited'], Integer[1]]]    $sizelimit_unchecked        = undef,
+  Integer[0]                                          $slapd_shutdown_timeout     = 3,
+  Integer[1]                                          $sockbuf_max_incoming       = 262143,
+  Integer[1]                                          $sockbuf_max_incoming_auth  = 4194303,
+  Array[String]                                       $sortvals                   = [],
+  Optional[Integer]                                   $tcp_buffer                 = undef,
+  Variant[Enum['dynamic'],Integer[1]]                 $threads                    = 'dynamic',
+  Variant[Enum['unlimited'], Integer[1]]              $timelimit                  = 3600,
+  Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_soft             = undef,
+  Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_hard             = undef,
+  Integer[0]                                          $writetimeout               = 0,
+  Variant[Enum['simp'],Boolean]                       $use_tls                    = $::openldap::pki,
+  Stdlib::Absolutepath                                $app_pki_ca_dir             = $::openldap::app_pki_ca_dir,
+  Stdlib::Absolutepath                                $app_pki_cert               = $::openldap::app_pki_cert,
+  Stdlib::Absolutepath                                $app_pki_key                = $::openldap::app_pki_key,
+  Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $::openldap::app_pki_crl,
+  Array[String[1]]                                    $tls_cipher_suite           = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
+  Enum['none','peer','all']                           $tls_crl_check              = 'none',
+  # lint:ignore:quoted_booleans
+  Enum['never','allow','try','demand','hard','true']  $tls_verify_client          = 'allow',
+  # lint:endignore
+  String[1]                                           $database                   = 'bdb',
+  Stdlib::Absolutepath                                $directory                  = '/var/lib/ldap',
+  Boolean                                             $db_add_content_acl         = false,
+  Boolean                                             $db_lastmod                 = true,
+  Integer[1]                                          $db_maxderefdepth           = 15,
+  Boolean                                             $db_mirrormode              = false,
+  Boolean                                             $db_monitoring              = true,
+  Boolean                                             $db_readonly                = false,
+  Pattern['^\d+\s\d+\s\d+$']                          $db_cachesize               = '0 268435456 1',
+  Integer[1]                                          $db_max_locks               = 3000,
+  Integer[1]                                          $db_max_lock_objects        = 1500,
+  Integer[1]                                          $db_max_lock_lockers        = 1500,
+  Integer[1]                                          $db_log_region_max_size     = 262144,
+  Integer[1]                                          $db_log_buffer_size         = 2097152,
+  Boolean                                             $db_log_autoremove          = true,
+  Integer[1024]                                       $ulimit_max_open_files      = 81920,
+  Boolean                                             $syslog                     = simplib::lookup('simp_options::syslog', {'default_value' => false }),
+  Boolean                                             $logrotate                  = simplib::lookup('simp_options::logrotate', {'default_value' => false }),
+  Boolean                                             $log_to_file                = false,
+  Stdlib::Absolutepath                                $log_file                   = '/var/log/slapd.log',
+  Boolean                                             $forward_all_logs           = false,
+  Boolean                                             $firewall                   = simplib::lookup('simp_options::firewall', {'default_value' => false }),
+) inherits ::openldap {
 
   include '::openldap::server::conf::default_ldif'
 
-  if $use_tls and $use_simp_pki {
-    pki::copy { '/etc/openldap':
-      group  => 'ldap',
-      notify => Class['openldap::server::service']
-    }
-  }
-
-  if $::hardwaremodel == 'x86_64' {
-      $modulepath = ['/usr/lib64/openldap','/usr/lib/openldap']
-  }
-  else {
-      $modulepath = ['/usr/lib/openldap']
-  }
-
   if $force_log_quick_kill {
-    include '::simplib::incron'
+    include '::incron'
 
-    simplib::incron::add_system_table { 'nuke_openldap_log_files':
+    incron::system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'
     }
-  }
-
-  file { $modulepath:
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    recurse => true
   }
 
   file { '/etc/openldap/slapd.conf':
@@ -521,7 +336,7 @@ class openldap::server::conf (
     owner   => 'root',
     group   => 'ldap',
     mode    => '0640',
-    content => template('openldap/etc/openldap/slapd.conf.erb'),
+    content => template("${module_name}/etc/openldap/slapd.conf.erb"),
     notify  => Class['openldap::server::service']
   }
 
@@ -530,17 +345,17 @@ class openldap::server::conf (
     owner   => 'root',
     group   => 'ldap',
     mode    => '0640',
-    content => template('openldap/etc/openldap/DB_CONFIG.erb'),
+    content => template("${module_name}/etc/openldap/DB_CONFIG.erb"),
     notify  => Class['openldap::server::service']
   }
 
-  if ($::operatingsystem in ['RedHat','CentOS']) and (versioncmp($::operatingsystemmajrelease, '6') > 0) {
+  if ($facts['os']['name'] in ['RedHat','CentOS']) and (versioncmp($facts['os']['release']['major'], '6') > 0) {
     file { '/etc/sysconfig/slapd':
       ensure  => 'file',
       owner   => 'root',
       group   => 'root',
       mode    => '0640',
-      content => template('openldap/etc/sysconfig/slapd.erb'),
+      content => template("${module_name}/etc/sysconfig/slapd.erb"),
       notify  => Class['openldap::server::service']
     }
   }
@@ -550,32 +365,31 @@ class openldap::server::conf (
       owner   => 'root',
       group   => 'root',
       mode    => '0640',
-      content => template('openldap/etc/sysconfig/ldap.erb'),
+      content => template("${module_name}/etc/sysconfig/ldap.erb"),
       notify  => Class['openldap::server::service']
     }
   }
 
-  # IPTables
-  if $enable_iptables {
+  if $firewall {
     include '::iptables'
 
     if $listen_ldap or $listen_ldaps {
-      iptables::add_tcp_stateful_listen { 'allow_ldap':
-        order       => '11',
-        client_nets => $client_nets,
-        dports      => 'ldap'
+      iptables::listen::tcp_stateful { 'allow_ldap':
+        order        => 11,
+        trusted_nets => $trusted_nets,
+        dports       => 389
       }
     }
     if $listen_ldaps {
-      iptables::add_tcp_stateful_listen { 'allow_ldaps':
-        order       => '11',
-        client_nets => $client_nets,
-        dports      => 'ldaps'
+      iptables::listen::tcp_stateful { 'allow_ldaps':
+        order        => 11,
+        trusted_nets => $trusted_nets,
+        dports       => 636
       }
     }
   }
 
-  if $enable_logging or hiera('use_simp_logging',false) {
+  if $syslog {
     include '::rsyslog'
 
     if $audit_transactions {
@@ -588,21 +402,20 @@ class openldap::server::conf (
         mode   => '0750'
       }
 
-      logrotate::add { 'slapd_audit_log':
-        log_files     => $auditlog,
+      logrotate::rule { 'slapd_audit_log':
+        log_files     => [ $auditlog ],
         create        => '0640 ldap ldap',
         rotate_period => $auditlog_rotate,
         rotate        => $auditlog_preserve
       }
 
-      openldap::server::dynamic_includes::add { 'auditlog':
-        order   => '1000',
-        content => template('openldap/slapo/auditlog.erb'),
+      openldap::server::dynamic_include { 'auditlog':
+        order   => 1000,
+        content => template("${module_name}/slapo/auditlog.erb"),
         require => File[$auditlog]
       }
 
       if $audit_to_syslog {
-        include '::rsyslog'
         rsyslog::rule::data_source { 'openldap_audit':
           rule    => "
   input(type=\"imfile\"
@@ -628,20 +441,22 @@ class openldap::server::conf (
 
       # These are quite heavyweight so we're moving them up in the stack.
       rsyslog::rule::local { '05_openldap_local':
-        rule            => 'local4.*',
-        target_log_file => "/var/log/${log_file}"
+        rule            => "prifilt('local4.*')",
+        target_log_file => $log_file
       }
 
-      logrotate::add { 'slapd':
-        log_files  => [ $log_file ],
-        missingok  => true,
-        lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
+      if $logrotate {
+        logrotate::rule { 'slapd':
+          log_files  => [ $log_file ],
+          missingok  => true,
+          lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
+        }
       }
     }
 
     if $forward_all_logs {
       rsyslog::rule::remote { '06_openldap_remote':
-        rule            => 'if $syslogfacility-text == \'local4\' then',
+        rule            => '$syslogfacility-text == \'local4\'',
         stop_processing => true
       }
     }

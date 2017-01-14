@@ -1,32 +1,41 @@
 HOSTS:
-  server:
+  server-el7:
     roles:
       - default
       - server
     yum_repos:
       simp:
-        url: https://dl.bintray.com/simp/5.1.X
+        baseurl: https://packagecloud.io/simp-project/6_X_Alpha_Dependencies/el/7/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
     platform:   el-7-x86_64
-    box:        puppetlabs/centos-7.0-64-nocm
-    box_url:    https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+    box:        centos/7
     hypervisor: vagrant
-  # slave1:
+  server-el6:
+    roles:
+      - server
+    yum_repos:
+      simp:
+        baseurl: https://packagecloud.io/simp-project/6_X_Alpha_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+    platform:   el-6-x86_64
+    box:        centos/6
+    hypervisor: vagrant
+  # slave-el7:
   #   roles:
   #     - slave
   #   platform:   el-7-x86_64
-  #   box:        puppetlabs/centos-7.0-64-nocm
-  #   box_url:    https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+  #   box:        centos/7
   #   hypervisor: vagrant
-  # slave2:
+  # slave-el6:
   #   roles:
   #     - slave
-  #   platform:   el-7-x86_64
-  #   box:        puppetlabs/centos-7.0-64-nocm
-  #   box_url:    https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+  #   platform:   el-6-x86_64
+  #   box:        centos/6
   #   hypervisor: vagrant
 CONFIG:
   log_level:       verbose
-  type:            foss
-  vagrant_mem: 256
+  type:            aio
+  vagrant_memsize: 256
+  synced_folder:   disabled

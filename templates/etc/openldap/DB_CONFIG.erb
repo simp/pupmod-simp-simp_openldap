@@ -6,6 +6,6 @@ set_lg_dir logs
 set_lk_max_locks <%= @db_max_locks %>
 set_lk_max_objects <%= @db_max_lock_objects %>
 set_lk_max_lockers <%= @db_max_lock_lockers %>
-<% if @db_log_autoremove then -%>
+<% if @db_log_autoremove -%>
 set_flags DB_LOG_AUTOREMOVE
 <% end -%>

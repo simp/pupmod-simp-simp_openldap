@@ -5,6 +5,10 @@ describe 'openldap::slapo::ppolicy' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
+          facts[:server_facts] = {
+            :servername => facts[:fqdn],
+            :serverip   => facts[:ipaddress]
+          }
           facts
         end
 
@@ -13,11 +17,9 @@ describe 'openldap::slapo::ppolicy' do
           :use_cracklib => true
         }}
 
-        it { is_expected.to create_class('openldap::server::dynamic_includes') }
-
         it { is_expected.to create_package('simp-ppolicy-check-password') }
 
-        it { is_expected.to create_openldap__server__dynamic_includes__add('ppolicy').with_content(
+        it { is_expected.to create_openldap__server__dynamic_include('ppolicy').with_content(
           /ppolicy_default\s+"cn=default,ou=pwpolicies,#{params[:suffix]}"/
         )}
 

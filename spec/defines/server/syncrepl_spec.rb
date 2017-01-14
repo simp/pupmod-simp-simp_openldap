@@ -4,7 +4,15 @@ describe 'openldap::server::syncrepl' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
+        let(:pre_condition) {
+          'class { "openldap": is_server => true }'
+        }
+
         let(:facts) do
+          facts[:server_facts] = {
+            :servername => facts[:fqdn],
+            :serverip   => facts[:ipaddress]
+          }
           facts
         end
 
@@ -12,15 +20,13 @@ describe 'openldap::server::syncrepl' do
 
         let(:params) {{ :syncrepl_retry => '3 10' }}
 
-        it { should create_class('openldap::server::dynamic_includes') }
-
-        it { should compile.with_all_deps }
+        it { is_expected.to compile.with_all_deps }
 
         it {
-          should create_openldap__server__dynamic_includes__add('syncrepl').with_content(
+          is_expected.to create_openldap__server__dynamic_include('syncrepl').with_content(
             /syncrepl rid=#{params[:rid]}/
           )
-          should create_openldap__server__dynamic_includes__add('syncrepl').with_content(
+          is_expected.to create_openldap__server__dynamic_include('syncrepl').with_content(
             /retry="#{params[:syncrepl_retry]}"/
           )
         }
@@ -30,7 +36,7 @@ describe 'openldap::server::syncrepl' do
 
           it do
             expect {
-              should compile.with_all_deps
+              is_expected.to compile.with_all_deps
             }.to raise_error(/" 3" does not match/)
           end
         end

@@ -1,46 +1,83 @@
+# Manage access control entries in ``slapd.access``
 #
-# == Class: openldap::server::access
+# Remember that **order matters**! Entries will be listed in alphanumeric order
+# after the ``$order`` parameter is processed.
 #
-# This is a helper class for adding access control rules to
-# /etc/openldap/slapd.access.
+# @see slapd.access(5)
 #
-# This whole thing needs to be rewritten as a native type.
+# @param name
+#   The unique name of the dynamic include. This does become part of the sort
+#   order so be careful!
 #
-# == Authors:
+# @param comment
+#   An arbitrary comment that will be included above the entry
 #
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+#   * You do not need to include the leading `#`
 #
-class openldap::server::access {
-  include '::openldap::server'
+# @param content
+#   the **entire* content under ``$what``
+#
+#   * If you do not specify this, ``$who`` is a required variable
+#   * If you do specify this, ``$who`` will be ignored
+#
+# @param order
+#   The default sort order of the entry to be added
+#
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+#
+define openldap::server::access (
+  String           $what,
+  Optional[String] $comment = undef,
+  Optional[String] $who     = undef,
+  Optional[String] $access  = undef,
+  Optional[String] $control = undef,
+  Optional[String] $content = undef,
+  Integer          $order   = 1000
+) {
+  ensure_resource('concat', '/etc/openldap/slapd.access', {
+    owner          => 'root',
+    group          => 'ldap',
+    mode           => '0640',
+    ensure_newline => true,
+    warn           => true,
+    notify         => Class['openldap::server::service']
+  })
 
-  $fragdir = simpcat_fragmentdir('slapd_access')
-
-  simpcat_build { 'slapd_access':
-    order  => '*.inc',
-    target => "${fragdir}_slapd.access",
-    notify => Exec['postprocess_slapd.access']
+  unless ($who or $content) {
+    fail('You must specify "$who" if you are not specifying "$content"')
   }
 
-  exec { 'postprocess_slapd.access':
-    command => "/usr/local/sbin/simp/build_slapd_access.rb ${fragdir}_slapd.access",
-    unless  => "/usr/bin/diff -q ${fragdir}_slapd.access.out /etc/openldap/slapd.access",
-    require => File['/usr/local/sbin/simp/build_slapd_access.rb']
+  if $content {
+    $_content = "access to ${what} ${content}"
+  }
+  else {
+    if $comment {
+      if $comment =~ Pattern['^#'] {
+        $_comment = "\n${comment}\n"
+      }
+      else {
+        $_comment = "\n# ${comment}\n"
+      }
+    }
+    else {
+      $_comment = ''
+    }
+
+    $_optional_content = join(map([$access, $control]) |$x| {
+      if $x {
+        " ${x}"
+      }
+      else {
+        ''
+      }
+    }, '')
+
+    $_content = "${_comment}access to ${what}\n    by ${who}${_optional_content}"
   }
 
-  file { '/usr/local/sbin/simp/build_slapd_access.rb':
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0750',
-    content => template('openldap/build_slapd_access.rb.erb')
-  }
-
-  file { '/etc/openldap/slapd.access':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'ldap',
-    mode    => '0640',
-    require => Exec['postprocess_slapd.access'],
-    notify  => Class['openldap::server::service'],
-    source  => "file://${fragdir}_slapd.access.out"
+  concat::fragment { "openldap_access_${name}":
+    target  => '/etc/openldap/slapd.access',
+    content => $_content,
+    order   => $order
   }
 }

@@ -1,7 +1,7 @@
 <%
-  if @listen_ldap then
+  if @listen_ldap
     listen_ldap = 'yes'
-  elsif not ( @listen_ldap and @listen_ldapi and @listen_ldaps ) then
+  elsif !( @listen_ldap && @listen_ldapi && @listen_ldaps )
     listen_ldap = 'yes'
   else
     listen_ldap = 'no'

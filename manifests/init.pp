@@ -1,71 +1,113 @@
-# == Class: openldap
+# This class provides a common base for both the client and server portions of
+# an OpenLDAP-based sysetm
 #
-# This class provides a common base for both the client and server
-# portions of an OpenLDAP-based sysetm.
+# @param ldap_uri
+#   It is recommended that you make the master the last entry in this array
 #
-# == Parameters
+#   * Will default to ``["ldap://${server_facts['servername']}"]`` if not set
 #
-# [*ldap_master_uri*]
-# Type: LDAP URI
-#   This is the LDAP master if there is one.
+# @param base_dn
+#   The base DN of the LDAP entries
 #
-# [*ldap_uri*]
-# Type: Array of LDAP servers
-#   It is recommended that you make the master the last entry in this
-#   array.
+# @param bind_dn
+#   The use that should be used to bind to the LDAP server
 #
-# [*is_server*]
-# Type: Boolean
-# Default: false
-#   Set this if you want to create an OpenLDAP server on your node.
+# @param ldap_master
+#   The LDAP Master server
 #
-# [*use_nscd*]
-# Type: Boolean
-# Default: true
-#   Only appiles to *client* systems
+#   * Will default to the **last** entry in ``ldap_uri`` if not set
 #
-#   Whether or not to use NSCD in the installation instead of SSSD. If
-#   '$use_sssd = true' then this will not be referenced.
+# @param is_server
+#   Set this if you want to create an OpenLDAP server on your node
 #
-# [*use_sssd*]
-# Type: Boolean
-# Default: false if EL<7, true otherwise
-#   Only appiles to *client* systems
+# @param sssd
+#   Whether or not to use SSSD in the installation
 #
-#   Whether or not to use SSSD in the installation.
-#   There are issues where SSSD will allow a login, even if the user's password
-#   has expire, if the user has a valid SSH key. However, in EL7+, there are
-#   issues with nscd and nslcd which can lock users our of the system when
-#   using LDAP.
+# @param pki
+#   * If 'simp', include SIMP's pki module and use pki::copy to manage
+#     application certs in /etc/pki/simp_apps/openldap/x509
+#   * If true, do *not* include SIMP's pki module, but still use pki::copy
+#     to manage certs in /etc/pki/simp_apps/openldap/x509
+#   * If false, do not include SIMP's pki module and do not use pki::copy
+#     to manage certs.  You will need to appropriately assign a subset of:
+#     * app_pki_dir
+#     * app_pki_key
+#     * app_pki_cert
+#     * app_pki_ca
+#     * app_pki_ca_dir
 #
-# == Hiera Variables
+# @param app_pki_external_source
+#   * If pki = 'simp' or true, this is the directory from which certs will be
+#     copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
 #
-# [*ldap::base_dn*]
-#   The Base DN of the LDAP server.
+#   * If pki = false, this variable has no effect.
 #
-# [*ldap::bind_dn*]
-#   The credentials to use when binding to the LDAP server.
+# @param app_pki_dir
+#   This variable controls the basepath of $app_pki_key, $app_pki_cert,
+#   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
+#   It defaults to /etc/pki/simp_apps/openldap/x509.
 #
-# [*ldap::master*]
-#   The LDAP Master (optional)
+# @param app_pki_key
+#   Path and name of the private SSL key file.
 #
-# [*ldap::uri*]
-#   An Array of OpenLDAP servers in URI form (ldap://server)
+# @param app_pki_cert
+#   Path and name of the public SSL certificate.
 #
-# == Authors
+# @param app_pki_ca_dir
+#   Path to the CA.
 #
-#   * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @param app_pki_crl
+#   Path to the CRL file.
+#
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class openldap (
-  $base_dn = hiera('ldap::base_dn'),
-  $bind_dn = hiera('ldap::bind_dn'),
-  $ldap_master = hiera('ldap::master',''),
-  $ldap_uri = hiera('ldap::uri'),
-  $is_server = false,
-  $use_nscd = $::openldap::params::use_nscd,
-  $use_sssd = $::openldap::params::use_sssd
-) inherits ::openldap::params {
-  if $is_server { include '::openldap::server' }
+  Array[Simplib::URI]            $ldap_uri                = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
+  String                         $base_dn                 = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => simplib::ldap::domain_to_dn() }),
+  String                         $bind_dn                 = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', simplib::ldap::domain_to_dn()) }),
+  String                         $ldap_master             = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
+  Boolean                        $is_server               = false,
+  Boolean                        $sssd                    = simplib::lookup('simp_options::sssd', { 'default_value' => false }),
+  Variant[Boolean, Enum['simp']] $pki                     = simplib::lookup('simp_options::pki', { 'default_value' => false }),
+  Stdlib::Absolutepath           $app_pki_external_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
+  Stdlib::Absolutepath           $app_pki_dir             = '/etc/pki/simp_apps/openldap/x509',
+  Stdlib::AbsolutePath           $app_pki_cert            = "${app_pki_dir}/public/${facts['fqdn']}.pub",
+  Stdlib::AbsolutePath           $app_pki_key             = "${app_pki_dir}/private/${facts['fqdn']}.pem",
+  Stdlib::AbsolutePath           $app_pki_ca_dir          = "${app_pki_dir}/cacerts",
+  Optional[Stdlib::Absolutepath] $app_pki_crl             = undef,
+) {
+  if $ldap_uri {
+    $_ldap_uri = $ldap_uri
+  }
+  elsif $server_facts {
+    $_ldap_uri = ["ldap://${server_facts['servername']}"]
+  }
+  else {
+    fail('You must provide a value for `$ldap_uri`')
+  }
 
-  validate_bool($is_server)
+  if $ldap_master {
+    $_ldap_master = $ldap_master
+  }
+  else {
+    $_ldap_master = $_ldap_uri[-1]
+  }
+
+  if $is_server {
+    contain '::openldap::server'
+
+    if $pki {
+      Class['pki::copy'] ~> Class['openldap::server::service']
+    }
+  }
+
+  contain '::openldap::client'
+
+  if $pki {
+    pki::copy { 'openldap':
+      source => $app_pki_external_source,
+      pki    => $pki,
+      group  => 'ldap'
+    }
+  }
 }

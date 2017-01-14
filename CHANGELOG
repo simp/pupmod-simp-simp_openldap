@@ -1,3 +1,12 @@
+* Thu Jan 12 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.0-0
+- Updated pki scheme, application certs now managed in
+  /etc/pki/simp_apps/openldap/x509
+
+* Mon Dec 19 2016 Jeanne Greulich <jgreulich.simp@onyxpoint.com> - 6.0.0-0
+- Updated global catalysts
+- Strong typed variables
+- General housekeeping
+
 * Wed Nov 23 2016 Jeanne Greulich <jgreulich.simp@onyxpoint.com> - 5.0.1-0
 - update requirement versions
 

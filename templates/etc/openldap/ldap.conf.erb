@@ -1,16 +1,16 @@
 URI                 <%= Array(@uri).join(' ') %>
-BASE                <%= @base %>
+BASE                <%= @base_dn %>
 BINDDN              <%= @bind_dn %>
 REFERRALS           <%= @referrals %>
 SIZELIMIT           <%= @sizelimit %>
 TIMELIMIT           <%= @timelimit %>
 DEREF               <%= @deref %>
 <% if @use_tls -%>
-TLS_CACERTDIR       <%= @tls_cacertdir %>
+TLS_CACERTDIR       <%= @app_pki_ca_dir %>
 TLS_CIPHER_SUITE    <%= Array(@tls_cipher_suite).join(':') %>
 TLS_REQCERT         <%= @tls_reqcert %>
 TLS_CRLCHECK        <%= @tls_crlcheck %>
-<%   if not @tls_crlfile.empty? -%>
-TLS_CRLFILE         <%= @tls_crlfile %>
+<%   if @app_pki_crl -%>
+TLS_CRLFILE         <%= @app_pki_crl %>
 <%   end -%>
 <% end -%>

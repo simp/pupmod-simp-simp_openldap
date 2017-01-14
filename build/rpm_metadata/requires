@@ -13,7 +13,7 @@ Requires: pupmod-simp-rsyslog >= 7.0.0-0
 Requires: pupmod-simp-simpcat < 7.0.0-0
 Requires: pupmod-simp-simpcat >= 6.0.0-0
 Requires: pupmod-simp-simplib < 4.0.0-0
-Requires: pupmod-simp-simplib >= 3.1.0-0
+Requires: pupmod-simp-simplib >= 3.2.0-0
 Requires: pupmod-simp-sssd < 7.0.0-0
 Requires: pupmod-simp-sssd >= 6.0.0-0
 Requires: pupmod-simp-tcpwrappers < 7.0.0-0

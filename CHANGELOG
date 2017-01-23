@@ -1,3 +1,6 @@
+* Mon Jan 23 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.0-0
+- Calls to rsyslog::rule no longer contain 'if' logic
+
 * Thu Jan 12 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.0-0
 - Updated pki scheme, application certs now managed in
   /etc/pki/simp_apps/openldap/x509

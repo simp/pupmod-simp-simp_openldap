@@ -431,7 +431,7 @@ class openldap::server::conf (
         rsyslog::rule::drop { '1_drop_openldap_passwords':
           rule => '
   # Drop passwords from OpenLDAP audit logs.
-  if $syslogtag == \'slapd_audit\' and $msg contains \'Password:: \''
+  $syslogtag == \'slapd_audit\' and $msg contains \'Password:: \''
         }
       }
     }

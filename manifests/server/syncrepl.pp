@@ -8,7 +8,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-define openldap::server::syncrepl (
+define simp_openldap::server::syncrepl (
   String[1]                               $syncrepl_retry = '60 10 600 +',
   Optional[String[1]]                     $provider       = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
   Optional[String[1]]                     $searchbase     = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef }),
@@ -51,7 +51,7 @@ define openldap::server::syncrepl (
 
   validate_re_array(split($syncrepl_retry,'(\d+ \d+)'),'^(\s*(\d+ (\d+|\+)\s*)|\s*)$')
 
-  openldap::server::dynamic_include { 'syncrepl':
+  simp_openldap::server::dynamic_include { 'syncrepl':
     content => template("${module_name}/syncrepl.erb")
   }
 }

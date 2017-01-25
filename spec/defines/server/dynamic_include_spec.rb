@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe 'openldap::server::dynamic_include' do
+describe 'simp_openldap::server::dynamic_include' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:pre_condition) {
-          'class { "openldap": is_server => true }'
+          'class { "simp_openldap": is_server => true }'
         }
 
         let(:facts) do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'openldap::slapo::ppolicy' do
+describe 'simp_openldap::slapo::ppolicy' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -19,7 +19,7 @@ describe 'openldap::slapo::ppolicy' do
 
         it { is_expected.to create_package('simp-ppolicy-check-password') }
 
-        it { is_expected.to create_openldap__server__dynamic_include('ppolicy').with_content(
+        it { is_expected.to create_simp_openldap__server__dynamic_include('ppolicy').with_content(
           /ppolicy_default\s+"cn=default,ou=pwpolicies,#{params[:suffix]}"/
         )}
 

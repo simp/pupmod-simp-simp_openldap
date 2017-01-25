@@ -5,12 +5,12 @@
 # @param slapd_svc
 #   The actual service name
 #
-class openldap::server::service (
+class simp_openldap::server::service (
   String[1] $slapd_svc = 'slapd'
 ){
   assert_private()
 
-  include '::openldap::server::fix_bad_upgrade'
+  include '::simp_openldap::server::fix_bad_upgrade'
 
   # This is a very crude attempt to not bootstrap if the executing node is a
   # slave node. Bootstrapping slave nodes causes the ``administrators`` group
@@ -49,6 +49,6 @@ class openldap::server::service (
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => Class['openldap::server::fix_bad_upgrade']
+    require    => Class['simp_openldap::server::fix_bad_upgrade']
   }
 }

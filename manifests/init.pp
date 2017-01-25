@@ -61,7 +61,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-class openldap (
+class simp_openldap (
   Array[Simplib::URI]            $ldap_uri                = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
   String                         $base_dn                 = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => simplib::ldap::domain_to_dn() }),
   String                         $bind_dn                 = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', simplib::ldap::domain_to_dn()) }),
@@ -94,14 +94,14 @@ class openldap (
   }
 
   if $is_server {
-    contain '::openldap::server'
+    contain '::simp_openldap::server'
 
     if $pki {
-      Class['pki::copy'] ~> Class['openldap::server::service']
+      Class['pki::copy'] ~> Class['simp_openldap::server::service']
     }
   }
 
-  contain '::openldap::client'
+  contain '::simp_openldap::client'
 
   if $pki {
     pki::copy { 'openldap':

@@ -62,15 +62,15 @@ ldaprc_content = {
 
 shared_examples_for "a ldap config generator" do
   it { is_expected.to compile.with_all_deps }
-  it { is_expected.to create_class('openldap') }
-  it { is_expected.to create_class('openldap::client') }
+  it { is_expected.to create_class('simp_openldap') }
+  it { is_expected.to create_class('simp_openldap::client') }
   it { is_expected.to create_file('/etc/openldap/ldap.conf').with_content( ldap_conf_content[content_option] ) }
   it { is_expected.to create_file('/root/.ldaprc').with_content( ldaprc_content[content_option] ) }
   it { is_expected.to create_package('nss-pam-ldapd') }
   it { is_expected.to create_package("openldap-clients.#{facts[:hardwaremodel]}") }
 end
 
-describe 'openldap::client' do
+describe 'simp_openldap::client' do
 
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|

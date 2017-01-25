@@ -7,7 +7,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-class openldap::server::install (
+class simp_openldap::server::install (
   Enum['latest','installed','present'] $ensure = 'latest'
 ){
   package { 'openldap': ensure => $ensure }

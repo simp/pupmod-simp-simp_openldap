@@ -1,9 +1,9 @@
 require 'spec_helper_acceptance'
 require 'erb'
 
-test_name 'openldap class'
+test_name 'simp_openldap class'
 
-describe 'openldap class' do
+describe 'simp_openldap class' do
   before(:context) do
     hosts.each do |host|
       interfaces = fact_on(host, 'interfaces').strip.split(',')
@@ -24,12 +24,12 @@ describe 'openldap class' do
 
   let(:server_manifest) {
     <<-EOS
-      include 'openldap::server'
+      include 'simp_openldap::server'
     EOS
   }
 
   servers.each do |server|
-    context "openldap::server #{server}" do
+    context "simp_openldap::server #{server}" do
       let(:server_fqdn) { fact_on(server, 'fqdn') }
       let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
 

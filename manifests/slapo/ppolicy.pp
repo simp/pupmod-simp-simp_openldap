@@ -37,8 +37,8 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-class openldap::slapo::ppolicy (
-  Optional[String[1]] $suffix                    = $::openldap::base_dn,
+class simp_openldap::slapo::ppolicy (
+  Optional[String[1]] $suffix                    = $::simp_openldap::base_dn,
   Optional[String[1]] $ppolicy_default           = undef,
   Optional[String[1]] $ppolicy_hash_cleartext    = undef,
   Optional[String[1]] $ppolicy_use_lockout       = undef,
@@ -49,12 +49,12 @@ class openldap::slapo::ppolicy (
   Integer[0]          $min_digit                 = 0,
   Integer[0]          $min_punct                 = 0,
   Integer[0]          $max_consecutive_per_class = 3
-) inherits ::openldap {
+) inherits ::simp_openldap {
   $_check_password = 'simp_check_password'
 
   package { 'simp-ppolicy-check-password': ensure => 'latest' }
 
-  openldap::server::dynamic_include { 'ppolicy':
+  simp_openldap::server::dynamic_include { 'ppolicy':
     order   => 1000,
     content => template("${module_name}/slapo/ppolicy.erb")
   }

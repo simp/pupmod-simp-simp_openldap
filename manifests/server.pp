@@ -12,7 +12,7 @@
 # ``/etc/openldap/puppet_bootstrapped.lock`` since this is in place as a
 # protective measure.
 #
-# Please look at the ``openldap::server::access`` stanzas below so that
+# Please look at the ``simp_openldap::server::access`` stanzas below so that
 # you can understand how to modify the access controls via puppet.
 #
 # The default access settings start at ``1000`` and go through ``3000`` except
@@ -35,7 +35,7 @@
 #   to this server
 #
 #   * Class variables will need to be set according to the
-#     ``openldap::slapo::syncprov`` class requirements
+#     ``simp_openldap::slapo::syncprov`` class requirements
 #
 # @param sync_dn
 #   The DN that is allowed to synchronize from the LDAP server
@@ -48,45 +48,45 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-class openldap::server (
+class simp_openldap::server (
   Boolean $schema_sync   = true,
   String  $schema_source = "puppet:///modules/${module_name}/etc/openldap/schema",
   Boolean $allow_sync    = true,
-  String  $sync_dn       = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::openldap::base_dn}" }),
+  String  $sync_dn       = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::simp_openldap::base_dn}" }),
   Boolean $use_ppolicy   = true,
   Boolean $tcpwrappers   = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })
-) inherits ::openldap {
+) inherits ::simp_openldap {
 
-  include '::openldap::client'
-  contain '::openldap::server::install'
-  contain '::openldap::server::service'
+  include '::simp_openldap::client'
+  contain '::simp_openldap::server::install'
+  contain '::simp_openldap::server::service'
 
   if $allow_sync {
-    contain '::openldap::slapo::syncprov'
+    contain '::simp_openldap::slapo::syncprov'
   }
 
   if $use_ppolicy {
-    contain '::openldap::slapo::ppolicy'
+    contain '::simp_openldap::slapo::ppolicy'
   }
 
   # This needs to come after ppolicy and syncprov since some templates
   # use the values.
-  contain '::openldap::server::conf'
+  contain '::simp_openldap::server::conf'
 
-  Class['openldap::server::install'] ~> Class['openldap::server::service']
-  Class['openldap::server::conf'] ~> Class['openldap::server::service']
+  Class['simp_openldap::server::install'] ~> Class['simp_openldap::server::service']
+  Class['simp_openldap::server::conf'] ~> Class['simp_openldap::server::service']
 
   file { '/etc/openldap':
     owner   => 'root',
     group   => 'ldap',
     recurse => true,
-    require => Class['openldap::server::install']
+    require => Class['simp_openldap::server::install']
   }
 
   file { '/var/lib/ldap/DB_CONFIG':
     ensure  => 'symlink',
     target  => '/etc/openldap/DB_CONFIG',
-    require => Class['openldap::server::install']
+    require => Class['simp_openldap::server::install']
   }
 
   if $schema_sync {
@@ -98,7 +98,7 @@ class openldap::server (
       mode    => '0644',
       recurse => true,
       source  => $schema_source,
-      require => Class['openldap::server::install']
+      require => Class['simp_openldap::server::install']
     }
   }
   else {
@@ -107,7 +107,7 @@ class openldap::server (
       group   => 'ldap',
       mode    => '0644',
       recurse => true,
-      require => Class['openldap::server::install']
+      require => Class['simp_openldap::server::install']
     }
   }
 
@@ -116,14 +116,14 @@ class openldap::server (
     owner   => 'ldap',
     group   => 'ldap',
     mode    => '0660',
-    require => Class['openldap::server::install']
+    require => Class['simp_openldap::server::install']
   }
 
   file { '/var/log/slapd.log':
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    require => Class['openldap::server::install']
+    require => Class['simp_openldap::server::install']
   }
 
   file { '/usr/local/sbin/ldap_bootstrap_check.sh':
@@ -146,7 +146,7 @@ class openldap::server (
     ensure    => 'present',
     allowdupe => false,
     gid       => 55,
-    require   => Class['openldap::server::install']
+    require   => Class['simp_openldap::server::install']
   }
 
   user { 'ldap':
@@ -157,17 +157,17 @@ class openldap::server (
     home       => '/var/lib/ldap',
     membership => 'inclusive',
     shell      => '/sbin/nologin',
-    require    => Class['openldap::server::install'],
-    notify     => Class['openldap::server::service']
+    require    => Class['simp_openldap::server::install'],
+    notify     => Class['simp_openldap::server::service']
   }
 
   # This adds the default entries to LDAP in a wide spacing for other users
   # to usefully add their own materials.
-  openldap::server::access { 'simp_userpassword_access':
+  simp_openldap::server::access { 'simp_userpassword_access':
     what    =>  'attrs=userPassword',
     content => "
       by dn.exact=\"${sync_dn}\" read
-      by dn.exact=\"${::openldap::bind_dn}\" auth
+      by dn.exact=\"${::simp_openldap::bind_dn}\" auth
       by anonymous auth
       by self write
       by * none",
@@ -179,18 +179,18 @@ class openldap::server (
   # password policy in place then this is completely mitigated and,
   # if you find a discrepancy, someone was trying to do bad things
   # on your system.
-  openldap::server::access { 'simp_shadowlastchange_access':
+  simp_openldap::server::access { 'simp_shadowlastchange_access':
     what    => 'attrs=shadowLastChange',
     content => "
       by dn.exact=\"${sync_dn}\" read
-      by dn.exact=\"${::openldap::bind_dn}\" read
+      by dn.exact=\"${::simp_openldap::bind_dn}\" read
       by anonymous auth
       by self write
       by * none",
     order   => 2000
   }
 
-  openldap::server::access { 'simp_loginshell_access':
+  simp_openldap::server::access { 'simp_loginshell_access':
     what    => 'attrs=loginShell',
     content => "
       by self write
@@ -201,14 +201,14 @@ class openldap::server (
 
   # The following two items really need to be last and act as an example of
   # calling out items that work on the same 'what' option.
-  openldap::server::access { 'simp_default_user_access':
+  simp_openldap::server::access { 'simp_default_user_access':
     what   => '*',
     who    => 'users',
     access => 'read',
     order  => 100000
   }
 
-  openldap::server::access { 'simp_default_user_reject':
+  simp_openldap::server::access { 'simp_default_user_reject':
     what   => '*',
     who    => '*',
     access => 'none',
@@ -218,8 +218,8 @@ class openldap::server (
   # Add a user that is allowed to authenticate to bind to the system
   # for host use. Make sure that all entries are available to that
   # user.
-  openldap::server::limits { 'hostAuth':
-    who    => $::openldap::bind_dn,
+  simp_openldap::server::limits { 'hostAuth':
+    who    => $::simp_openldap::bind_dn,
     limits => [
       'size.soft=unlimited',
       'size.hard=unlimited',

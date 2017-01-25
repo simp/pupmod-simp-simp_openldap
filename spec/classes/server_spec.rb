@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'openldap::server' do
+describe 'simp_openldap::server' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -12,8 +12,8 @@ describe 'openldap::server' do
           facts
         end
 
-        it { is_expected.to create_class('openldap') }
-        it { is_expected.to create_class('openldap::server::conf') }
+        it { is_expected.to create_class('simp_openldap') }
+        it { is_expected.to create_class('simp_openldap::server::conf') }
 
         it { is_expected.to compile.with_all_deps }
         it {
@@ -40,7 +40,7 @@ describe 'openldap::server' do
           '/var/log/slapd.log'
         ].each do |file|
           it {
-            is_expected.to create_file(file).that_requires("Class[Openldap::Server::Install]")
+            is_expected.to create_file(file).that_requires("Class[Simp_openldap::Server::Install]")
           }
         end
 
@@ -56,32 +56,32 @@ describe 'openldap::server' do
           })
         }
 
-        it { is_expected.to create_group('ldap').that_requires("Class[Openldap::Server::Install]") }
+        it { is_expected.to create_group('ldap').that_requires("Class[Simp_openldap::Server::Install]") }
 
         it { is_expected.to create_package('openldap') }
         it { is_expected.to create_package("openldap-servers.#{facts[:hardwaremodel]}") }
 
         it { is_expected.to create_user('ldap').with({
-            :require  => "Class[Openldap::Server::Install]",
-            :notify   => 'Class[Openldap::Server::Service]'
+            :require  => "Class[Simp_openldap::Server::Install]",
+            :notify   => 'Class[Simp_openldap::Server::Service]'
           })
         }
 
-        it { is_expected.to create_class('openldap::slapo::syncprov') }
-        it { is_expected.to create_class('openldap::slapo::ppolicy') }
+        it { is_expected.to create_class('simp_openldap::slapo::syncprov') }
+        it { is_expected.to create_class('simp_openldap::slapo::ppolicy') }
         it { is_expected.to_not create_tcpwrappers__allow('slapd').with_pattern('ALL') }
         it { is_expected.to create_file('/etc/openldap/schema') }
 
         context 'no_sync' do
           let(:params){{ :allow_sync => false }}
 
-          it { is_expected.to_not create_class('openldap::slapo::syncprov') }
+          it { is_expected.to_not create_class('simp_openldap::slapo::syncprov') }
         end
 
         context 'no_ppolicy' do
           let(:params){{ :use_ppolicy => false }}
 
-          it { is_expected.to_not create_class('openldap::slapo::ppolicy') }
+          it { is_expected.to_not create_class('simp_openldap::slapo::ppolicy') }
         end
 
         context 'no_tcpwrappers' do

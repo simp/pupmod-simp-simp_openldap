@@ -21,7 +21,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-define openldap::server::limits (
+define simp_openldap::server::limits (
   String                        $who,
   Variant[Array[String],String] $limits
 ) {
@@ -32,7 +32,7 @@ define openldap::server::limits (
     $_limits = $limits
   }
 
-  openldap::server::dynamic_include { "limit_${name}":
+  simp_openldap::server::dynamic_include { "limit_${name}":
     content => "limits ${who} ${_limits}"
   }
 }

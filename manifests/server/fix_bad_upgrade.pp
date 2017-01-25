@@ -9,7 +9,7 @@
 #
 # This pops up in the RPM updates from time to time
 #
-class openldap::server::fix_bad_upgrade {
+class simp_openldap::server::fix_bad_upgrade {
   assert_private()
 
   exec { 'fix_bad_upgrade':

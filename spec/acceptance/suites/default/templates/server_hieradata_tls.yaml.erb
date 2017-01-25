@@ -8,8 +8,8 @@ simp_options::syslog: false
 simp_options::pki: true
 simp_options::pki::source: '/etc/pki/simp-testing/pki'
 
-openldap::server::conf::default_ldif::ppolicy_pwd_min_age: 0
-openldap::server::conf::default_ldif::ppolicy_pwd_failure_count_interval: 4
+simp_openldap::server::conf::default_ldif::ppolicy_pwd_min_age: 0
+simp_openldap::server::conf::default_ldif::ppolicy_pwd_failure_count_interval: 4
 
 simp_options::ldap::uri:
   - 'ldap://<%= server_fqdn %>'

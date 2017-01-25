@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe 'openldap::server::syncrepl' do
+describe 'simp_openldap::server::syncrepl' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:pre_condition) {
-          'class { "openldap": is_server => true }'
+          'class { "simp_openldap": is_server => true }'
         }
 
         let(:facts) do
@@ -23,10 +23,10 @@ describe 'openldap::server::syncrepl' do
         it { is_expected.to compile.with_all_deps }
 
         it {
-          is_expected.to create_openldap__server__dynamic_include('syncrepl').with_content(
+          is_expected.to create_simp_openldap__server__dynamic_include('syncrepl').with_content(
             /syncrepl rid=#{params[:rid]}/
           )
-          is_expected.to create_openldap__server__dynamic_include('syncrepl').with_content(
+          is_expected.to create_simp_openldap__server__dynamic_include('syncrepl').with_content(
             /retry="#{params[:syncrepl_retry]}"/
           )
         }

@@ -217,14 +217,14 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-class openldap::server::conf (
+class simp_openldap::server::conf (
   Optional[String[1]]                                 $rootpw                     = simplib::lookup('simp_options::ldap::root_hash', { 'default_value' => undef }),
   Optional[String[1]]                                 $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash', { 'default_value' => undef }),
   Optional[String[1]]                                 $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
-  String[1]                                           $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::openldap::base_dn}" }),
-  String[1]                                           $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $::openldap::bind_dn }),
-  Optional[String[1]]                                 $rootdn                     = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::openldap::base_dn}" }),
-  String[1]                                           $suffix                     = $::openldap::base_dn,
+  String[1]                                           $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::simp_openldap::base_dn}" }),
+  String[1]                                           $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $::simp_openldap::bind_dn }),
+  Optional[String[1]]                                 $rootdn                     = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "LDAPAdmin,ou=People,${::simp_openldap::base_dn}" }),
+  String[1]                                           $suffix                     = $::simp_openldap::base_dn,
   Stdlib::Absolutepath                                $argsfile                   = '/var/run/openldap/slapd.args',
   Boolean                                             $audit_transactions         = true,
   Boolean                                             $audit_to_syslog            = true,
@@ -238,7 +238,7 @@ class openldap::server::conf (
       replace => String[1]
   }] ]                                                $authz_regexp               = [{
                                                           'match'   => '^uid=([^,]+),.*',
-                                                          'replace' => "uid=\$1,ou=People,${::openldap::base_dn}"
+                                                          'replace' => "uid=\$1,ou=People,${::simp_openldap::base_dn}"
                                                         }],
   Integer[1]                                          $cachesize                  = 10000,
   Pattern['(^\d+\s\d+$|^$)']                          $checkpoint                 = '1024 5',
@@ -248,13 +248,13 @@ class openldap::server::conf (
   Integer[1]                                          $conn_max_pending_auth      = 100,
   Array[String[1]]                                    $default_schemas            = [ 'openssh-lpk', 'freeradius', 'autofs' ],
   Optional[String[1]]                                 $default_searchbase         = undef,
-  Array[Openldap::SlapdConf::Disallow]                $disallow                   = ['bind_anon','tls_2_anon'],
+  Array[Simp_Openldap::SlapdConf::Disallow]                $disallow                   = ['bind_anon','tls_2_anon'],
   Boolean                                             $force_log_quick_kill       = false,
   Optional[String[1]]                                 $ditcontentrule             = undef,
   Boolean                                             $gentlehup                  = false,
   Integer[0]                                          $idletimeout                = 0,
   Boolean                                             $include_chain_overlay      = false,
-  Optional[String[1]]                                 $master                     = $::openldap::_ldap_master,
+  Optional[String[1]]                                 $master                     = $::simp_openldap::_ldap_master,
   Integer[0]                                          $index_substr_any_step      = 2,
   Integer[0]                                          $index_substr_any_len       = 4,
   Integer[0]                                          $index_substr_if_maxlen     = 4,
@@ -264,7 +264,7 @@ class openldap::server::conf (
   Boolean                                             $listen_ldapi               = true,
   Boolean                                             $listen_ldaps               = true,
   Array[String]                                       $custom_options             = [],
-  Array[Openldap::LogLevel]                           $slapd_log_level            = ['stats', 'acl', 'sync'],
+  Array[Simp_Openldap::LogLevel]                           $slapd_log_level            = ['stats', 'acl', 'sync'],
   String[1]                                           $password_crypt_salt_format = '%s',
   Enum['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT'] $password_hash              = 'SSHA',
   Stdlib::Absolutepath                                $pidfile                    = '/var/run/openldap/slapd.pid',
@@ -285,11 +285,11 @@ class openldap::server::conf (
   Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_soft             = undef,
   Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_hard             = undef,
   Integer[0]                                          $writetimeout               = 0,
-  Variant[Enum['simp'],Boolean]                       $use_tls                    = $::openldap::pki,
-  Stdlib::Absolutepath                                $app_pki_ca_dir             = $::openldap::app_pki_ca_dir,
-  Stdlib::Absolutepath                                $app_pki_cert               = $::openldap::app_pki_cert,
-  Stdlib::Absolutepath                                $app_pki_key                = $::openldap::app_pki_key,
-  Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $::openldap::app_pki_crl,
+  Variant[Enum['simp'],Boolean]                       $use_tls                    = $::simp_openldap::pki,
+  Stdlib::Absolutepath                                $app_pki_ca_dir             = $::simp_openldap::app_pki_ca_dir,
+  Stdlib::Absolutepath                                $app_pki_cert               = $::simp_openldap::app_pki_cert,
+  Stdlib::Absolutepath                                $app_pki_key                = $::simp_openldap::app_pki_key,
+  Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $::simp_openldap::app_pki_crl,
   Array[String[1]]                                    $tls_cipher_suite           = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
   Enum['none','peer','all']                           $tls_crl_check              = 'none',
   # lint:ignore:quoted_booleans
@@ -317,9 +317,9 @@ class openldap::server::conf (
   Stdlib::Absolutepath                                $log_file                   = '/var/log/slapd.log',
   Boolean                                             $forward_all_logs           = false,
   Boolean                                             $firewall                   = simplib::lookup('simp_options::firewall', {'default_value' => false }),
-) inherits ::openldap {
+) inherits ::simp_openldap {
 
-  include '::openldap::server::conf::default_ldif'
+  include '::simp_openldap::server::conf::default_ldif'
 
   if $force_log_quick_kill {
     include '::incron'
@@ -337,7 +337,7 @@ class openldap::server::conf (
     group   => 'ldap',
     mode    => '0640',
     content => template("${module_name}/etc/openldap/slapd.conf.erb"),
-    notify  => Class['openldap::server::service']
+    notify  => Class['simp_openldap::server::service']
   }
 
   file { '/etc/openldap/DB_CONFIG':
@@ -346,7 +346,7 @@ class openldap::server::conf (
     group   => 'ldap',
     mode    => '0640',
     content => template("${module_name}/etc/openldap/DB_CONFIG.erb"),
-    notify  => Class['openldap::server::service']
+    notify  => Class['simp_openldap::server::service']
   }
 
   if ($facts['os']['name'] in ['RedHat','CentOS']) and (versioncmp($facts['os']['release']['major'], '6') > 0) {
@@ -356,7 +356,7 @@ class openldap::server::conf (
       group   => 'root',
       mode    => '0640',
       content => template("${module_name}/etc/sysconfig/slapd.erb"),
-      notify  => Class['openldap::server::service']
+      notify  => Class['simp_openldap::server::service']
     }
   }
   else {
@@ -366,7 +366,7 @@ class openldap::server::conf (
       group   => 'root',
       mode    => '0640',
       content => template("${module_name}/etc/sysconfig/ldap.erb"),
-      notify  => Class['openldap::server::service']
+      notify  => Class['simp_openldap::server::service']
     }
   }
 
@@ -409,7 +409,7 @@ class openldap::server::conf (
         rotate        => $auditlog_preserve
       }
 
-      openldap::server::dynamic_include { 'auditlog':
+      simp_openldap::server::dynamic_include { 'auditlog':
         order   => 1000,
         content => template("${module_name}/slapo/auditlog.erb"),
         require => File[$auditlog]

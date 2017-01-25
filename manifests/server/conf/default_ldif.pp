@@ -6,7 +6,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-class openldap::server::conf::default_ldif (
+class simp_openldap::server::conf::default_ldif (
   Integer[0] $ppolicy_pwd_min_age                = 86400,
   Integer[1] $ppolicy_pwd_max_age                = 15552000,
   Integer[0] $ppolicy_pwd_in_history             = 24,
@@ -25,18 +25,18 @@ class openldap::server::conf::default_ldif (
 
   assert_private()
 
-  $_suffix = $::openldap::server::conf::suffix
-  $_rootdn = $::openldap::server::conf::rootdn
-  $_syncdn = $::openldap::server::conf::syncdn
-  $_syncpw = $::openldap::server::conf::syncpw
-  $_binddn = $::openldap::server::conf::binddn
-  $_bindpw = $::openldap::server::conf::bindpw
+  $_suffix = $::simp_openldap::server::conf::suffix
+  $_rootdn = $::simp_openldap::server::conf::rootdn
+  $_syncdn = $::simp_openldap::server::conf::syncdn
+  $_syncpw = $::simp_openldap::server::conf::syncpw
+  $_binddn = $::simp_openldap::server::conf::binddn
+  $_bindpw = $::simp_openldap::server::conf::bindpw
 
   if (
-    defined('$::openldap::slapo::ppolicy::_check_password') and
-    getvar('::openldap::slapo::ppolicy::_check_password')
+    defined('$::simp_openldap::slapo::ppolicy::_check_password') and
+    getvar('::simp_openldap::slapo::ppolicy::_check_password')
   ) {
-    $_simp_ppolicy_check_password = getvar('::openldap::slapo::ppolicy::_check_password')
+    $_simp_ppolicy_check_password = getvar('::simp_openldap::slapo::ppolicy::_check_password')
   }
   else {
     $_simp_ppolicy_check_password = undef

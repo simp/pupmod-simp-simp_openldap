@@ -8,7 +8,7 @@
 # @author Nick Markowski <nmarkowski@keywcorp.com>
 # @author Kendall Moore <kmoore@keywcorp.com>
 #
-class openldap::slapo::lastbind (
+class simp_openldap::slapo::lastbind (
   Integer[0] $lastbind_precision = 3600
 ) {
   package { 'simp-lastbind': ensure => 'latest' }
@@ -21,7 +21,7 @@ class openldap::slapo::lastbind (
     require => Package['simp-lastbind']
   }
 
-  openldap::server::dynamic_include { 'lastbind':
+  simp_openldap::server::dynamic_include { 'lastbind':
     order   => 1000,
     content => "moduleload lastbind.so\noverlay lastbind\n",
     require => Package['simp-lastbind']

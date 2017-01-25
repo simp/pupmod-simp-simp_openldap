@@ -11,7 +11,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-define openldap::server::dynamic_include (
+define simp_openldap::server::dynamic_include (
   String  $content,
   Integer $order = 100
 ) {
@@ -21,7 +21,7 @@ define openldap::server::dynamic_include (
     mode           => '0640',
     ensure_newline => true,
     warn           => true,
-    notify         => Class['openldap::server::service']
+    notify         => Class['simp_openldap::server::service']
   })
 
   concat::fragment { "openldap_dynamic_include_${name}":

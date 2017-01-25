@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'openldap::server::conf' do
+describe 'simp_openldap::server::conf' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -14,15 +14,15 @@ describe 'openldap::server::conf' do
 
         let(:pre_condition) {
           %(
-            class { "::openldap":
+            class { "::simp_openldap":
               base_dn   => "dc=host,dc=net",
               is_server => true
             }
           )
         }
 
-        it { is_expected.to create_class('openldap::server') }
-        it { is_expected.to create_class('openldap::server::conf::default_ldif') }
+        it { is_expected.to create_class('simp_openldap::server') }
+        it { is_expected.to create_class('simp_openldap::server::conf::default_ldif') }
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }
@@ -38,37 +38,37 @@ describe 'openldap::server::conf' do
         }
 
         context 'with pki = false' do
-          let(:pre_condition) { "include 'openldap'" }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_false' }
           it { is_expected.to_not contain_class('pki') }
           it { is_expected.to_not create_pki__copy('openldap') }
           it { is_expected.to_not create_file('/etc/pki/simp_apps/openldap/x509')}
-          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Openldap::Server::Service]') }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Simp_openldap::Server::Service]') }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSCertificateFile/) }
         end
 
         context 'with pki = true' do
-          let(:pre_condition) { "include 'openldap'" }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_true' }
           it { is_expected.to_not contain_class('pki') }
           it { is_expected.to create_pki__copy('openldap') }
           it { is_expected.to create_file('/etc/pki/simp_apps/openldap/x509')}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
-            :notify => 'Class[Openldap::Server::Service]',
+            :notify => 'Class[Simp_openldap::Server::Service]',
             :content => /TLSCertificateFile/
             })
           }
         end
 
         context 'with pki = simp' do
-          let(:pre_condition) { "include 'openldap'" }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_simp' }
           let(:params) {{ :syslog => false }}
           it { is_expected.to contain_class('pki') }
           it { is_expected.to create_pki__copy('openldap') }
           it { is_expected.to create_file('/etc/pki/simp_apps/openldap/x509')}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
-              :notify => 'Class[Openldap::Server::Service]',
+              :notify => 'Class[Simp_openldap::Server::Service]',
               :content => /TLSCertificateFile/
             })
           }
@@ -76,7 +76,7 @@ describe 'openldap::server::conf' do
 
         context 'force_log_quick_kill' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
 
           let(:params){{ :force_log_quick_kill => true }}
@@ -87,7 +87,7 @@ describe 'openldap::server::conf' do
         context 'enable_iptables' do
           # Testing this by setting the global override
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :firewall => true
@@ -100,7 +100,7 @@ describe 'openldap::server::conf' do
         context 'do_not_use_iptables' do
           # Testing this by setting the global override
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
 
           let(:params){{
@@ -112,7 +112,7 @@ describe 'openldap::server::conf' do
 
         context 'use_iptables_no_listen_ldaps' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :listen_ldaps => false,
@@ -126,7 +126,7 @@ describe 'openldap::server::conf' do
 
         context 'use_iptables_no_listen_ldap_or_ldaps' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :listen_ldap  => false,
@@ -141,7 +141,7 @@ describe 'openldap::server::conf' do
 
         context 'audit_transactions' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :auditlog          => '/var/log/ldap_audit.log',
@@ -162,14 +162,14 @@ describe 'openldap::server::conf' do
               :rotate        => params[:auditlog_preserve]
             })
           }
-          it { is_expected.to create_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
+          it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
           it { is_expected.to create_rsyslog__rule__data_source('openldap_audit').with_rule(/File="#{params[:auditlog]}"/) }
           it { is_expected.to create_rsyslog__rule__drop('1_drop_openldap_passwords').with_rule(/contains\s+'Password::\s+'/) }
         end
 
         context 'audit_transactions_no_audit_to_syslog' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :auditlog          => '/var/log/ldap_audit.log',
@@ -190,14 +190,14 @@ describe 'openldap::server::conf' do
               :rotate        => params[:auditlog_preserve]
             })
           }
-          it { is_expected.to create_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
+          it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
           it { is_expected.to_not create_rsyslog__add_conf('openldap_audit') }
           it { is_expected.to_not create_rsyslog__rule__drop('1_drop_openldap_passwords') }
         end
 
         context 'logging_enabled' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{
             :syslog      => true,
@@ -218,7 +218,7 @@ describe 'openldap::server::conf' do
 
         context 'logging_disabled' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
 
           let(:params){{
@@ -245,7 +245,7 @@ describe 'openldap::server::conf' do
 
         context 'threads_is_user_overridden' do
           let(:pre_condition) {
-            %( class { "::openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
           }
           let(:params){{ :threads => 20 }}
 

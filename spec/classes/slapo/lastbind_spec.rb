@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'openldap::slapo::lastbind' do
+describe 'simp_openldap::slapo::lastbind' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -18,7 +18,7 @@ describe 'openldap::slapo::lastbind' do
           "lastbind-precision #{params[:lastbind_precision]}\n"
         )}
 
-        it { is_expected.to create_openldap__server__dynamic_include('lastbind').that_requires(
+        it { is_expected.to create_simp_openldap__server__dynamic_include('lastbind').that_requires(
           'Package[simp-lastbind]'
         )}
 

@@ -25,7 +25,7 @@
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
-define openldap::server::access (
+define simp_openldap::server::access (
   String           $what,
   Optional[String] $comment = undef,
   Optional[String] $who     = undef,
@@ -40,7 +40,7 @@ define openldap::server::access (
     mode           => '0640',
     ensure_newline => true,
     warn           => true,
-    notify         => Class['openldap::server::service']
+    notify         => Class['simp_openldap::server::service']
   })
 
   unless ($who or $content) {

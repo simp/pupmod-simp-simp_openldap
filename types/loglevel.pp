@@ -1,5 +1,5 @@
 # OpenLDAP Log Levels
-type Openldap::LogLevel = Variant[
+type Simp_Openldap::LogLevel = Variant[
   Integer[-1,65535],
   Enum[
   'any',

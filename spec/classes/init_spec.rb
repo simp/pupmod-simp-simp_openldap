@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'openldap' do
+describe 'simp_openldap' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -12,7 +12,7 @@ describe 'openldap' do
           facts
         end
 
-        it { is_expected.to create_class('openldap') }
+        it { is_expected.to create_class('simp_openldap') }
         it { is_expected.to compile.with_all_deps }
 
         context 'is_server' do
@@ -20,7 +20,7 @@ describe 'openldap' do
             :is_server => true
           }}
 
-          it { is_expected.to create_class('openldap::server') }
+          it { is_expected.to create_class('simp_openldap::server') }
         end
       end
     end

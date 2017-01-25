@@ -21,4 +21,4 @@ fixtures:
     stunnel: https://github.com/simp/pupmod-simp-stunnel
     tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers
   symlinks:
-    openldap: "#{source_dir}"
+    simp_openldap: "#{source_dir}"

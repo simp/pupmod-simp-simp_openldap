@@ -3,8 +3,8 @@ require 'spec_helper'
 ldap_conf_content = {
   :default =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                ou=foo,dc=bar,dc=baz\n" +
-    "BINDDN              cn=hostAuth,ou=Hosts,ou=foo,dc=bar,dc=baz\n" +
+    "BASE                dc=bar,dc=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
@@ -16,8 +16,8 @@ ldap_conf_content = {
 
   :with_crlfile =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                ou=foo,dc=bar,dc=baz\n" +
-    "BINDDN              cn=hostAuth,ou=Hosts,ou=foo,dc=bar,dc=baz\n" +
+    "BASE                dc=bar,dc=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
@@ -30,8 +30,8 @@ ldap_conf_content = {
 
   :without_tls =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                ou=foo,dc=bar,dc=baz\n" +
-    "BINDDN              cn=hostAuth,ou=Hosts,ou=foo,dc=bar,dc=baz\n" +
+    "BASE                dc=bar,dc=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
@@ -76,11 +76,12 @@ describe 'simp_openldap::client' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) {
+          facts[:fqdn]         = 'myserver.test.local'
+          facts[:domain]       = 'bar.baz'
           facts[:server_facts] = {
             :servername => facts[:fqdn],
             :serverip   => facts[:ipaddress]
           }
-          facts[:fqdn] = 'myserver.test.local'
           facts
         }
 

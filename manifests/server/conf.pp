@@ -245,7 +245,7 @@ class simp_openldap::server::conf (
   Simplib::Netlist                                    $trusted_nets               = simplib::lookup('simp_options::trusted_nets', { 'default_value' => ['127.0.0.1'] }),
   Optional[Integer[1]]                                $concurrency                = undef,
   Integer[1]                                          $conn_max_pending           = 100,
-  Integer[1]                                          $conn_max_pending_auth      = 100,
+  Integer[1]                                          $conn_max_pending_auth      = 1000,
   Array[String[1]]                                    $default_schemas            = [ 'openssh-lpk', 'freeradius', 'autofs' ],
   Optional[String[1]]                                 $default_searchbase         = undef,
   Array[Simp_Openldap::SlapdConf::Disallow]                $disallow                   = ['bind_anon','tls_2_anon'],

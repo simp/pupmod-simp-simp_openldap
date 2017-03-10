@@ -1,3 +1,7 @@
+* Wed Mar 08 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.1-0
+- Corrected the openldap::server::conf::conn_max_pending_auth to be set to 1000
+  instead of 100
+
 * Wed Jan 25 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.0-0
 - Rename from 'openldap' to 'simp_openldap' so that we can migrate to an
   alternate backend in the future

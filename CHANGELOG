@@ -1,4 +1,6 @@
 * Wed Mar 08 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.1-0
+- Removed the 'acl' log level from the default list since it was causing low
+  server response time on some EL7 systems
 - Corrected the openldap::server::conf::conn_max_pending_auth to be set to 1000
   instead of 100
 

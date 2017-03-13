@@ -9,13 +9,13 @@ simp_options::ldap::bind_hash : '{SSHA}foobarbaz!!!!'
 simp_options::ldap::sync_dn : "cn=sync,ou=Hosts,%{hiera('simp_options::ldap::base_dn')}"
 simp_options::ldap::sync_hash : '{SSHA}foobarbaz!!!!'
 simp_options::ldap::root_dn : "cn=LDAPAdmin,ou=People,%{hiera('simp_options::ldap::base_dn')}"
-simp_options::ldap::root_hash : '{SSHA}foobarbaz!!!!'
 simp_options::syslog : true
 simp_options::iptables : true
 simp_options::ldap::uri :
   - "ldap://server1.bar.baz"
   - "ldap://server2.bar.baz"
 simp_options::ldap::master : "ldap://server1.bar.baz"
+simp_openldap::server::conf::rootpw: '{SSHA}foobarbaz!!!!'
 simp::rsync_server : 'rsync.bar.baz'
 rsync::timeout : '1'
 sssd::domains :

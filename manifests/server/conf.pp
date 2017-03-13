@@ -218,7 +218,7 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class simp_openldap::server::conf (
-  Optional[String[1]]                                 $rootpw                     = simplib::lookup('simp_options::ldap::root_hash', { 'default_value' => undef }),
+  Optional[String[1]]                                 $rootpw                     = undef,
   Optional[String[1]]                                 $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash', { 'default_value' => undef }),
   Optional[String[1]]                                 $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
   String[1]                                           $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "LDAPSync,ou=People,${::simp_openldap::base_dn}" }),

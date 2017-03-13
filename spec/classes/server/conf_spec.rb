@@ -21,21 +21,93 @@ describe 'simp_openldap::server::conf' do
           )
         }
 
-        it { is_expected.to create_class('simp_openldap::server') }
-        it { is_expected.to create_class('simp_openldap::server::conf::default_ldif') }
+        context 'with default parameters' do
+          it { is_expected.to create_class('simp_openldap::server') }
+          it { is_expected.to create_class('simp_openldap::server::conf::default_ldif') }
 
-        it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }
-        it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/dn: dc=host,dc=net/) }
-        it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/pwdCheckModule: .*check_password.so/) }
-        it {
-          if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
-          then
-            is_expected.to create_file('/etc/sysconfig/ldap').with_content(/SLAPD_OPTIONS.*slapd.conf/)
-          else
-            is_expected.to create_file('/etc/sysconfig/slapd').with_content(/SLAPD_URLS.*ldap.*:\/\//)
-          end
-        }
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }
+          it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/dn: dc=host,dc=net/) }
+          it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/pwdCheckModule: .*check_password.so/) }
+          it {
+            if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
+            then
+              is_expected.to create_file('/etc/sysconfig/ldap').with_content(/SLAPD_OPTIONS.*slapd.conf/)
+            else
+              is_expected.to create_file('/etc/sysconfig/slapd').with_content(/SLAPD_URLS.*ldap.*:\/\//)
+            end
+          }
+#          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/conn_max_pending_auth 1000/) }
+#          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/loglevel stats sync/) }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(<<EOM
+include   /etc/openldap/schema/core.schema
+include   /etc/openldap/schema/cosine.schema
+include   /etc/openldap/schema/inetorgperson.schema
+include   /etc/openldap/schema/nis.schema
+include  /etc/openldap/schema/openssh-lpk.schema
+include  /etc/openldap/schema/freeradius.schema
+include  /etc/openldap/schema/autofs.schema
+
+threads   8
+pidfile   /var/run/openldap/slapd.pid
+argsfile  /var/run/openldap/slapd.args
+
+
+authz-policy to
+authz-regexp
+    "^uid=([^,]+),.*"
+    "uid=$1,ou=People,dc=host,dc=net"
+
+
+
+disallow bind_anon
+conn_max_pending 100
+conn_max_pending_auth 1000
+disallow bind_anon tls_2_anon
+idletimeout 0
+
+sizelimit 500
+timelimit 3600
+writetimeout 0
+
+sockbuf_max_incoming 262143
+sockbuf_max_incoming_auth 4194303
+
+loglevel stats sync
+
+reverse-lookup off
+
+database  bdb
+suffix    "dc=host,dc=net"
+rootdn    "cn=LDAPAdmin,ou=People,dc=bar,dc=baz"
+
+rootpw    {SSHA}foobarbaz!!!!
+
+directory /var/lib/ldap
+checkpoint 1024 5
+cachesize 10000
+lastmod on
+maxderefdepth 15
+monitoring on
+readonly off
+
+index_substr_any_step 2
+index_substr_any_len 4
+index_substr_if_maxlen 4
+index_substr_if_minlen 2
+index_intlen 4
+
+index objectClass                       eq,pres
+index ou,cn,mail,surname,givenname      eq,pres,sub
+index uidNumber,gidNumber,loginShell    eq,pres
+index uid,memberUid                     eq,pres,sub
+index nisMapName,nisMapEntry            eq,pres,sub
+
+include /etc/openldap/slapd.access
+include /etc/openldap/dynamic_includes
+EOM
+          )}
+        end
 
         context 'with pki = false' do
           let(:pre_condition) { "include 'simp_openldap'" }

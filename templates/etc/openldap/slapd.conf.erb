@@ -104,7 +104,7 @@ conn_max_pending_auth <%= @conn_max_pending_auth %>
 <% if @default_searchbase -%>
 defaultsearchbase <%= @default_searchbase %>
 <% end -%>
-<% if @disallow && !@disallow.empty? -%>
+<% unless @disallow.empty? -%>
 disallow <%= @disallow.join(' ') %>
 <% end -%>
 <% if @ditcontentrule -%>
@@ -122,10 +122,12 @@ writetimeout <%= @writetimeout %>
 sockbuf_max_incoming <%= @sockbuf_max_incoming %>
 sockbuf_max_incoming_auth <%= @sockbuf_max_incoming_auth %>
 
+<% unless @slapd_log_level.empty? -%>
 loglevel <%= @slapd_log_level.join(' ') %>
+<% end -%>
 
 reverse-lookup <%= @reverse_lookup ? 'on' : 'off' %>
-<% if @sortvals && !@sortvals.empty? -%>
+<% unless @sortvals.empty? -%>
 sortvals <%= @sortvals.join(' ') -%>
 <% end -%>
 <% if @tcp_buffer -%>

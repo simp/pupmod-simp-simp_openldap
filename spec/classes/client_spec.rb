@@ -14,6 +14,32 @@ ldap_conf_content = {
     "TLS_REQCERT         allow\n" +
     "TLS_CRLCHECK        none\n",
 
+  :with_strip_128_bit_ciphers =>
+    "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
+    "BASE                dc=bar,dc=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
+    "REFERRALS           on\n" +
+    "SIZELIMIT           0\n" +
+    "TIMELIMIT           15\n" +
+    "DEREF               never\n" +
+    "TLS_CACERTDIR       /etc/pki/simp_apps/openldap/x509/cacerts\n" +
+    "TLS_CIPHER_SUITE    AES256\n" +
+    "TLS_REQCERT         allow\n" +
+    "TLS_CRLCHECK        none\n",
+
+  :without_strip_128_bit_ciphers =>
+    "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
+    "BASE                dc=bar,dc=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
+    "REFERRALS           on\n" +
+    "SIZELIMIT           0\n" +
+    "TIMELIMIT           15\n" +
+    "DEREF               never\n" +
+    "TLS_CACERTDIR       /etc/pki/simp_apps/openldap/x509/cacerts\n" +
+    "TLS_CIPHER_SUITE    AES256:AES128\n" +
+    "TLS_REQCERT         allow\n" +
+    "TLS_CRLCHECK        none\n",
+
   :with_crlfile =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
     "BASE                dc=bar,dc=baz\n" +
@@ -65,7 +91,13 @@ shared_examples_for "a ldap config generator" do
   it { is_expected.to create_class('simp_openldap') }
   it { is_expected.to create_class('simp_openldap::client') }
   it { is_expected.to create_file('/etc/openldap/ldap.conf').with_content( ldap_conf_content[content_option] ) }
-  it { is_expected.to create_file('/root/.ldaprc').with_content( ldaprc_content[content_option] ) }
+    it {
+      if ldaprc_content[content_option]
+        is_expected.to create_file('/root/.ldaprc').with_content( ldaprc_content[content_option] )
+      else
+        is_expected.to create_file('/root/.ldaprc').with_content( ldaprc_content[:default] )
+      end
+  }
   it { is_expected.to create_package('nss-pam-ldapd') }
   it { is_expected.to create_package("openldap-clients.#{facts[:hardwaremodel]}") }
 end
@@ -84,6 +116,39 @@ describe 'simp_openldap::client' do
           }
           facts
         }
+
+        context 'Generates files with strip_128_bit_ciphers = true' do
+          let(:hieradata) { 'pki_true' }
+          let(:params) {{
+            :strip_128_bit_ciphers => true,
+            :tls_cipher_suite      => ['AES256','AES128']
+          }}
+
+          if ['RedHat','CentOS'].include?(facts[:os][:name])
+            if facts[:os][:release][:major] < '7'
+              context 'on EL6' do
+                let(:content_option) { :with_strip_128_bit_ciphers }
+                it_should_behave_like "a ldap config generator"
+              end
+            else
+              context 'on EL7' do
+                let(:content_option) { :without_strip_128_bit_ciphers }
+                it_should_behave_like "a ldap config generator"
+              end
+            end
+          end
+        end
+
+        context 'Generates files with strip_128_bit_ciphers = false' do
+          let(:hieradata) { 'pki_true' }
+          let(:params) {{
+            :strip_128_bit_ciphers => false,
+            :tls_cipher_suite      => ['AES256','AES128']
+          }}
+
+          let(:content_option) { :without_strip_128_bit_ciphers }
+          it_should_behave_like "a ldap config generator"
+        end
 
         context 'Generates files with pki = false' do
           let(:hieradata) { 'pki_false' }

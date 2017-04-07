@@ -7,7 +7,7 @@ TIMELIMIT           <%= @timelimit %>
 DEREF               <%= @deref %>
 <% if @use_tls -%>
 TLS_CACERTDIR       <%= @app_pki_ca_dir %>
-TLS_CIPHER_SUITE    <%= Array(@tls_cipher_suite).join(':') %>
+TLS_CIPHER_SUITE    <%= Array(@_tls_cipher_suite).join(':') %>
 TLS_REQCERT         <%= @tls_reqcert %>
 TLS_CRLCHECK        <%= @tls_crlcheck %>
 <%   if @app_pki_crl -%>

@@ -3,7 +3,7 @@ simp_options::trusted_nets :
   - 1.2.3.4
   - 5.6.7.8
 simp_options::puppet::server : "puppet.server.com"
-simp_options::ldap::base_dn : "dc=bar,dc=baz"
+simp_options::ldap::base_dn : "DC=bar,DC=baz"
 simp_options::ldap::bind_pw : "s00per sekr3t!"
 simp_options::ldap::bind_hash : '{SSHA}foobarbaz!!!!'
 simp_options::ldap::sync_dn : "cn=sync,ou=Hosts,%{hiera('simp_options::ldap::base_dn')}"
@@ -20,4 +20,4 @@ simp::rsync_server : 'rsync.bar.baz'
 rsync::timeout : '1'
 sssd::domains :
   - 'LOCAL'
-openldap::base_dn : "ou=foo,dc=bar,dc=baz"
+openldap::base_dn : "ou=foo,DC=bar,DC=baz"

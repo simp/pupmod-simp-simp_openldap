@@ -1,5 +1,8 @@
 require 'spec_helper'
 
+file_content_7 = "/usr/bin/systemctl restart rsyslog > /dev/null 2>&1 || true"
+file_content_6 = "/sbin/service rsyslog restart > /dev/null 2>&1 || true"
+
 describe 'simp_openldap::server::conf' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
@@ -15,7 +18,7 @@ describe 'simp_openldap::server::conf' do
         let(:pre_condition) {
           %(
             class { "::simp_openldap":
-              base_dn   => "dc=host,dc=net",
+              base_dn   => "DC=host,DC=net",
               is_server => true
             }
           )
@@ -27,7 +30,7 @@ describe 'simp_openldap::server::conf' do
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }
-          it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/dn: dc=host,dc=net/) }
+          it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/dn: DC=host,DC=net/) }
           it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/pwdCheckModule: .*check_password.so/) }
           it {
             if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
@@ -56,7 +59,7 @@ argsfile  /var/run/openldap/slapd.args
 authz-policy to
 authz-regexp
     "^uid=([^,]+),.*"
-    "uid=$1,ou=People,dc=host,dc=net"
+    "uid=$1,ou=People,DC=host,DC=net"
 
 
 
@@ -78,8 +81,8 @@ loglevel stats sync
 reverse-lookup off
 
 database  bdb
-suffix    "dc=host,dc=net"
-rootdn    "cn=LDAPAdmin,ou=People,dc=bar,dc=baz"
+suffix    "DC=host,DC=net"
+rootdn    "cn=LDAPAdmin,ou=People,DC=bar,DC=baz"
 
 rootpw    {SSHA}foobarbaz!!!!
 
@@ -148,7 +151,7 @@ EOM
 
         context 'force_log_quick_kill' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
 
           let(:params){{ :force_log_quick_kill => true }}
@@ -159,7 +162,7 @@ EOM
         context 'enable_iptables' do
           # Testing this by setting the global override
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{
             :firewall => true
@@ -172,7 +175,7 @@ EOM
         context 'do_not_use_iptables' do
           # Testing this by setting the global override
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
 
           let(:params){{
@@ -184,7 +187,7 @@ EOM
 
         context 'use_iptables_no_listen_ldaps' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{
             :listen_ldaps => false,
@@ -198,7 +201,7 @@ EOM
 
         context 'use_iptables_no_listen_ldap_or_ldaps' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{
             :listen_ldap  => false,
@@ -213,15 +216,24 @@ EOM
 
         context 'audit_transactions' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{
             :auditlog          => '/var/log/ldap_audit.log',
             :auditlog_rotate   => 'daily',
             :auditlog_preserve => 7,
             :syslog            => true,
-            :logrotate         => true
+            :logrotate         => true,
+            :log_to_file       => true
           }}
+
+          if ['RedHat','CentOS'].include?(facts[:operatingsystem])
+            if facts[:operatingsystemmajrelease].to_s < '7'
+              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_6}/)}
+            else
+              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_7}/)}
+            end
+          end
 
           it { is_expected.to create_class('logrotate') }
           it { is_expected.to create_class('rsyslog') }
@@ -241,7 +253,7 @@ EOM
 
         context 'audit_transactions_no_audit_to_syslog' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{
             :auditlog          => '/var/log/ldap_audit.log',
@@ -249,8 +261,17 @@ EOM
             :auditlog_preserve => 7,
             :audit_to_syslog   => false,
             :syslog            => true,
-            :logrotate         => true
+            :logrotate         => true,
+            :log_to_file       => true
           }}
+
+          if ['RedHat','CentOS'].include?(facts[:operatingsystem])
+            if facts[:operatingsystemmajrelease].to_s < '7'
+              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_6}/)}
+            else
+              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_7}/)}
+            end
+          end
 
           it { is_expected.to create_class('logrotate') }
 
@@ -269,7 +290,7 @@ EOM
 
         context 'logging_enabled' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{
             :syslog      => true,
@@ -290,7 +311,7 @@ EOM
 
         context 'logging_disabled' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
 
           let(:params){{
@@ -317,7 +338,7 @@ EOM
 
         context 'threads_is_user_overridden' do
           let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "dc=host,dc=net" })
+            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
           }
           let(:params){{ :threads => 20 }}
 

@@ -1,3 +1,7 @@
+* Wed Apr 19 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.3-0
+- Updated logrotate to use new lastaction API
+- Updated all ldap DNs to uppercase DC=
+
 * Fri Apr 07 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.2-0
 - Ensure that 128-bit ciphers are not present in ldap.conf for EL6 systems
 

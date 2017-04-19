@@ -3,7 +3,7 @@ require 'spec_helper'
 ldap_conf_content = {
   :default =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                dc=bar,dc=baz\n" +
+    "BASE                DC=bar,DC=baz\n" +
     "BINDDN              cn=hostAuth,ou=Hosts,DC=bar,DC=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
@@ -16,8 +16,8 @@ ldap_conf_content = {
 
   :with_strip_128_bit_ciphers =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                dc=bar,dc=baz\n" +
-    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
+    "BASE                DC=bar,DC=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,DC=bar,DC=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
@@ -29,8 +29,8 @@ ldap_conf_content = {
 
   :without_strip_128_bit_ciphers =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                dc=bar,dc=baz\n" +
-    "BINDDN              cn=hostAuth,ou=Hosts,dc=bar,dc=baz\n" +
+    "BASE                DC=bar,DC=baz\n" +
+    "BINDDN              cn=hostAuth,ou=Hosts,DC=bar,DC=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
     "TIMELIMIT           15\n" +
@@ -42,7 +42,7 @@ ldap_conf_content = {
 
   :with_crlfile =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                dc=bar,dc=baz\n" +
+    "BASE                DC=bar,DC=baz\n" +
     "BINDDN              cn=hostAuth,ou=Hosts,DC=bar,DC=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +
@@ -56,7 +56,7 @@ ldap_conf_content = {
 
   :without_tls =>
     "URI                 ldap://server1.bar.baz ldap://server2.bar.baz\n" +
-    "BASE                dc=bar,dc=baz\n" +
+    "BASE                DC=bar,DC=baz\n" +
     "BINDDN              cn=hostAuth,ou=Hosts,DC=bar,DC=baz\n" +
     "REFERRALS           on\n" +
     "SIZELIMIT           0\n" +

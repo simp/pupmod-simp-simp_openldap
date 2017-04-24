@@ -446,9 +446,9 @@ class simp_openldap::server::conf (
 
       if $logrotate {
         logrotate::rule { 'slapd':
-          log_files  => [ $log_file ],
-          missingok  => true,
-          lastaction => '/sbin/service rsyslog restart > /dev/null 2>&1 || true'
+          log_files                 => [ $log_file ],
+          missingok                 => true,
+          lastaction_restart_logger => true
         }
       }
     }

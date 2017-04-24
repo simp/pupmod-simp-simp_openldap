@@ -1,4 +1,4 @@
 ---
-openldap::base_dn: "ou=foo,dc=bar,dc=baz"
+openldap::base_dn: "ou=foo,DC=bar,DC=baz"
 simp_options::pki: false
 simp_options::pki::source: '/etc/pki/simp-testing/pki'

@@ -5,7 +5,7 @@ HOSTS:
       - server
     yum_repos:
       simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Alpha_Dependencies/el/7/$basearch
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
     platform:   el-7-x86_64
@@ -16,7 +16,7 @@ HOSTS:
       - server
     yum_repos:
       simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Alpha_Dependencies/el/7/$basearch
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/6/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
     platform:   el-6-x86_64

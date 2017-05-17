@@ -4,21 +4,6 @@ require 'erb'
 test_name 'simp_openldap class'
 
 describe 'simp_openldap class' do
-  before(:context) do
-    hosts.each do |host|
-      interfaces = fact_on(host, 'interfaces').strip.split(',')
-      interfaces.delete_if do |x|
-        x =~ /^lo/
-      end
-
-      interfaces.each do |iface|
-        if fact_on(host, "ipaddress_#{iface}").strip.empty?
-          on(host, "ifup #{iface}", :accept_all_exit_codes => true)
-        end
-      end
-    end
-  end
-
   servers = hosts_with_role(hosts, 'server')
   # slaves = hosts_with_role(hosts, 'slave')
 

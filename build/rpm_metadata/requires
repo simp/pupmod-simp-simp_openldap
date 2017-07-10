@@ -7,7 +7,7 @@ Requires: pupmod-simp-auditd >= 7.0.0-0
 Requires: pupmod-simp-iptables < 7.0.0-0
 Requires: pupmod-simp-iptables >= 6.0.0-0
 Requires: pupmod-simp-logrotate < 7.0.0-0
-Requires: pupmod-simp-logrotate >= 6.0.0-0
+Requires: pupmod-simp-logrotate >= 6.1.0-0
 Requires: pupmod-simp-pki < 7.0.0-0
 Requires: pupmod-simp-pki >= 6.0.0-0
 Requires: pupmod-simp-rsyslog < 8.0.0-0

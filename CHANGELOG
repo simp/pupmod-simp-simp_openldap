@@ -1,3 +1,7 @@
+* Fri Jul 14 2017 Jeanne Greulich <jeannegreulich@onyxpoint.com> - 6.0.3-0
+- Udated default_ldif.erb temlate so it would accept  DC= or dc= for the
+  base dn.
+
 * Wed Apr 19 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.3-0
 - Updated logrotate to use new lastaction API
 - Updated all ldap DNs to uppercase DC=

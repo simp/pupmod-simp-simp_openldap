@@ -16,7 +16,17 @@ describe 'simp_openldap class' do
   servers.each do |server|
     context "simp_openldap::server #{server}" do
       let(:server_fqdn) { fact_on(server, 'fqdn') }
-      let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+      # The if statement below is to test both capitol DC= and lowercase work it has
+      # nothing to do with the os release when creating and querying.
+      if fact_on(server,'operatingsystemmajrelease') == '7'
+        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "DC=#{d}" }.join(',') }
+      else
+        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+      end
+      # It appears when you query ldap it is returning lowercase values for the
+      # ldif formats (dn, ou, cn etc) so when the output from a query is checked
+      # the lower case format is needed.
+      let(:results_base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
 
       let(:server_hieradata)      { File.read(File.expand_path('templates/server_hieradata.yaml.erb', File.dirname(__FILE__))) }
       let(:server_hieradata_tls)  { File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__))) }
@@ -52,7 +62,7 @@ describe 'simp_openldap class' do
             on(server, "ldapadd -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x -f /tmp/add_testuser.ldif")
 
             result = on(server, "ldapsearch -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x uid=test.user")
-            expect(result.stdout).to include("dn: uid=test.user,ou=People,#{base_dn}")
+            expect(result.stdout).to include("dn: uid=test.user,ou=People,#{results_base_dn}")
           end
 
           it 'should be able to add user to group' do
@@ -61,7 +71,7 @@ describe 'simp_openldap class' do
             on(server, "ldapmodify -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x -f /tmp/add_testuser_to_admin.ldif")
 
             result = on(server, "ldapsearch -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x cn=test.user")
-            expect(result.stdout).to include("dn: cn=test.user,ou=Group,#{base_dn}")
+            expect(result.stdout).to include("dn: cn=test.user,ou=Group,#{results_base_dn}")
           end
 
           context 'should be able to check password complexity' do

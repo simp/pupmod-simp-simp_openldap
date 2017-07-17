@@ -24,7 +24,13 @@ describe 'simp-ppolicy-check-password update' do
       }
 
       let(:server_fqdn) { fact_on(server, 'fqdn') }
-      let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+      if fact_on(server,'operatingsystemmajrelease') == '7'
+        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "DC=#{d}" }.join(',') }
+      else
+        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+      end
+      # The ldif format always comes out in lowercase when quering the openldap server
+      let(:results_base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
 
       context 'on the clean server' do
         it 'should be running openldap' do
@@ -39,7 +45,7 @@ describe 'simp-ppolicy-check-password update' do
 
         it 'should have a test user from a previous test' do
           result = on(server, "ldapsearch -Z -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x cn=test.user")
-          expect(result.stdout).to include("dn: cn=test.user,ou=Group,#{base_dn}")
+          expect(result.stdout).to include("dn: cn=test.user,ou=Group,#{results_base_dn}")
         end
       end
 
@@ -55,7 +61,7 @@ describe 'simp-ppolicy-check-password update' do
 
         it 'should be able to access the test user' do
           result = on(server, "ldapsearch -Z -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x cn=test.user")
-          expect(result.stdout).to include("dn: cn=test.user,ou=Group,#{base_dn}")
+          expect(result.stdout).to include("dn: cn=test.user,ou=Group,#{results_base_dn}")
         end
       end
     end

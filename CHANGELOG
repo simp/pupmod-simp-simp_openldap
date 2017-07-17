@@ -1,4 +1,4 @@
-* Fri Jul 14 2017 Jeanne Greulich <jeannegreulich@onyxpoint.com> - 6.0.3-0
+* Fri Jul 14 2017 Jeanne Greulich <jeannegreulich@onyxpoint.com> - 6.0.4-0
 - Udated default_ldif.erb temlate so it would accept  DC= or dc= for the
   base dn.
 

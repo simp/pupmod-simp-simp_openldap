@@ -1,5 +1,5 @@
 dn: <%= @_suffix %>
-dc: <%= @_suffix.split(',').first.split('dc=').last %>
+dc: <%= @_suffix.split(',').first.split(/dc=/i).last %>
 objectClass: top
 objectClass: domain
 

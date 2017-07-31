@@ -79,7 +79,10 @@ end
 <% if @use_tls -%>
 TLSCertificateFile <%= @app_pki_cert %>
 TLSCertificateKeyFile <%= @app_pki_key %>
-TLSCipherSuite <%= @tls_cipher_suite.join(':') %>
+<% if @_tls_protocol_min -%>
+TLSProtocolMin <%= @_tls_protocol_min %>
+<%   end -%>
+TLSCipherSuite <%= @_tls_cipher_suite.join(':') %>
 TLSVerifyClient <%= @tls_verify_client %>
 TLSCRLCheck <%= @tls_crl_check %>
 <%   if @app_pki_crl -%>

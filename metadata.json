@@ -1,6 +1,6 @@
 {
   "name": "simp-simp_openldap",
-  "version": "6.0.5",
+  "version": "6.1.0",
   "author": "SIMP Team",
   "summary": "Manages OpenLDAP and related security bindings",
   "license": "Apache-2.0",

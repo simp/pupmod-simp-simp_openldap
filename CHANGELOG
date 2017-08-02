@@ -1,5 +1,5 @@
 * Tue Aug 01 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.1.0-0
-- Per CVE-2014-3566, SSLv3 and TLSv1.0 ciphers should be disallowed. Recent-ish
+- Per CVE-2014-3566, SSLv3 and TLSv1 ciphers should be disallowed. Recent-ish
   updates to openldap-servers, shipped with SIMP-6.0.0-0, includes a parameter
   to specify a minimum bound of TLS protocol in slapd.conf, TLSProtocolMin.
   (see https://access.redhat.com/solutions/1234843)

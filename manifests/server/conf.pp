@@ -5,11 +5,11 @@
 # Regarding: POODLE - CVE-2014-3566
 #
 # Using module defaults and openldap-servers >= 2.4.40, a minimum bound of TLS
-# v1.2 will be set.  TLSv1, SSLv3, and SSLv2 ciphers will be removed from the
-# cipher suite.
+# v1.2 will be set.  TLSv1 and SSLv3 ciphers will be removed from the cipher
+# suite.
 #
 # If openldap-servers is < 2.4.40, the ``tls_cipher_suite`` parameter will
-# default to ``HIGH:-SSLv2`` because OpenLDAP < 2.4.40 cannot ensure the SSL
+# default to ``DEFAULT:!MEDIUM`` because OpenLDAP < 2.4.40 cannot ensure the SSL
 # provider natively. Take care to ensure that your clients only connect with
 # TLSv1 if possible.
 #
@@ -157,8 +157,16 @@
 #   Corresponds to ``time.hard`` in ``slapd.conf``
 #
 # @param tls_protocol_min
-#   Pin the minimum version of TLS used by the server. This option is only
-#   compatible with openldap-servers >= 2.4.40.
+#   This option is only compatible with openldap-servers >= 2.4.40.
+#
+#   From the slapd.conf man page:
+#   Specifies minimum SSL/TLS protocol version that will be negotiated.  If the
+#   server doesn't  support at least that version, the SSL handshake will fail.
+#   To require TLS 1.x or higher, set this option to 3.(x+1), e.g.,
+#
+#     TLSProtocolMin 3.2
+#
+#   would require TLS 1.1. 
 #
 # @param tls_verify_client
 #   TLS client verification level
@@ -352,9 +360,9 @@ class simp_openldap::server::conf (
       else {
         $_tls_protocol_min = '3.3'
       }
-      # If the minimum TLS bound is > TLSv1.0, remove weak protocols
+      # If the minimum TLS bound is > TLSv1, remove weak protocols
       if !defined('$_tls_cipher_suite') and $_tls_protocol_min >= '3.1' {
-        $_tls_cipher_suite = ['HIGH','-TLSv1.0', '-SSLv3', '-SSLv2']
+        $_tls_cipher_suite = ['HIGH','-TLSv1', '-SSLv3']
       }
     }
     else {

@@ -133,9 +133,11 @@ describe 'simp_openldap class' do
           it 'should only accept tlsv1.2 connections' do
             result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -tls1_2")
             expect(result.stdout).to include('Server certificate')
-            result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -ssl3", :acceptable_exit_codes => 1)
-            expect(result.stderr).to include('wrong version number')
-            expect(result.stdout).to include('no peer certificate available')
+            ['ssl3','tls1'].each do |cipher|
+              result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -#{cipher}", :acceptable_exit_codes => 1)
+              expect(result.stderr).to include('wrong version number')
+              expect(result.stdout).to include('no peer certificate available')
+            end
           end
         end
       end

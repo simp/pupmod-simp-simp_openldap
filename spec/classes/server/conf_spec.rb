@@ -1,16 +1,4 @@
 require 'spec_helper'
-describe 'simp_openldap::server::conf' do
-  context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) do
-          facts[:slapd_version] = '2.4.40'
-          facts[:server_facts]  = {
-            :servername    => facts[:fqdn],
-            :serverip      => facts[:ipaddress],
-          }
-          facts
-        end
 
 file_content_7 = "/usr/bin/systemctl restart rsyslog > /dev/null 2>&1 || true"
 file_content_6 = "/sbin/service rsyslog restart > /dev/null 2>&1 || true"
@@ -83,8 +71,21 @@ include /etc/openldap/slapd.access
 include /etc/openldap/dynamic_includes
 EOM
 
-slapd_content_pki = <<EOM
-include   /etc/openldap/schema/core.schema
+describe 'simp_openldap::server::conf' do
+  context 'supported operating systems' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) do
+          facts[:slapd_version] = '2.4.40'
+          facts[:server_facts]  = {
+            :servername    => facts[:fqdn],
+            :serverip      => facts[:ipaddress],
+          }
+          facts
+        end
+
+        let(:slapd_content_pki) {
+%(include   /etc/openldap/schema/core.schema
 include   /etc/openldap/schema/cosine.schema
 include   /etc/openldap/schema/inetorgperson.schema
 include   /etc/openldap/schema/nis.schema
@@ -106,7 +107,7 @@ authz-regexp
 TLSCertificateFile /etc/pki/simp_apps/openldap/x509/public/#{facts[:fqdn]}.pub
 TLSCertificateKeyFile /etc/pki/simp_apps/openldap/x509/private/#{facts[:fqdn]}.pem
 TLSProtocolMin 3.3
-TLSCipherSuite HIGH:-TLSv1.0:-SSLv3:-SSLv2
+TLSCipherSuite HIGH:-TLSv1:-SSLv3
 TLSVerifyClient allow
 TLSCRLCheck none
 TLSCACertificatePath /etc/pki/simp_apps/openldap/x509/cacerts
@@ -159,7 +160,8 @@ index nisMapName,nisMapEntry            eq,pres,sub
 
 include /etc/openldap/slapd.access
 include /etc/openldap/dynamic_includes
-EOM
+)
+}
 
         let(:pre_condition) {
           %(

@@ -1,3 +1,6 @@
+* Thu Aug 10 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.5-0
+- Updated syncdn and binddn defaults in server::conf
+
 * Fri Jul 14 2017 Jeanne Greulich <jeannegreulich@onyxpoint.com> - 6.0.4-0
 - Udated default_ldif.erb temlate so it would accept  DC= or dc= for the
   base dn.

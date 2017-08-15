@@ -4,12 +4,14 @@
 #
 # Regarding: POODLE - CVE-2014-3566
 #
-# The ``tls_cipher_suite`` parameter is set to ``HIGH:-SSLv2`` because OpenLDAP
-# cannot set the SSL provider natively.
+# Using module defaults and openldap-servers >= 2.4.40, a minimum bound of TLS
+# v1.2 will be set.  TLSv1 and SSLv3 ciphers will be removed from the cipher
+# suite.
 #
-# By default, it will run TLSv1 but cannot handle TLSv1.2 therefore the SSLv3
-# ciphers cannot be eliminated. Take care to ensure that your clients only
-# connect with TLSv1 if possible.
+# If openldap-servers is < 2.4.40, the ``tls_cipher_suite`` parameter will
+# default to ``DEFAULT:!MEDIUM`` because OpenLDAP < 2.4.40 cannot ensure the SSL
+# provider natively. Take care to ensure that your clients only connect with
+# TLSv1 if possible.
 #
 # @see slapd.conf(5)
 # @see slapd-bdb(5)
@@ -154,7 +156,19 @@
 # @param timelimit_hard
 #   Corresponds to ``time.hard`` in ``slapd.conf``
 #
-# @param tlsVerifyClient
+# @param tls_protocol_min
+#   This option is only compatible with openldap-servers >= 2.4.40.
+#
+#   From the slapd.conf man page:
+#   Specifies minimum SSL/TLS protocol version that will be negotiated.  If the
+#   server doesn't  support at least that version, the SSL handshake will fail.
+#   To require TLS 1.x or higher, set this option to 3.(x+1), e.g.,
+#
+#     TLSProtocolMin 3.2
+#
+#   would require TLS 1.1. 
+#
+# @param tls_verify_client
 #   TLS client verification level
 #
 #   Do not set this more restrictive than 'try' unless you **really** know what
@@ -290,7 +304,8 @@ class simp_openldap::server::conf (
   Stdlib::Absolutepath                                $app_pki_cert               = $::simp_openldap::app_pki_cert,
   Stdlib::Absolutepath                                $app_pki_key                = $::simp_openldap::app_pki_key,
   Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $::simp_openldap::app_pki_crl,
-  Array[String[1]]                                    $tls_cipher_suite           = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' => ['DEFAULT', '!MEDIUM'] }),
+  Optional[Array[String[1]]]                          $tls_cipher_suite           = undef,
+  Optional[Float]                                     $tls_protocol_min           = undef,
   Enum['none','peer','all']                           $tls_crl_check              = 'none',
   # lint:ignore:quoted_booleans
   Enum['never','allow','try','demand','hard','true']  $tls_verify_client          = 'allow',
@@ -329,6 +344,39 @@ class simp_openldap::server::conf (
       mask    => ['IN_CREATE'],
       command => '/bin/rm $@/$#'
     }
+  }
+
+  # By default, remove weak ciphers and allow users to set a minimum TLS
+  # protocol if openlap supports it
+  if $tls_cipher_suite {
+    $_tls_cipher_suite = $tls_cipher_suite
+  }
+  if $facts['slapd_version'] {
+    if $facts['slapd_version'] >= '2.4.40' {
+      if $tls_protocol_min {
+        $_tls_protocol_min = $tls_protocol_min
+      }
+      # Minimum bound of TLSv1.2
+      else {
+        $_tls_protocol_min = '3.3'
+      }
+      # If the minimum TLS bound is > TLSv1, remove weak protocols
+      if !defined('$_tls_cipher_suite') and $_tls_protocol_min >= '3.1' {
+        $_tls_cipher_suite = ['HIGH','-TLSv1', '-SSLv3']
+      }
+    }
+    else {
+      if $tls_protocol_min {
+        notify { 'TLSProtocolMin':
+          message =>  "TLSProtocolMin not supported by openldap-servers ${facts['slapd_version']}"
+        }
+      }
+    }
+  }
+  # Fallback if cipher suite not specified and we can't determine the version
+  # of slapd
+  if !defined('$_tls_cipher_suite') {
+    $_tls_cipher_suite = simplib::lookup('simp_options::openssl::cipher_suite' ,{ 'default_value' =>  ['DEFAULT', '!MEDIUM'] })
   }
 
   file { '/etc/openldap/slapd.conf':

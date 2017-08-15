@@ -1,4 +1,11 @@
-* Thu Aug 10 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.5-0
+* Tue Aug 01 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.1.0-0
+- Per CVE-2014-3566, SSLv3 and TLSv1 ciphers should be disallowed. Recent-ish
+  updates to openldap-servers, shipped with SIMP-6.0.0-0, includes a parameter
+  to specify a minimum bound of TLS protocol in slapd.conf, TLSProtocolMin.
+  (see https://access.redhat.com/solutions/1234843)
+- This commit includes puppetry to remove TLSv1.0, SSLv3, and SSLv2 from the
+  TLS cipher suites, and set a minimum TLS protocol of TLSv1.2, given
+  openldap-servers is >= 2.4.40.
 - Updated syncdn and binddn defaults in server::conf
 
 * Fri Jul 14 2017 Jeanne Greulich <jeannegreulich@onyxpoint.com> - 6.0.4-0

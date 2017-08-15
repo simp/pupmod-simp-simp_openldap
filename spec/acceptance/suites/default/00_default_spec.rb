@@ -129,6 +129,16 @@ describe 'simp_openldap class' do
           it 'should reject non-tls connections' do
             on(server, "ldapsearch -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -x -w suP3rP@ssw0r!", :acceptable_exit_codes=> [13])
           end
+
+          it 'should only accept tlsv1.2 connections' do
+            result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -tls1_2")
+            expect(result.stdout).to include('Server certificate')
+            ['ssl3','tls1'].each do |cipher|
+              result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -#{cipher}", :acceptable_exit_codes => 1)
+              expect(result.stderr).to include('wrong version number')
+              expect(result.stdout).to include('no peer certificate available')
+            end
+          end
         end
       end
     end

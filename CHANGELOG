@@ -1,3 +1,6 @@
+* Thu Nov 09 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.1-0
+- Adjust text search strings in acceptance tests
+
 * Tue Aug 01 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.1.0-0
 - Per CVE-2014-3566, SSLv3 and TLSv1 ciphers should be disallowed. Recent-ish
   updates to openldap-servers, shipped with SIMP-6.0.0-0, includes a parameter

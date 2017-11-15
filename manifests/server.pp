@@ -59,14 +59,17 @@ class simp_openldap::server (
 
   include '::simp_openldap::client'
   contain '::simp_openldap::server::install'
-  contain '::simp_openldap::server::service'
 
   if $allow_sync {
     contain '::simp_openldap::slapo::syncprov'
+
+    Class['simp_openldap::server::install'] -> Class['simp_openldap::slapo::syncprov']
   }
 
   if $use_ppolicy {
     contain '::simp_openldap::slapo::ppolicy'
+
+    Class['simp_openldap::server::install'] -> Class['simp_openldap::slapo::ppolicy']
   }
 
   # This needs to come after ppolicy and syncprov since some templates
@@ -234,5 +237,11 @@ class simp_openldap::server (
       pattern => 'ALL',
       order   => 1
     }
+  }
+
+  contain '::simp_openldap::server::service'
+
+  if $::simp_openldap::pki {
+    Pki::Copy['openldap'] ~> Class['simp_openldap::server::service']
   }
 }

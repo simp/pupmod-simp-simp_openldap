@@ -1,3 +1,8 @@
+* Wed Nov 15 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.1-0
+- Fixed an issue where pki::copy was not correctly hooked into the server logic
+  and a system PKI update would not properly propagate into the OpenLDAP
+  service restart.
+
 * Thu Nov 09 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.1-0
 - Adjust text search strings in acceptance tests
 

@@ -9,7 +9,7 @@
 
 .setup_bundler_env: &setup_bundler_env
   before_script:
-    - gem install bundler 
+    - gem install bundler
     - rm -f Gemfile.lock
     - bundle install --no-binstubs --path .vendor "${FLAGS[@]}"
 
@@ -107,15 +107,6 @@ unit-puppet5-ruby-2.4:
   <<: *spec_tests
   allow_failure: true
 
-acceptance-base_apps:
-  stage: acceptance
-  tags:
-    - beaker
-  <<: *cache_bundler
-  <<: *setup_bundler_env
-  script:
-    - bundle exec rake beaker:suites[base_apps]
-
 acceptance-default:
   stage: acceptance
   tags:
@@ -125,39 +116,11 @@ acceptance-default:
   script:
     - bundle exec rake beaker:suites[default]
 
-acceptance-no_simp_server:
+acceptance-fips:
   stage: acceptance
   tags:
     - beaker
   <<: *cache_bundler
   <<: *setup_bundler_env
   script:
-    - bundle exec rake beaker:suites[no_simp_server]
-
-acceptance-one_shot_scenario:
-  stage: acceptance
-  tags:
-    - beaker
-  <<: *cache_bundler
-  <<: *setup_bundler_env
-  script:
-    - bundle exec rake beaker:suites[scenario_one_shot]
-
-acceptance-poss_scenario:
-  stage: acceptance
-  tags:
-    - beaker
-  <<: *cache_bundler
-  <<: *setup_bundler_env
-  script:
-    - bundle exec rake beaker:suites[scenario_poss]
-
-acceptance-remote_access_scenario:
-  stage: acceptance
-  tags:
-    - beaker
-  <<: *cache_bundler
-  <<: *setup_bundler_env
-  script:
-    - bundle exec rake beaker:suites[scenario_remote_access]
-  allow_failure: true
+    - BEAKER_fips=yes bundle exec rake beaker:suites[default]

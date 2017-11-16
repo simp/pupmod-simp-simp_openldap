@@ -42,11 +42,6 @@ describe 'simp_openldap class' do
 
             set_hieradata_on(server, server_hieradata)
             apply_manifest_on(server, server_manifest, :catch_failures => true)
-            #apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
-            #apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
-
-            # reboot to apply auditd changes
-            # shell( 'shutdown -r now', { :expect_connection_failure => true } )
           end
 
           it 'should be idempotent' do

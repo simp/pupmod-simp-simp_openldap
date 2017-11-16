@@ -23,6 +23,7 @@ class simp_openldap::server::service (
         /bin/chown -h -R ldap.ldap /var/lib/ldap/*; \
         /bin/touch /etc/openldap/puppet_bootstrapped.lock; \
         /bin/chown root:ldap /etc/openldap/puppet_bootstrapped.lock; \
+        /usr/bin/chcon --reference=/etc/openldap/slapd.conf /etc/openldap/puppet_bootstrapped.lock ||:; \
         /bin/echo 'Bootstrapped LDAP';",
     onlyif    => '/usr/local/sbin/ldap_bootstrap_check.sh',
     logoutput => true,

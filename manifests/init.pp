@@ -95,10 +95,6 @@ class simp_openldap (
 
   if $is_server {
     contain '::simp_openldap::server'
-
-    if $pki {
-      Class['pki::copy'] ~> Class['simp_openldap::server::service']
-    }
   }
 
   contain '::simp_openldap::client'

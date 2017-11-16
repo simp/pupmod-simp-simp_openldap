@@ -28,27 +28,25 @@ describe 'simp_openldap class' do
       # the lower case format is needed.
       let(:results_base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
 
-      let(:server_hieradata)      { File.read(File.expand_path('templates/server_hieradata.yaml.erb', File.dirname(__FILE__))) }
-      let(:server_hieradata_tls)  { File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__))) }
       let(:add_testuser)          { File.read(File.expand_path('templates/add_testuser.ldif.erb', File.dirname(__FILE__))) }
       let(:add_testuser_to_admin) { File.read(File.expand_path('templates/add_testuser_to_admin.ldif.erb', File.dirname(__FILE__))) }
 
       context 'default parameters (no pki)' do
-        it 'should configure server with tls disabled and with no errors' do
-          echo_on(server, base_dn)
+        let(:server_hieradata)      { ERB.new(File.read(File.expand_path('templates/server_hieradata.yaml.erb', File.dirname(__FILE__)))).result(binding) }
 
-          on(server, 'mkdir -p /usr/local/sbin/simp')
-          set_hieradata_on(server, ERB.new(server_hieradata).result(binding))
-          apply_manifest_on(server, server_manifest, :catch_failures => true)
-          apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
-          apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
+        context 'preparing for run' do
+          it 'should configure server with tls disabled and with no errors' do
+            echo_on(server, base_dn)
 
-          # reboot to apply auditd changes
-          # shell( 'shutdown -r now', { :expect_connection_failure => true } )
-        end
+            on(server, 'mkdir -p /usr/local/sbin/simp')
 
-        it 'should be idempotent' do
-          apply_manifest(server_manifest, {:catch_changes => true})
+            set_hieradata_on(server, server_hieradata)
+            apply_manifest_on(server, server_manifest, :catch_failures => true)
+          end
+
+          it 'should be idempotent' do
+            apply_manifest(server_manifest, {:catch_changes => true})
+          end
         end
 
         context 'user management' do
@@ -105,24 +103,14 @@ describe 'simp_openldap class' do
 
            on(server, "date --set='last year'")
           end
-
         end
+      end
 
-        context 'with tls enabled' do
+      context 'with tls enabled' do
+        let(:server_hieradata)  { ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding) }
+
+        shared_examples_for 'a tls enabled system' do
           it 'should be able to connect using tls and use ldapsearch' do
-            on(server, 'rm /root/.ldaprc', :accept_all_exit_codes => true)
-            on(server, 'mkdir -p /usr/local/sbin/simp', :accept_all_exit_codes => true)
-
-            # convert certs to pkcs12
-            certpath = '/etc/pki/simp-testing/pki'
-            on(server, "openssl pkcs12 -export -in #{certpath}/private/#{server_fqdn}.pem -out #{certpath}/private/#{server_fqdn}.p12 -passout pass: -name #{server_fqdn}")
-            on(server, "pk12util -i #{certpath}/private/#{server_fqdn}.p12 -d sql:/etc/openldap/certs -k /etc/openldap/certs/password -W '' -n #{server_fqdn}")
-            on(server, 'chown :ldap -R /etc/pki/simp-testing/')
-
-            set_hieradata_on(server, ERB.new(server_hieradata_tls).result(binding))
-            apply_manifest_on(server, server_manifest, :catch_failures => true)
-            apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
-
             on(server, "ldapsearch -ZZ -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -x -w suP3rP@ssw0r!")
           end
 
@@ -146,6 +134,35 @@ describe 'simp_openldap class' do
               expect(result.stdout).to include('no peer certificate available')
             end
           end
+        end
+
+        context 'with the default environment' do
+          it 'should run puppet' do
+            set_hieradata_on(server, server_hieradata)
+            apply_manifest_on(server, server_manifest, :catch_failures => true)
+          end
+
+          it 'should be idempotent' do
+            apply_manifest_on(server, server_manifest, :acceptable_exit_codes => [0,2])
+          end
+
+          it_should_behave_like 'a tls enabled system'
+        end
+
+        context 'with a new set of PKI certificates' do
+          it 'should populate new certificates into simp-testing' do
+            Dir.mktmpdir do |cert_dir|
+              run_fake_pki_ca_on(server, hosts, cert_dir)
+              hosts.each { |sut| copy_pki_to(sut, cert_dir, '/etc/pki/simp-testing') }
+            end
+          end
+
+          # Refresh the certs via Puppet
+          it 'should run puppet' do
+            apply_manifest_on(server, server_manifest, :catch_failures => true)
+          end
+
+          it_should_behave_like 'a tls enabled system'
         end
       end
     end

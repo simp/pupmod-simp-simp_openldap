@@ -1,3 +1,6 @@
+* Thu Nov 16 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.2-0
+- Fix an incorrect dependency for puppetlabs/concat in the metadata.json
+
 * Wed Nov 15 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.1-0
 - Fixed an issue where pki::copy was not correctly hooked into the server logic
   and a system PKI update would not properly propagate into the OpenLDAP

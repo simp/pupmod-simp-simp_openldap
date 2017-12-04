@@ -83,13 +83,13 @@ dn: cn=users,ou=Group,<%= @_suffix %>
 objectClass: posixGroup
 objectClass: top
 cn: users
-gidNumber: 100
+gidNumber: <%= @users_group_id %>
 
 dn: cn=administrators,ou=Group,<%= @_suffix %>
 objectClass: posixGroup
 objectClass: top
 cn: administrators
-gidNumber: 700
+gidNumber: <%= @administrators_group_id %>
 
 dn: ou=pwpolicies,<%= @_suffix %>
 ou: pwpolicies

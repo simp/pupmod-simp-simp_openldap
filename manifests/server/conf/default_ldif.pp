@@ -8,7 +8,7 @@
 #
 class simp_openldap::server::conf::default_ldif (
   Integer[1]   $users_group_id                     = 100,
-  Integer[501] $administrators_group_id            = 700,
+  Integer[500] $administrators_group_id            = 700,
   Integer[0]   $ppolicy_pwd_min_age                = 86400,
   Integer[1]   $ppolicy_pwd_max_age                = 15552000,
   Integer[0]   $ppolicy_pwd_in_history             = 24,

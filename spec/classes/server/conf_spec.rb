@@ -180,6 +180,12 @@ include /etc/openldap/dynamic_includes
           it { is_expected.to create_file('/etc/openldap/DB_CONFIG').with_content(/set_data_dir/) }
           it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/dn: DC=host,DC=net/) }
           it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/pwdCheckModule: .*check_password.so/) }
+
+          # Users
+          it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/gidNumber: 100/) }
+
+          # Administrators
+          it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/gidNumber: 700/) }
           it {
             if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
             then

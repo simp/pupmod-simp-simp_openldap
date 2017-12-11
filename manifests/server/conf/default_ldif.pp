@@ -1,26 +1,28 @@
 # **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 #
 # This allows for the modification of the default LDIF entries in
-# /etc/openldap/default.ldif. It will *not* modify any active values in a
+# /etc/openldap/default.ldif. It will **not** modify any active values in a
 # running LDAP server.
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class simp_openldap::server::conf::default_ldif (
-  Integer[0] $ppolicy_pwd_min_age                = 86400,
-  Integer[1] $ppolicy_pwd_max_age                = 15552000,
-  Integer[0] $ppolicy_pwd_in_history             = 24,
-  Integer[0] $ppolicy_pwd_check_quality          = 2,
-  Integer[0] $ppolicy_pwd_min_length             = 14,
-  Integer[0] $ppolicy_pwd_expire_warning         = 1209600,
-  Integer    $ppolicy_pwd_grace_authn_limit      = -1,
-  Boolean    $ppolicy_pwd_lockout                = true,
-  Integer[0] $ppolicy_pwd_lockout_duration       = 900,
-  Integer[0] $ppolicy_pwd_max_failure            = 5,
-  Integer[0] $ppolicy_pwd_failure_count_interval = 900,
-  Boolean    $ppolicy_pwd_must_change            = true,
-  Boolean    $ppolicy_pwd_allow_user_change      = true,
-  Boolean    $ppolicy_pwd_safe_modify            = false
+  Integer[1]   $users_group_id                     = 100,
+  Integer[500] $administrators_group_id            = 700,
+  Integer[0]   $ppolicy_pwd_min_age                = 86400,
+  Integer[1]   $ppolicy_pwd_max_age                = 15552000,
+  Integer[0]   $ppolicy_pwd_in_history             = 24,
+  Integer[0]   $ppolicy_pwd_check_quality          = 2,
+  Integer[0]   $ppolicy_pwd_min_length             = 14,
+  Integer[0]   $ppolicy_pwd_expire_warning         = 1209600,
+  Integer      $ppolicy_pwd_grace_authn_limit      = -1,
+  Boolean      $ppolicy_pwd_lockout                = true,
+  Integer[0]   $ppolicy_pwd_lockout_duration       = 900,
+  Integer[0]   $ppolicy_pwd_max_failure            = 5,
+  Integer[0]   $ppolicy_pwd_failure_count_interval = 900,
+  Boolean      $ppolicy_pwd_must_change            = true,
+  Boolean      $ppolicy_pwd_allow_user_change      = true,
+  Boolean      $ppolicy_pwd_safe_modify            = false
 ) {
 
   assert_private()

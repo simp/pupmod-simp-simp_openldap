@@ -63,7 +63,7 @@
 #
 class simp_openldap (
   Array[Simplib::URI]            $ldap_uri                = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
-  String                         $base_dn                 = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => simplib::ldap::domain_to_dn() }),
+  String                         $base_dn                 = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => simplib::ldap::domain_to_dn("example.com") }),
   String                         $bind_dn                 = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', simplib::ldap::domain_to_dn()) }),
   String                         $ldap_master             = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
   Boolean                        $is_server               = false,

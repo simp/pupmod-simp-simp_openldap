@@ -197,6 +197,7 @@ default:
   variables:
     PUPPET_VERSION: '4.10'
   script:
+    - bundle exec rake spec_prep
     - bundle exec rake beaker:suites[default]
 
 default-fips:
@@ -209,4 +210,5 @@ default-fips:
     PUPPET_VERSION: '4.10'
     BEAKER_fips: 'yes'
   script:
+    - bundle exec rake spec_prep
     - bundle exec rake beaker:suites[default]

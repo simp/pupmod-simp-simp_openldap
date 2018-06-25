@@ -1,7 +1,6 @@
 ---
 fixtures:
   repositories:
-    auditd: https://github.com/simp/pupmod-simp-auditd
     augeasproviders_core: https://github.com/simp/augeasproviders_core
     augeasproviders_grub: https://github.com/simp/augeasproviders_grub
     concat:
@@ -13,14 +12,13 @@ fixtures:
     iptables: https://github.com/simp/pupmod-simp-iptables
     logrotate: https://github.com/simp/pupmod-simp-logrotate
     pki: https://github.com/simp/pupmod-simp-pki
-    rsync: https://github.com/simp/pupmod-simp-rsync
     rsyslog: https://github.com/simp/pupmod-simp-rsyslog
-    simpcat: https://github.com/simp/pupmod-simp-simpcat
     simplib: https://github.com/simp/pupmod-simp-simplib
     simp_options: https://github.com/simp/pupmod-simp-simp_options
-    sssd: https://github.com/simp/pupmod-simp-sssd
     stdlib: https://github.com/simp/puppetlabs-stdlib
-    stunnel: https://github.com/simp/pupmod-simp-stunnel
+    systemd:
+      repo: https://github.com/simp/puppet-systemd
+      branch: simp-master
     tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers
   symlinks:
     simp_openldap: "#{source_dir}"

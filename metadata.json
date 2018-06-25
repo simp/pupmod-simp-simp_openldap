@@ -1,6 +1,6 @@
 {
   "name": "simp-simp_openldap",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "author": "SIMP Team",
   "summary": "Manages OpenLDAP and related security bindings",
   "license": "Apache-2.0",
@@ -22,10 +22,6 @@
     {
       "name": "puppetlabs/stdlib",
       "version_requirement": ">= 4.13.1 < 5.0.0"
-    },
-    {
-      "name": "simp/auditd",
-      "version_requirement": ">= 7.0.0 < 8.0.0"
     },
     {
       "name": "simp/iptables",

@@ -1,3 +1,8 @@
+* Thu Jun 14 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.2.1-0
+- Update systemd fixtures and CI assets
+- Fix acceptance test by not testing text of failure code, only the exit code
+- Remove unneeded simp/auditd dependency
+
 * Mon Dec 04 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.2.0-0
 - Allow setting the 'users' and 'administrators' GIDs in the default ldif file
 

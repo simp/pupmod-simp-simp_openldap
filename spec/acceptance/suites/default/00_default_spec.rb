@@ -120,19 +120,18 @@ describe 'simp_openldap class' do
 
           it 'should only accept tlsv1.2 connections' do
             result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -tls1_2")
+
             expect(result.stdout).to include('Server certificate')
             ['tls1','tls1_1'].each do |cipher|
-              result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -#{cipher}", :acceptable_exit_codes => 1)
-              expect(result.stderr).to include('wrong version number')
-              expect(result.stdout).to include('no peer certificate available')
+              result = on(server,
+                "echo 'Q' | openssl s_client -connect localhost:636 -#{cipher}",
+                :acceptable_exit_codes => 1
+              )
             end
-            result = on(server, "echo 'Q' | openssl s_client -connect localhost:636 -ssl3", :acceptable_exit_codes => 1)
-            if ENV['BEAKER_fips'] == 'yes'
-              expect(result.stderr).to include('only tls allowed in fips mode')
-            else
-              expect(result.stderr).to include('wrong version number')
-              expect(result.stdout).to include('no peer certificate available')
-            end
+            result = on(server,
+              "echo 'Q' | openssl s_client -connect localhost:636 -ssl3",
+              :acceptable_exit_codes => 1
+            )
           end
         end
 

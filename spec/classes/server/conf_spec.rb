@@ -1,8 +1,5 @@
 require 'spec_helper'
 
-file_content_7 = "/usr/bin/systemctl restart rsyslog > /dev/null 2>&1 || true"
-file_content_6 = "/sbin/service rsyslog restart > /dev/null 2>&1 || true"
-
 slapd_content_nopki = <<EOM
 include   /etc/openldap/schema/core.schema
 include   /etc/openldap/schema/cosine.schema
@@ -341,14 +338,6 @@ include /etc/openldap/dynamic_includes
             :log_to_file       => true
           }}
 
-          if ['RedHat','CentOS'].include?(facts[:operatingsystem])
-            if facts[:operatingsystemmajrelease].to_s < '7'
-              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_6}/)}
-            else
-              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_7}/)}
-            end
-          end
-
           it { is_expected.to create_class('logrotate') }
           it { is_expected.to create_class('rsyslog') }
 
@@ -363,6 +352,14 @@ include /etc/openldap/dynamic_includes
           it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
           it { is_expected.to create_rsyslog__rule__data_source('openldap_audit').with_rule(/File="#{params[:auditlog]}"/) }
           it { is_expected.to create_rsyslog__rule__drop('1_drop_openldap_passwords').with_rule(/contains\s+'Password::\s+'/) }
+
+          it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule("prifilt('local4.*')") }
+          it { is_expected.to create_logrotate__rule('slapd').with({
+              :log_files                 => [ '/var/log/slapd.log' ],
+              :missingok                 => true,
+              :lastaction_restart_logger => true
+            })
+          }
         end
 
         context 'audit_transactions_no_audit_to_syslog' do
@@ -379,14 +376,6 @@ include /etc/openldap/dynamic_includes
             :log_to_file       => true
           }}
 
-          if ['RedHat','CentOS'].include?(facts[:operatingsystem])
-            if facts[:operatingsystemmajrelease].to_s < '7'
-              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_6}/)}
-            else
-              it { should create_file('/etc/logrotate.d/slapd').with_content(/#{file_content_7}/)}
-            end
-          end
-
           it { is_expected.to create_class('logrotate') }
 
           it { is_expected.to create_file(params[:auditlog]) }
@@ -400,6 +389,14 @@ include /etc/openldap/dynamic_includes
           it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(/auditlog #{params[:auditlog]}/) }
           it { is_expected.to_not create_rsyslog__add_conf('openldap_audit') }
           it { is_expected.to_not create_rsyslog__rule__drop('1_drop_openldap_passwords') }
+
+          it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule("prifilt('local4.*')") }
+          it { is_expected.to create_logrotate__rule('slapd').with({
+              :log_files                 => [ '/var/log/slapd.log' ],
+              :missingok                 => true,
+              :lastaction_restart_logger => true
+            })
+          }
         end
 
         context 'logging_enabled' do
@@ -416,9 +413,11 @@ include /etc/openldap/dynamic_includes
           it { is_expected.to create_class('logrotate') }
           it { is_expected.to create_class('rsyslog') }
 
-          it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule(/local4\.\*/) }
+          it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule("prifilt('local4.*')") }
           it { is_expected.to create_logrotate__rule('slapd').with({
-              :log_files => [params[:log_file]]
+              :log_files                 => [params[:log_file]],
+              :missingok                 => true,
+              :lastaction_restart_logger => true
             })
           }
         end

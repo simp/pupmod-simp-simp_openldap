@@ -3,7 +3,7 @@ simp_options::trusted_nets :
   - 1.2.3.4
   - 5.6.7.8
 simp_options::puppet::server : "puppet.server.com"
-simp_options::ldap::base_dn : "DC=bar,DC=baz"
+simp_options::ldap::base_dn : "DC=host,DC=net"
 simp_options::ldap::bind_pw : "s00per sekr3t!"
 simp_options::ldap::bind_hash : '{SSHA}foobarbaz!!!!'
 simp_options::ldap::sync_dn : "cn=sync,ou=Hosts,%{hiera('simp_options::ldap::base_dn')}"
@@ -12,12 +12,12 @@ simp_options::ldap::root_dn : "cn=LDAPAdmin,ou=People,%{hiera('simp_options::lda
 simp_options::syslog : true
 simp_options::iptables : true
 simp_options::ldap::uri :
-  - "ldap://server1.bar.baz"
-  - "ldap://server2.bar.baz"
-simp_options::ldap::master : "ldap://server1.bar.baz"
+  - "ldap://server1.host.net"
+  - "ldap://server2.host.net"
+simp_options::ldap::master : "ldap://server1.host.net"
 simp_openldap::server::conf::rootpw: '{SSHA}foobarbaz!!!!'
-simp::rsync_server : 'rsync.bar.baz'
+simp::rsync_server : 'rsync.host.net'
 rsync::timeout : '1'
 sssd::domains :
   - 'LOCAL'
-openldap::base_dn : "ou=foo,DC=bar,DC=baz"
+openldap::base_dn : "ou=foo,DC=host,DC=net"

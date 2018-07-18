@@ -9,10 +9,6 @@ describe 'simp_openldap::server::access' do
         }
 
         let(:facts) do
-          facts[:server_facts] = {
-            :servername => facts[:fqdn],
-            :serverip   => facts[:ipaddress]
-          }
           facts
         end
 
@@ -49,4 +45,3 @@ describe 'simp_openldap::server::access' do
     end
   end
 end
-

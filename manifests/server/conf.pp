@@ -166,7 +166,7 @@
 #
 #     TLSProtocolMin 3.2
 #
-#   would require TLS 1.1. 
+#   would require TLS 1.1.
 #
 # @param tls_verify_client
 #   TLS client verification level
@@ -368,7 +368,7 @@ class simp_openldap::server::conf (
     else {
       if $tls_protocol_min {
         notify { 'TLSProtocolMin':
-          message =>  "TLSProtocolMin not supported by openldap-servers ${facts['slapd_version']}"
+          message => "TLSProtocolMin not supported by openldap-servers ${facts['slapd_version']}"
         }
       }
     }
@@ -385,7 +385,6 @@ class simp_openldap::server::conf (
     group   => 'ldap',
     mode    => '0640',
     content => template("${module_name}/etc/openldap/slapd.conf.erb"),
-    notify  => Class['simp_openldap::server::service']
   }
 
   file { '/etc/openldap/DB_CONFIG':
@@ -394,17 +393,15 @@ class simp_openldap::server::conf (
     group   => 'ldap',
     mode    => '0640',
     content => template("${module_name}/etc/openldap/DB_CONFIG.erb"),
-    notify  => Class['simp_openldap::server::service']
   }
 
-  if ($facts['os']['name'] in ['RedHat','CentOS']) and (versioncmp($facts['os']['release']['major'], '6') > 0) {
+  if versioncmp($facts['os']['release']['major'], '6') > 0 {
     file { '/etc/sysconfig/slapd':
       ensure  => 'file',
       owner   => 'root',
       group   => 'root',
       mode    => '0640',
       content => template("${module_name}/etc/sysconfig/slapd.erb"),
-      notify  => Class['simp_openldap::server::service']
     }
   }
   else {
@@ -414,7 +411,6 @@ class simp_openldap::server::conf (
       group   => 'root',
       mode    => '0640',
       content => template("${module_name}/etc/sysconfig/ldap.erb"),
-      notify  => Class['simp_openldap::server::service']
     }
   }
 

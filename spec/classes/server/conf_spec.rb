@@ -40,7 +40,7 @@ reverse-lookup off
 
 database  bdb
 suffix    "DC=host,DC=net"
-rootdn    "cn=LDAPAdmin,ou=People,DC=bar,DC=baz"
+rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
 
 rootpw    {SSHA}foobarbaz!!!!
 
@@ -74,10 +74,6 @@ describe 'simp_openldap::server::conf' do
       context "on #{os}" do
         let(:facts) do
           facts[:slapd_version] = '2.4.40'
-          facts[:server_facts]  = {
-            :servername    => facts[:fqdn],
-            :serverip      => facts[:ipaddress],
-          }
           facts
         end
 
@@ -98,7 +94,7 @@ argsfile  /var/run/openldap/slapd.args
 authz-policy to
 authz-regexp
     "^uid=([^,]+),.*"
-    "uid=$1,ou=People,DC=bar,DC=baz"
+    "uid=$1,ou=People,DC=host,DC=net"
 
 
 TLSCertificateFile /etc/pki/simp_apps/openldap/x509/public/#{facts[:fqdn]}.pub
@@ -130,8 +126,8 @@ loglevel stats sync
 reverse-lookup off
 
 database  bdb
-suffix    "DC=bar,DC=baz"
-rootdn    "cn=LDAPAdmin,ou=People,DC=bar,DC=baz"
+suffix    "DC=host,DC=net"
+rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
 
 rootpw    {SSHA}foobarbaz!!!!
 
@@ -184,8 +180,7 @@ include /etc/openldap/dynamic_includes
           # Administrators
           it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/gidNumber: 700/) }
           it {
-            if ['RedHat','CentOS'].include?(facts[:operatingsystem]) and facts[:operatingsystemmajrelease] < "7"
-            then
+            if facts[:operatingsystemmajrelease] < "7"
               is_expected.to create_file('/etc/sysconfig/ldap').with_content(/SLAPD_OPTIONS.*slapd.conf/)
             else
               is_expected.to create_file('/etc/sysconfig/slapd').with_content(/SLAPD_URLS.*ldap.*:\/\//)
@@ -195,38 +190,27 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'with pki = false' do
-          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_false' }
           it { is_expected.to_not contain_class('pki') }
           it { is_expected.to_not create_pki__copy('openldap') }
           it { is_expected.to_not create_file('/etc/pki/simp_apps/openldap/x509')}
-          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_notify('Class[Simp_openldap::Server::Service]') }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf') }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSCertificateFile/) }
         end
 
         context 'with pki = true and openldap-server = 2.4.40' do
-          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_true' }
           it { is_expected.to_not contain_class('pki') }
           it { is_expected.to create_pki__copy('openldap') }
           it { is_expected.to create_file('/etc/pki/simp_apps/openldap/x509')}
-          it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
-            :notify => 'Class[Simp_openldap::Server::Service]',
-            :content => slapd_content_pki
-            })
-          }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(slapd_content_pki) }
         end
 
         context 'with pki = true and openldap-servers < 2.4.40' do
           let(:facts) do
             facts[:slapd_version] = '2.3.0'
-            facts[:server_facts]  = {
-              :servername    => facts[:fqdn],
-              :serverip      => facts[:ipaddress],
-            }
             facts
           end
-          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_true' }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSProtocolMin/)}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/TLSCipherSuite DEFAULT:!MEDIUM/)}
@@ -234,13 +218,8 @@ include /etc/openldap/dynamic_includes
 
         context 'with pki = true and slapd_version = nil' do
           let(:facts) do
-            facts[:server_facts]  = {
-              :servername    => facts[:fqdn],
-              :serverip      => facts[:ipaddress],
-            }
             facts
           end
-          let(:pre_condition) { "include 'simp_openldap'" }
           let(:hieradata) { 'pki_true' }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSProtocolMin/)}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/TLSCipherSuite DEFAULT:!MEDIUM/)}
@@ -253,53 +232,33 @@ include /etc/openldap/dynamic_includes
           it { is_expected.to contain_class('pki') }
           it { is_expected.to create_pki__copy('openldap') }
           it { is_expected.to create_file('/etc/pki/simp_apps/openldap/x509')}
-          it { is_expected.to create_file('/etc/openldap/slapd.conf').with({
-              :notify => 'Class[Simp_openldap::Server::Service]',
-              :content => /TLSCertificateFile/
-            })
-          }
+          it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/TLSCertificateFile/) }
         end
 
         context 'force_log_quick_kill' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
-
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{ :force_log_quick_kill => true }}
 
           it { is_expected.to create_incron__system_table('nuke_openldap_log_files').with_command('/bin/rm $@/$#') }
         end
 
         context 'enable_iptables' do
-          # Testing this by setting the global override
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
-          let(:params){{
-            :firewall => true
-          }}
+          let(:pre_condition) { "include 'simp_openldap'" }
+          let(:params){{ :firewall => true }}
           it { is_expected.to create_class('iptables') }
           it { is_expected.to create_iptables__listen__tcp_stateful('allow_ldap').with_dports(389) }
           it { is_expected.to create_iptables__listen__tcp_stateful('allow_ldaps').with_dports(636) }
         end
 
         context 'do_not_use_iptables' do
-          # Testing this by setting the global override
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
-
-          let(:params){{
-            :firewall => false
-          }}
+          let(:pre_condition) { "include 'simp_openldap'" }
+          let(:params){{ :firewall => false }}
           it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldap') }
           it { is_expected.to_not create_iptables__listen__tcp_stateful('allow_ldaps') }
         end
 
         context 'use_iptables_no_listen_ldaps' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{
             :listen_ldaps => false,
             :firewall     => true
@@ -311,9 +270,7 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'use_iptables_no_listen_ldap_or_ldaps' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{
             :listen_ldap  => false,
             :listen_ldaps => false,
@@ -326,9 +283,7 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'audit_transactions' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{
             :auditlog          => '/var/log/ldap_audit.log',
             :auditlog_rotate   => 'daily',
@@ -363,9 +318,7 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'audit_transactions_no_audit_to_syslog' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{
             :auditlog          => '/var/log/ldap_audit.log',
             :auditlog_rotate   => 'daily',
@@ -400,9 +353,7 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'logging_enabled' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{
             :syslog      => true,
             :log_to_file => true,
@@ -423,26 +374,17 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'logging_disabled' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
-
-          let(:params){{
-            :syslog => false,
-          }}
+          let(:pre_condition) { "include 'simp_openldap'" }
+          let(:params){{ :syslog => false }}
           it { is_expected.to_not create_rsyslog__rule__local('05_openldap_local') }
           it { is_expected.to_not create_logrotate__rule('slapd') }
         end
 
         context 'threads_is_dynamic' do
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:facts){
             facts[:slapd_version] = '2.4.40'
-            facts[:server_facts]  = {
-              :servername    => facts[:fqdn],
-              :serverip      => facts[:ipaddress],
-            }
             facts[:processorcount] = 4
-
             facts
           }
 
@@ -451,9 +393,7 @@ include /etc/openldap/dynamic_includes
         end
 
         context 'threads_is_user_overridden' do
-          let(:pre_condition) {
-            %( class { "::simp_openldap": base_dn => "DC=host,DC=net" })
-          }
+          let(:pre_condition) { "include 'simp_openldap'" }
           let(:params){{ :threads => 20 }}
 
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/threads   20/) }

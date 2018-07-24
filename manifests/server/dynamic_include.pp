@@ -21,7 +21,6 @@ define simp_openldap::server::dynamic_include (
     mode           => '0640',
     ensure_newline => true,
     warn           => true,
-    notify         => Class['simp_openldap::server::service']
   })
 
   concat::fragment { "openldap_dynamic_include_${name}":

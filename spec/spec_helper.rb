@@ -88,6 +88,15 @@ RSpec.configure do |c|
     }
   }
 
+  def server_facts_hash
+    {
+      'serverversion' => Puppet.version,
+      'servername'    => 'puppet.host.net',
+      'serverip'      => '1.2.3.4'
+    }
+  end
+
+
   c.mock_framework = :rspec
   c.mock_with :mocha
 

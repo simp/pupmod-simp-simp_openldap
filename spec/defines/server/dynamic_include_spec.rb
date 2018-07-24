@@ -9,10 +9,6 @@ describe 'simp_openldap::server::dynamic_include' do
         }
 
         let(:facts) do
-          facts[:server_facts] = {
-            :servername => facts[:fqdn],
-            :serverip   => facts[:ipaddress]
-          }
           facts
         end
 

@@ -60,7 +60,7 @@ class simp_openldap::client (
     # This is here due to a bug in the LDAP client library on EL6 that will set
     # the SSF to 128 when connecting over StartTLS if there are *any* 128-bit
     # ciphers in the list.
-    if $facts['os']['name'] in ['RedHat','CentOS'] and (versioncmp($facts['os']['release']['major'],'7') < 0) {
+    if versioncmp($facts['os']['release']['major'],'7') < 0 {
       $_tmp_suite = flatten($tls_cipher_suite.map |$cipher| { split($cipher,':') })
       $_tls_cipher_suite = $_tmp_suite.filter |$cipher| { $cipher !~ Pattern[/128/] }
     }

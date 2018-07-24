@@ -9,10 +9,6 @@ describe 'simp_openldap::server::syncrepl' do
         }
 
         let(:facts) do
-          facts[:server_facts] = {
-            :servername => facts[:fqdn],
-            :serverip   => facts[:ipaddress]
-          }
           facts
         end
 

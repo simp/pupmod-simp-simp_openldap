@@ -1,4 +1,5 @@
 * Thu Jun 14 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.2.1-0
+- Update to support Puppet 5 and OEL
 - Update systemd fixtures and CI assets
 - Fix acceptance test by not testing text of failure code, only the exit code
 - Remove unneeded simp/auditd dependency

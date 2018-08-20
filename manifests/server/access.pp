@@ -40,6 +40,7 @@ define simp_openldap::server::access (
     mode           => '0640',
     ensure_newline => true,
     warn           => true,
+    order          => 'numeric',
     notify         => Class['simp_openldap::server::service']
   })
 

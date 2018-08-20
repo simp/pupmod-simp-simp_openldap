@@ -1,3 +1,7 @@
+* Mon Aug 20 2018 Mark Fitch <CodePhase@users.noreply.github.com> - 6.2.1-0
+- Ensure that the `concat` statement for `access.conf` is sorted in `numeric`
+  order for consistency.
+
 * Thu Jun 14 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.2.1-0
 - Update to support Puppet 5 and OEL
 - Update systemd fixtures and CI assets

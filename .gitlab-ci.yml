@@ -192,7 +192,7 @@ default:
   <<: *cache_bundler
   <<: *setup_bundler_env
   variables:
-    PUPPET_VERSION: '4.10'
+    PUPPET_VERSION: '~> 4.10.0'
   script:
     - bundle exec rake spec_clean
     - bundle exec rake beaker:suites[default]
@@ -204,7 +204,7 @@ default-fips:
   <<: *cache_bundler
   <<: *setup_bundler_env
   variables:
-    PUPPET_VERSION: '4.10'
+    PUPPET_VERSION: '~> 4.10.0'
     BEAKER_fips: 'yes'
   script:
     - bundle exec rake spec_clean
@@ -217,7 +217,7 @@ default-puppet5:
   <<: *cache_bundler
   <<: *setup_bundler_env
   variables:
-    PUPPET_VERSION: '5.4'
+    PUPPET_VERSION: '~> 5.4'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -231,7 +231,7 @@ default-fips-puppet5:
   <<: *setup_bundler_env
   variables:
     BEAKER_fips: 'yes'
-    PUPPET_VERSION: '5.4'
+    PUPPET_VERSION: '~> 5.4'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -244,7 +244,7 @@ default-oel-puppet5:
   <<: *cache_bundler
   <<: *setup_bundler_env
   variables:
-    PUPPET_VERSION: '5.4'
+    PUPPET_VERSION: '~> 5.4'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean

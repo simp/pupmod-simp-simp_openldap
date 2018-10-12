@@ -6,7 +6,7 @@
   - $simp_openldap::slapo::lastbind::lastbind_ensure
   - $simp_openldap::slapo::ppolicy::ppolicy_ensure
 
-* Tue Sep 11 2018 Nicholas Markowski <nicholas.markowski@onyxpoint.com> - 6.2.2-0
+* Tue Sep 11 2018 Nicholas Markowski <nicholas.markowski@onyxpoint.com> - 6.3.0-0
 - Updated $app_pki_external_source to accept any string. This matches the
   functionality of pki::copy.
 

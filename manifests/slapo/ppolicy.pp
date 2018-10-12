@@ -38,7 +38,7 @@
 # @param ppolicy_ensure The ensure status of the simp-ppolicy-check-password
 #   package
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::slapo::ppolicy (
   Optional[String[1]] $suffix                    = $::simp_openldap::base_dn,

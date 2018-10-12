@@ -8,8 +8,12 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class simp_openldap::server::install (
-  Enum['latest','installed','present'] $ensure = 'latest'
+  Enum['latest','installed','present'] $ensure = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ){
-  package { 'openldap': ensure => $ensure }
-  package { "openldap-servers.${facts['hardwaremodel']}": ensure => $ensure }
+  package { 'openldap':
+    ensure => $ensure
+  }
+  package { "openldap-servers.${facts['hardwaremodel']}":
+    ensure => $ensure
+  }
 }

@@ -37,6 +37,9 @@
 #     128-bit ciphers and not use stronger ciphers when those are present. This
 #     breaks connections to securely configured LDAP servers.
 #
+# @param openldap_clients_ensure The ensure status of the openldap-clients package
+# @param nss_pam_ldapd_ensure The ensure status of the nss-pam-ldapd package
+#
 class simp_openldap::client (
   Array[Simplib::URI]                          $uri                   = $::simp_openldap::_ldap_uri,
   Optional[String]                             $base_dn               = $::simp_openldap::base_dn,
@@ -53,7 +56,9 @@ class simp_openldap::client (
   Array[String[1]]                             $tls_cipher_suite      = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT','!MEDIUM'] }),
   Enum['none','peer','all']                    $tls_crlcheck          = 'none',
   Enum['never','searching','finding','always'] $deref                 = 'never',
-  Enum['never','allow','try','demand','hard']  $tls_reqcert           = 'allow'
+  Enum['never','allow','try','demand','hard']  $tls_reqcert           = 'allow',
+  String                                       $openldap_clients_ensure = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
+  String                                       $nss_pam_ldapd_ensure    = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ) inherits ::simp_openldap {
 
   if $strip_128_bit_ciphers {
@@ -88,6 +93,10 @@ class simp_openldap::client (
     content => template("${module_name}/ldaprc.erb")
   }
 
-  package { "openldap-clients.${facts['hardwaremodel']}": ensure => 'latest' }
-  package { 'nss-pam-ldapd': ensure => 'latest' }
+  package { "openldap-clients.${facts['hardwaremodel']}":
+    ensure => $openldap_clients_ensure
+  }
+  package { 'nss-pam-ldapd':
+    ensure => $nss_pam_ldapd_ensure
+  }
 }

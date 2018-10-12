@@ -1,3 +1,11 @@
+* Fri Oct 12 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.3.0-0
+- Changed the packages from 'latest' to 'installed'
+  - They will also respect `simp_options::package_ensure`
+  - $simp_openldap::client::openldap_clients_ensure
+  - $simp_openldap::client::nss_pam_ldapd_ensure
+  - $simp_openldap::slapo::lastbind::lastbind_ensure
+  - $simp_openldap::slapo::ppolicy::ppolicy_ensure
+
 * Tue Sep 11 2018 Nicholas Markowski <nicholas.markowski@onyxpoint.com> - 6.2.2-0
 - Updated $app_pki_external_source to accept any string. This matches the
   functionality of pki::copy.

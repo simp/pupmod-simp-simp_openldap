@@ -7,8 +7,7 @@
 #
 # @param lastbind_ensure The ensure status of packages to be managed
 #
-# @author Nick Markowski <nmarkowski@keywcorp.com>
-# @author Kendall Moore <kmoore@keywcorp.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::slapo::lastbind (
   Integer[0] $lastbind_precision = 3600,

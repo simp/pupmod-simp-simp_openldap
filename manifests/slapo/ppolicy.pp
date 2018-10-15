@@ -35,7 +35,10 @@
 #   The maximum number of characters from any character class that can exist in
 #   a row.
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @param ppolicy_ensure The ensure status of the simp-ppolicy-check-password
+#   package
+#
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::slapo::ppolicy (
   Optional[String[1]] $suffix                    = $::simp_openldap::base_dn,
@@ -48,11 +51,14 @@ class simp_openldap::slapo::ppolicy (
   Integer[0]          $min_lower                 = 0,
   Integer[0]          $min_digit                 = 0,
   Integer[0]          $min_punct                 = 0,
-  Integer[0]          $max_consecutive_per_class = 3
-) inherits ::simp_openldap {
+  Integer[0]          $max_consecutive_per_class = 3,
+  String              $ppolicy_ensure            = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
+  ) inherits ::simp_openldap {
   $_check_password = 'simp_check_password'
 
-  package { 'simp-ppolicy-check-password': ensure => 'latest' }
+  package { 'simp-ppolicy-check-password':
+    ensure => $ppolicy_ensure
+  }
 
   simp_openldap::server::dynamic_include { 'ppolicy':
     order   => 1000,

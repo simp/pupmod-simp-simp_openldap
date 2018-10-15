@@ -5,13 +5,18 @@
 #   Determines the amount of time, in seconds, after which to update the
 #   authTimestamp entry.
 #
-# @author Nick Markowski <nmarkowski@keywcorp.com>
-# @author Kendall Moore <kmoore@keywcorp.com>
+# @param lastbind_ensure The ensure status of packages to be managed
+#
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::slapo::lastbind (
-  Integer[0] $lastbind_precision = 3600
+  Integer[0] $lastbind_precision = 3600,
+  String     $lastbind_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ) {
-  package { 'simp-lastbind': ensure => 'latest' }
+
+  package { 'simp-lastbind':
+    ensure => $lastbind_ensure
+  }
 
   file { '/etc/openldap/lastbind.conf':
     owner   => 'root',

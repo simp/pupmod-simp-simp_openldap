@@ -7,6 +7,7 @@
 - Changed the defaults for all package ensures from 'latest' to the following:
   - `simp_options::package_ensure` when that parameter is present
   - 'installed' otherwise
+- Require Puppet versions greater than 4.10.4, and don't test on it
 
 * Tue Sep 11 2018 Nicholas Markowski <nicholas.markowski@onyxpoint.com> - 6.3.0-0
 - Updated $app_pki_external_source to accept any string. This matches the

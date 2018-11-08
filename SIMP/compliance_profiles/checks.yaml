@@ -1,0 +1,705 @@
+---
+version: 2.0.0
+checks:
+  oval:com.puppet.forge.simp.simp_openldap.client.app_pki_ca_dir:
+    settings:
+      parameter: simp_openldap::client::app_pki_ca_dir
+      value: "/etc/pki/simp_apps/openldap/x509/cacerts"
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040240: true
+      SRG-OS-000403-GPOS-00182: true
+      cci:CCI-002470: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040240
+      - SRG-OS-000403-GPOS-00182
+      - CCI-002470
+  oval:com.puppet.forge.simp.simp_openldap.client.tls_reqcert:
+    settings:
+      parameter: simp_openldap::client::tls_reqcert
+      value: allow
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040240: true
+      SRG-OS-000403-GPOS-00182: true
+      cci:CCI-002470: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040240
+      - SRG-OS-000403-GPOS-00182
+      - CCI-002470
+  oval:com.puppet.forge.simp.simp_openldap.server.allow_sync:
+    settings:
+      parameter: simp_openldap::server::allow_sync
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-2: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-2
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.audit_transactions:
+    settings:
+      parameter: simp_openldap::server::conf::audit_transactions
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-2: true
+      disa_stig: true
+      RHEL-07-030310: true
+      SRG-OS-000327-GPOS-00127: true
+      cci:CCI-002234: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-2
+      disa_stig:
+      - RHEL-07-030310
+      - SRG-OS-000327-GPOS-00127
+      - CCI-002234
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.auditlog:
+    settings:
+      parameter: simp_openldap::server::conf::auditlog
+      value: "/var/log/slapd.audit"
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-3: true
+      disa_stig: true
+      RHEL-07-030310: true
+      SRG-OS-000327-GPOS-00127: true
+      cci:CCI-002234: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-3
+      disa_stig:
+      - RHEL-07-030310
+      - SRG-OS-000327-GPOS-00127
+      - CCI-002234
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.auditlog_preserve:
+    settings:
+      parameter: simp_openldap::server::conf::auditlog_preserve
+      value: 7
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-4: true
+      nist_800_53_rev4:AU-5:b: true
+      nist_800_53_rev4:AU-11: true
+      disa_stig: true
+      RHEL-07-030320: true
+      SRG-OS-000341-GPOS-00132: true
+      cci:CCI-001849: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-4
+      - AU-5:b
+      - AU-11
+      disa_stig:
+      - RHEL-07-030320
+      - SRG-OS-000341-GPOS-00132
+      - CCI-001849
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.auditlog_rotate:
+    settings:
+      parameter: simp_openldap::server::conf::auditlog_rotate
+      value: daily
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-4: true
+      nist_800_53_rev4:AU-5:b: true
+      nist_800_53_rev4:AU-11: true
+      disa_stig: true
+      RHEL-07-030320: true
+      SRG-OS-000341-GPOS-00132: true
+      cci:CCI-001849: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-4
+      - AU-5:b
+      - AU-11
+      disa_stig:
+      - RHEL-07-030320
+      - SRG-OS-000341-GPOS-00132
+      - CCI-001849
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.authz_policy:
+    settings:
+      parameter: simp_openldap::server::conf::authz_policy
+      value: to
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.bind_anon:
+    settings:
+      parameter: simp_openldap::server::conf::bind_anon
+      value: false
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-6: true
+      disa_stig: true
+      RHEL-07-040880: true
+      SRG-OS-000250-GPOS-00093: true
+      cci:CCI-001453: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-6
+      disa_stig:
+      - RHEL-07-040880
+      - SRG-OS-000250-GPOS-00093
+      - CCI-001453
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.conn_max_pending:
+    settings:
+      parameter: simp_openldap::server::conf::conn_max_pending
+      value: 100
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-5: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-5
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.conn_max_pending_auth:
+    settings:
+      parameter: simp_openldap::server::conf::conn_max_pending_auth
+      value: 1000
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-5: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-5
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_allow_user_change:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_allow_user_change
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7: true
+      disa_stig: true
+      RHEL-07-010390: true
+      SRG-OS-000380-GPOS-00165: true
+      cci:CCI-002041: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7
+      disa_stig:
+      - RHEL-07-010390
+      - SRG-OS-000380-GPOS-00165
+      - CCI-002041
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_check_quality:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_check_quality
+      value: 2
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:a: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:a
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_expire_warning:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_expire_warning
+      value: 1209600
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:d: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:d
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_failure_count_interval:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_failure_count_interval
+      value: 900
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7:b: true
+      disa_stig: true
+      RHEL-07-010370: true
+      SRG-OS-000329-GPOS-00128: true
+      cci:CCI-002238: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7:b
+      disa_stig:
+      - RHEL-07-010370
+      - SRG-OS-000329-GPOS-00128
+      - CCI-002238
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_grace_authn_limit:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_grace_authn_limit
+      value: -1
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:d: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:d
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_in_history:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_in_history
+      value: 24
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:e: true
+      disa_stig: true
+      RHEL-07-010240: true
+      SRG-OS-000077-GPOS-00045: true
+      cci:CCI-000200: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:e
+      disa_stig:
+      - RHEL-07-010240
+      - SRG-OS-000077-GPOS-00045
+      - CCI-000200
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_lockout:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_lockout
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7: true
+      disa_stig: true
+      RHEL-07-010370: true
+      SRG-OS-000329-GPOS-00128: true
+      cci:CCI-002238: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7
+      disa_stig:
+      - RHEL-07-010370
+      - SRG-OS-000329-GPOS-00128
+      - CCI-002238
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_lockout_duration:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_lockout_duration
+      value: 900
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7:b: true
+      disa_stig: true
+      RHEL-07-010370: true
+      SRG-OS-000329-GPOS-00128: true
+      cci:CCI-002238: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7:b
+      disa_stig:
+      - RHEL-07-010370
+      - SRG-OS-000329-GPOS-00128
+      - CCI-002238
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_max_age:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_max_age
+      value: 15552000
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:d: true
+      disa_stig: true
+      RHEL-07-010220: true
+      SRG-OS-000076-GPOS-00044: true
+      cci:CCI-000199: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:d
+      disa_stig:
+      - RHEL-07-010220
+      - SRG-OS-000076-GPOS-00044
+      - CCI-000199
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_max_failure:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_max_failure
+      value: 3
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7:a: true
+      disa_stig: true
+      RHEL-07-010370: true
+      SRG-OS-000329-GPOS-00128: true
+      cci:CCI-002238: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7:a
+      disa_stig:
+      - RHEL-07-010370
+      - SRG-OS-000329-GPOS-00128
+      - CCI-002238
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_min_age:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_min_age
+      value: 86400
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:d: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:d
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_min_length:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_min_length
+      value: 15
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:a: true
+      disa_stig: true
+      RHEL-07-010250: true
+      SRG-OS-000078-GPOS-00046: true
+      cci:CCI-000205: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:a
+      disa_stig:
+      - RHEL-07-010250
+      - SRG-OS-000078-GPOS-00046
+      - CCI-000205
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_must_change:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_must_change
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7:f: true
+      disa_stig: true
+      RHEL-07-010390: true
+      SRG-OS-000380-GPOS-00165: true
+      cci:CCI-002041: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7:f
+      disa_stig:
+      - RHEL-07-010390
+      - SRG-OS-000380-GPOS-00165
+      - CCI-002041
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_ldif.ppolicy_pwd_safe_modify:
+    settings:
+      parameter: simp_openldap::server::conf::default_ldif::ppolicy_pwd_safe_modify
+      value: false
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.default_schemas:
+    settings:
+      parameter: simp_openldap::server::conf::default_schemas
+      value:
+      - openssh-lpk
+      - freeradius
+      - autofs
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.disallow:
+    settings:
+      parameter: simp_openldap::server::conf::disallow
+      value:
+      - bind_anon
+      - tls_2_anon
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+      disa_stig: true
+      RHEL-07-040880: true
+      SRG-OS-000250-GPOS-00093: true
+      cci:CCI-001453: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+      disa_stig:
+      - RHEL-07-040880
+      - SRG-OS-000250-GPOS-00093
+      - CCI-001453
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.firewall:
+    settings:
+      parameter: simp_openldap::server::conf::firewall
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-4: true
+      disa_stig: true
+      RHEL-07-040920: true
+      SRG-OS-000480-GPOS-00227: true
+      cci:CCI-000366: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-4
+      disa_stig:
+      - RHEL-07-040920
+      - SRG-OS-000480-GPOS-00227
+      - CCI-000366
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.listen_ldaps:
+    settings:
+      parameter: simp_openldap::server::conf::listen_ldaps
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-13: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040180: true
+      SRG-OS-000250-GPOS-00093: true
+      cci:CCI-001453: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-13
+      - SC-23
+      disa_stig:
+      - RHEL-07-040180
+      - SRG-OS-000250-GPOS-00093
+      - CCI-001453
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.password_crypt_salt_format:
+    settings:
+      parameter: simp_openldap::server::conf::password_crypt_salt_format
+      value: "%s"
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:c: true
+      nist_800_53_rev4:IA-1:c: true
+      disa_stig: true
+      RHEL-07-010500: true
+      SRG-OS-000104-GPOS-00051: true
+      cci:CCI-000764: true
+      cci:CCI-000770: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:c
+      - IA-1:c
+      disa_stig:
+      - RHEL-07-010500
+      - SRG-OS-000104-GPOS-00051
+      - CCI-000764
+      - CCI-000770
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.password_hash:
+    settings:
+      parameter: simp_openldap::server::conf::password_hash
+      value: SSHA
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:c: true
+      nist_800_53_rev4:IA-1:c: true
+      disa_stig: true
+      RHEL-07-021280: true
+      SRG-OS-000033-GPOS-00014: true
+      cci:CCI-000068: true
+      cci:CCI-002450: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:c
+      - IA-1:c
+      disa_stig:
+      - RHEL-07-021280
+      - SRG-OS-000033-GPOS-00014
+      - CCI-000068
+      - CCI-002450
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.security:
+    settings:
+      parameter: simp_openldap::server::conf::security
+      value:
+      - ssf=256
+      - tls=256
+      - update_ssf=256
+      - simple_bind=256
+      - update_tls=256
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-13: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-021280: true
+      SRG-OS-000033-GPOS-00014: true
+      cci:CCI-000068: true
+      cci:CCI-002450: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-13
+      - SC-23
+      disa_stig:
+      - RHEL-07-021280
+      - SRG-OS-000033-GPOS-00014
+      - CCI-000068
+      - CCI-002450
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.slapd_log_level:
+    settings:
+      parameter: simp_openldap::server::conf::slapd_log_level
+      value:
+      - stats
+      - sync
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-3: true
+      disa_stig: true
+      RHEL-07-030310: true
+      SRG-OS-000327-GPOS-00127: true
+      cci:CCI-002234: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-3
+      disa_stig:
+      - RHEL-07-030310
+      - SRG-OS-000327-GPOS-00127
+      - CCI-002234
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.syslog:
+    settings:
+      parameter: simp_openldap::server::conf::syslog
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-3:2: true
+      nist_800_53_rev4:AU-4:1: true
+      nist_800_53_rev4:AU-9: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-3:2
+      - AU-4:1
+      - AU-9
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.use_tls:
+    settings:
+      parameter: simp_openldap::server::conf::use_tls
+      value: simp
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-13: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040180: true
+      SRG-OS-000250-GPOS-00093: true
+      cci:CCI-001453: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-13
+      - SC-23
+      disa_stig:
+      - RHEL-07-040180
+      - SRG-OS-000250-GPOS-00093
+      - CCI-001453
+  oval:com.puppet.forge.simp.simp_openldap.server.schema_source:
+    settings:
+      parameter: simp_openldap::server::schema_source
+      value: puppet:///modules/simp_openldap/etc/openldap/schema
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.simp_openldap.server.schema_sync:
+    settings:
+      parameter: simp_openldap::server::schema_sync
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.simp_openldap.server.tcpwrappers:
+    settings:
+      parameter: simp_openldap::server::tcpwrappers
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-4: true
+      disa_stig: true
+      RHEL-07-040810: true
+      SRG-OS-000480-GPOS-00227: true
+      cci:CCI-000366: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-4
+      disa_stig:
+      - RHEL-07-040810
+      - SRG-OS-000480-GPOS-00227
+      - CCI-000366
+  oval:com.puppet.forge.simp.simp_openldap.server.use_ppolicy:
+    settings:
+      parameter: simp_openldap::server::use_ppolicy
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5
+  oval:com.puppet.forge.simp.simp_openldap.server.conf.audit_to_syslog:
+    settings:
+      parameter: simp_openldap::server::conf::audit_to_syslog
+      value: true
+    type: puppet-class-parameter
+    controls:
+      disa_stig: true
+      RHEL-07-030330: true
+      SRG-OS-000342-GPOS-00133: true
+      cci:CCI-001851: true
+    identifiers:
+      disa_stig:
+      - RHEL-07-030330
+      - SRG-OS-000342-GPOS-00133
+      - CCI-001851
+    confine:
+      osfamily: RedHat
+      operatingsystemmajrelease: '7'

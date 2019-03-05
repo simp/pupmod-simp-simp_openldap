@@ -1,3 +1,7 @@
+* Mon Mar 04 2019 Liz Nemsick <lnemsick.simp@gmail.com> - 6.3.1-0
+- Expanded the upper limit of the concat and stdlib Puppet module versions
+- Updated a URL in the README.md
+
 * Fri Oct 12 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.3.0-0
 - Added the following package ensure parameters
   - $simp_openldap::client::openldap_clients_ensure

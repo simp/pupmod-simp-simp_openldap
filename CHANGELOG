@@ -1,3 +1,7 @@
+* Tue Mar 19 2019 Liz Nemsick <lnemsick.simp@gmail.com> - 6.3.2-0
+- Use simplib::validate_re_array in lieu of deprecated Puppet 3 validate_re_array
+- Use Puppet Integer() in lieu of simplib's deprecated Puppet 3 to_integer
+
 * Mon Mar 04 2019 Liz Nemsick <lnemsick.simp@gmail.com> - 6.3.1-0
 - Expanded the upper limit of the concat and stdlib Puppet module versions
 - Updated a URL in the README.md

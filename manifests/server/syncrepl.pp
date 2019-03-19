@@ -6,7 +6,7 @@
 # $name should be the 'rid' of the syncrepl instance and must be between 0 and
 # 1000, non-inclusive.
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 define simp_openldap::server::syncrepl (
   String[1]                               $syncrepl_retry = '60 10 600 +',
@@ -35,7 +35,7 @@ define simp_openldap::server::syncrepl (
   Enum['default','accesslog']             $syncdata       = 'default',
   Optional[String[1]]                     $updateref      = undef
 ) {
-  if to_integer($name) !~ Integer[1,999] {
+  if Integer($name) !~ Integer[1,999] {
     fail('$name must be an integer between `1` and `999`')
   }
 
@@ -49,7 +49,7 @@ define simp_openldap::server::syncrepl (
     fail('You must provide a valie for `$provider`')
   }
 
-  validate_re_array(split($syncrepl_retry,'(\d+ \d+)'),'^(\s*(\d+ (\d+|\+)\s*)|\s*)$')
+  simplib::validate_re_array(split($syncrepl_retry,'(\d+ \d+)'),'^(\s*(\d+ (\d+|\+)\s*)|\s*)$')
 
   simp_openldap::server::dynamic_include { 'syncrepl':
     content => template("${module_name}/syncrepl.erb")

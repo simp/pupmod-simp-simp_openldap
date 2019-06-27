@@ -467,25 +467,6 @@ checks:
       - RHEL-07-040880
       - SRG-OS-000250-GPOS-00093
       - CCI-001453
-  oval:com.puppet.forge.simp.simp_openldap.server.conf.firewall:
-    settings:
-      parameter: simp_openldap::server::conf::firewall
-      value: true
-    type: puppet-class-parameter
-    controls:
-      nist_800_53:rev4: true
-      nist_800_53:rev4:AC-4: true
-      disa_stig: true
-      RHEL-07-040920: true
-      SRG-OS-000480-GPOS-00227: true
-      cci:CCI-000366: true
-    identifiers:
-      nist_800_53:rev4:
-      - AC-4
-      disa_stig:
-      - RHEL-07-040920
-      - SRG-OS-000480-GPOS-00227
-      - CCI-000366
   oval:com.puppet.forge.simp.simp_openldap.server.conf.listen_ldaps:
     settings:
       parameter: simp_openldap::server::conf::listen_ldaps
@@ -614,21 +595,6 @@ checks:
       - RHEL-07-030310
       - SRG-OS-000327-GPOS-00127
       - CCI-002234
-  oval:com.puppet.forge.simp.simp_openldap.server.conf.syslog:
-    settings:
-      parameter: simp_openldap::server::conf::syslog
-      value: true
-    type: puppet-class-parameter
-    controls:
-      nist_800_53:rev4: true
-      nist_800_53:rev4:AU-3:2: true
-      nist_800_53:rev4:AU-4:1: true
-      nist_800_53:rev4:AU-9: true
-    identifiers:
-      nist_800_53:rev4:
-      - AU-3:2
-      - AU-4:1
-      - AU-9
   oval:com.puppet.forge.simp.simp_openldap.server.conf.use_tls:
     settings:
       parameter: simp_openldap::server::conf::use_tls
@@ -694,25 +660,6 @@ checks:
       - RHEL-07-010000
       - SRG-OS-000001-GPOS-00001
       - CCI-000015
-  oval:com.puppet.forge.simp.simp_openldap.server.tcpwrappers:
-    settings:
-      parameter: simp_openldap::server::tcpwrappers
-      value: true
-    type: puppet-class-parameter
-    controls:
-      nist_800_53:rev4: true
-      nist_800_53:rev4:AC-4: true
-      disa_stig: true
-      RHEL-07-040810: true
-      SRG-OS-000480-GPOS-00227: true
-      cci:CCI-000366: true
-    identifiers:
-      nist_800_53:rev4:
-      - AC-4
-      disa_stig:
-      - RHEL-07-040810
-      - SRG-OS-000480-GPOS-00227
-      - CCI-000366
   oval:com.puppet.forge.simp.simp_openldap.server.use_ppolicy:
     settings:
       parameter: simp_openldap::server::use_ppolicy

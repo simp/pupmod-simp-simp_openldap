@@ -1,3 +1,6 @@
+* Thu Jun 06 2019 Steven Pritchard <steven.pritchard@onyxpoint.com> -6.4.0-0
+- Add v2 compliance_markup data
+
 * Tue Mar 19 2019 Liz Nemsick <lnemsick.simp@gmail.com> - 6.3.2-0
 - Use simplib::validate_re_array in lieu of deprecated Puppet 3 validate_re_array
 - Use Puppet Integer() in lieu of simplib's deprecated Puppet 3 to_integer

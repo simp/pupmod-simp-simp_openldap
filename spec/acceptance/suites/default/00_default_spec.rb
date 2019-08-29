@@ -5,7 +5,6 @@ test_name 'simp_openldap class'
 
 describe 'simp_openldap class' do
   servers = hosts_with_role(hosts, 'server')
-  # slaves = hosts_with_role(hosts, 'slave')
 
   let(:server_manifest) {
     <<-EOS

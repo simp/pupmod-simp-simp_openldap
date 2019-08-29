@@ -36,7 +36,7 @@ syncrepl rid=<%= @name %>
   authzid=<%= @authzid %>
 <% end -%>
 <% if @credentials -%>
-  credentials=<%= @credentials %>
+  credentials="<%= @credentials %>"
 <% end -%>
 <% if @realm -%>
   realm=<%= @realm %>
@@ -45,10 +45,10 @@ syncrepl rid=<%= @name %>
   secprops=<%= @secprops %>
 <% end -%>
 <% if @logbase -%>
-  logbase=<%= @logbase %>
+  logbase="<%= @logbase %>"
 <% end -%>
 <% if @logfilter -%>
-  logfilter=<%= @logfilter %>
+  logfilter="<%= @logfilter %>"
 <% end -%>
   syncdata=<%= @syncdata %>
 <% if @updateref -%>

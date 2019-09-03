@@ -230,10 +230,12 @@ describe 'simp_openldap class' do
     context "on Valhalla #{server}" do
       let(:host) { server }
 
+      it 'should restart the service to trigger a sync' do
+        on(host, 'puppet resource service slapd ensure=stopped')
+        on(host, 'puppet resource service slapd ensure=running')
+      end
+
       it 'should have only allowed entries in the database' do
-        # The first slapcat seems to kickstart the sync
-        on(host,'slapcat')
-        sleep(30)
         result = on(host, 'slapcat').output.strip
 
         expect(result).to match(/ou=Valhalla/m)
@@ -250,10 +252,12 @@ describe 'simp_openldap class' do
     context "on Niflheim #{server}" do
       let(:host) { server }
 
+      it 'should restart the service to trigger a sync' do
+        on(host, 'puppet resource service slapd ensure=stopped')
+        on(host, 'puppet resource service slapd ensure=running')
+      end
+
       it 'should have only allowed entries in the database' do
-        # The first slapcat seems to kickstart the sync
-        on(host,'slapcat')
-        sleep(30)
         result = on(host, 'slapcat').output.strip
 
         expect(result).to match(/ou=Niflheim/m)

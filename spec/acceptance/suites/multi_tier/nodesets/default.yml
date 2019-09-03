@@ -1,0 +1,71 @@
+<%
+  if ENV['BEAKER_HYPERVISOR']
+    hypervisor = ENV['BEAKER_HYPERVISOR']
+  else
+    hypervisor = 'vagrant'
+  end
+-%>
+HOSTS:
+  # NOTE: Node names are used in the tests
+  yggdrasil:
+    roles:
+      - default
+      - ldap_root
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
+    yum_repos:
+      simp_deps:
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+          - https://download.simp-project.com/simp/GPGKEYS/RPM-GPG-KEY-SIMP-6
+          - https://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+          - https://yum.puppetlabs.com/RPM-GPG-KEY-puppet
+          - https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-94
+          - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+
+  valhalla:
+    roles:
+      - ldap_replica
+      - valhalla
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
+    yum_repos:
+      simp_deps:
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+          - https://download.simp-project.com/simp/GPGKEYS/RPM-GPG-KEY-SIMP-6
+          - https://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+          - https://yum.puppetlabs.com/RPM-GPG-KEY-puppet
+          - https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-94
+          - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+
+  niflheim:
+    roles:
+      - ldap_replica
+      - niflheim
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
+    yum_repos:
+      simp_deps:
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+          - https://download.simp-project.com/simp/GPGKEYS/RPM-GPG-KEY-SIMP-6
+          - https://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+          - https://yum.puppetlabs.com/RPM-GPG-KEY-puppet
+          - https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-94
+          - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+
+CONFIG:
+  type: aio
+  vagrant_memsize: 256
+  log_level: verbose
+  synced_folder: disabled
+<% if ENV['BEAKER_PUPPET_COLLECTION'] -%>
+  puppet_collection: <%= ENV['BEAKER_PUPPET_COLLECTION'] %>
+<% end -%>

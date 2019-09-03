@@ -171,11 +171,11 @@ pup5.5.10-fips:
   script:
     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
 
-pup5.5.10-fips-multi_tier:
+pup5.5.10-multi_tier:
   <<: *pup_5_5_10
   <<: *acceptance_base
   script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[multi_tier]'
+    - 'bundle exec rake beaker:suites[multi_tier]'
 
 pup5.5.10-oel:
   <<: *pup_5_5_10

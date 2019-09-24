@@ -29,18 +29,6 @@ HOSTS:
         baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/6/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
-  # slave-el7:
-  #   roles:
-  #     - slave
-  #   platform: el-7-x86_64
-  #   box: onyxpoint/oel-7-x86_64
-  #   hypervisor: <%= hypervisor %>
-  # slave-el6:
-  #   roles:
-  #     - slave
-  #   platform: el-6-x86_64
-  #   box: onyxpoint/oel-6-x86_64
-  #   hypervisor: <%= hypervisor %>
 CONFIG:
   type: aio
   vagrant_memsize: 256

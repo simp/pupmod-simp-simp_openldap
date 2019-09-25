@@ -1,3 +1,8 @@
+* Tue Sep 24 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.4.1-0
+- Updated README.md
+- Added REFERENCE.md
+- Cleaned up some test fixtures
+
 * Fri Aug 02 2019 Robert Vincent <pillarsdotnet@gmail.com> - 6.4.1-0
 - Support puppetlabs/concat 6.x.
 

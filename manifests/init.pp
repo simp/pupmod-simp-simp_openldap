@@ -20,9 +20,6 @@
 # @param is_server
 #   Set this if you want to create an OpenLDAP server on your node
 #
-# @param sssd
-#   Whether or not to use SSSD in the installation
-#
 # @param pki
 #   * If 'simp', include SIMP's pki module and use pki::copy to manage
 #     application certs in /etc/pki/simp_apps/openldap/x509
@@ -67,7 +64,6 @@ class simp_openldap (
   String                         $bind_dn                 = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', simplib::ldap::domain_to_dn()) }),
   String                         $ldap_master             = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
   Boolean                        $is_server               = false,
-  Boolean                        $sssd                    = simplib::lookup('simp_options::sssd', { 'default_value' => false }),
   Variant[Boolean, Enum['simp']] $pki                     = simplib::lookup('simp_options::pki', { 'default_value' => false }),
   String                         $app_pki_external_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
   Stdlib::Absolutepath           $app_pki_dir             = '/etc/pki/simp_apps/openldap/x509',

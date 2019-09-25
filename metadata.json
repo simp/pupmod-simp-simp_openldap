@@ -11,7 +11,6 @@
     "simp",
     "openldap",
     "pki",
-    "tls",
     "ldap"
   ],
   "dependencies": [
@@ -42,10 +41,6 @@
     {
       "name": "simp/simplib",
       "version_requirement": ">= 3.7.0 < 4.0.0"
-    },
-    {
-      "name": "simp/sssd",
-      "version_requirement": ">= 6.0.0 < 7.0.0"
     },
     {
       "name": "simp/tcpwrappers",

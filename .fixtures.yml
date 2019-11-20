@@ -16,6 +16,7 @@ fixtures:
     rsyslog: https://github.com/simp/pupmod-simp-rsyslog
     simp_options: https://github.com/simp/pupmod-simp-simp_options
     simplib: https://github.com/simp/pupmod-simp-simplib
+    sssd: https://github.com/simp/pupmod-simp-sssd
     stdlib: https://github.com/simp/puppetlabs-stdlib
     systemd: https://github.com/simp/puppet-systemd
     tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers

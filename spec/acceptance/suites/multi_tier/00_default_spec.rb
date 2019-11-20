@@ -27,6 +27,8 @@ describe 'simp_openldap class' do
       'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn}",
       'simp_options::ldap::bind_pw'         => 'foobarbaz1',
       'simp_options::ldap::bind_hash'       => '{SSHA}xas+n3P2Qa827CSP+IHNtYAkwSIHsAja',
+      # This is needed for full stack replication from the top level directory
+      'simp_openldap::server::conf::suffix' => base_dn,
       'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Valhalla,#{base_dn}",
       'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr'
     },
@@ -40,6 +42,8 @@ describe 'simp_openldap class' do
       'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn}",
       'simp_options::ldap::bind_pw'         => 'foobarbaz2',
       'simp_options::ldap::bind_hash'       => '{SSHA}UoKntkxjUv/LIitnLJudT30lNDXMAtpM',
+      # This is needed for full stack replication from the top level directory
+      'simp_openldap::server::conf::suffix' => base_dn,
       'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Niflheim,#{base_dn}",
       'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH'
     }
@@ -99,24 +103,55 @@ describe 'simp_openldap class' do
         }
 
         simp_openldap::server::access { 'LDAP_Auth_Sync_Valhalla':
-          what => "dn.exact=\\"cn=LDAPSync,ou=Hosts,ou=Valhalla,${_base_dn}\\" attrs=\\"userPassword\\"",
-          content => "by anonymous auth"
+          what    => "dn.exact=\\"cn=LDAPSync,ou=Hosts,ou=Valhalla,${_base_dn}\\" attrs=\\"userPassword\\"",
+          content => "by anonymous auth",
+          order   => 10
         }
 
         simp_openldap::server::access { 'LDAP_Sync_Valhalla':
-          what => "dn.subtree=\\"ou=Valhalla,${_base_dn}\\"",
-          content => "by dn.exact=\\"${valhalla_sync_dn}\\" read"
+          what    => "dn.subtree=\\"ou=Valhalla,${_base_dn}\\"",
+          content => "by dn.exact=\\"${valhalla_sync_dn}\\" read",
+          order   => 10
         }
 
         simp_openldap::server::access { 'LDAP_Auth_Sync_Niflheim':
-          what => "dn.exact=\\"cn=LDAPSync,ou=Hosts,ou=Niflheim,${_base_dn}\\" attrs=\\"userPassword\\"",
-          content => "by anonymous auth"
+          what    => "dn.exact=\\"cn=LDAPSync,ou=Hosts,ou=Niflheim,${_base_dn}\\" attrs=\\"userPassword\\"",
+          content => "by anonymous auth",
+          order   => 10
         }
 
         simp_openldap::server::access { 'LDAP_Sync_Niflheim':
-          what => "dn.subtree=\\"ou=Niflheim,${_base_dn}\\"",
-          content => "by dn.exact=\\"${niflheim_sync_dn}\\" read"
+          what    => "dn.subtree=\\"ou=Niflheim,${_base_dn}\\"",
+          content => "by dn.exact=\\"${niflheim_sync_dn}\\" read",
+          order   => 10
         }
+
+        # These override the settings in simp_openldap::server to allow a regexp
+        # match for the LDAPSync accounts. We're using the 'first match wins'
+        # functionality of slapd.access to effect this
+
+        simp_openldap::server::access { 'override_userpassword_access':
+          what    => 'attrs=userPassword',
+          content => "
+            by dn.regex=\\"cn=LDAPSync,(.+,)?ou=Hosts,${_base_dn}\\" read
+            by dn.exact=\\"${simp_openldap::bind_dn}\\" read
+            by anonymous auth
+            by self write
+            by * none",
+          order   => 100
+        }
+
+        simp_openldap::server::access { 'override_shadowlastchange_access':
+          what    => 'attrs=shadowLastChange',
+          content => "
+            by dn.regex=\\"cn=LDAPSync,(.+,)?ou=Hosts,${_base_dn}\\" read
+            by dn.exact=\\"${simp_openldap::bind_dn}\\" read
+            by anonymous auth
+            by self write
+            by * none",
+          order   => 100
+        }
+
       EOS
     elsif host.name == 'valhalla'
       manifest = <<-EOS
@@ -127,8 +162,10 @@ describe 'simp_openldap class' do
         $_base_dn = simplib::lookup('simp_options::ldap::base_dn')
 
         simp_openldap::server::syncrepl { '555':
-          binddn => "cn=LDAPSync,ou=Hosts,${_base_dn}",
-          credentials => '#{sync_pw}'
+          binddn      => "cn=LDAPSync,ou=Hosts,${_base_dn}",
+          credentials => '#{sync_pw}',
+          # This needs to be the top level so that all of the account aliases work
+          searchbase  => '#{base_dn}'
         }
 
         simp_openldap::server::limits { 'Host_Bind_DN_Unlimited_Query':
@@ -145,8 +182,10 @@ describe 'simp_openldap class' do
         $_base_dn = simplib::lookup('simp_options::ldap::base_dn')
 
         simp_openldap::server::syncrepl { '556':
-          binddn => "cn=LDAPSync,ou=Hosts,${_base_dn}",
-          credentials => '#{sync_pw}'
+          binddn      => "cn=LDAPSync,ou=Hosts,${_base_dn}",
+          credentials => '#{sync_pw}',
+          # This needs to be the top level so that all of the account aliases work
+          searchbase  => '#{base_dn}'
         }
 
         simp_openldap::server::limits { 'Host_Bind_DN_Unlimited_Query':
@@ -238,12 +277,11 @@ describe 'simp_openldap class' do
       it 'should have only allowed entries in the database' do
         result = on(host, 'slapcat').output.strip
 
-        expect(result).to match(/ou=Valhalla/m)
         expect(result).to_not match(/ou=Niflheim/m)
       end
 
       it 'should be able to query the local server as the bind user' do
-        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(/dn: cn=thor,ou=People,ou=Valhalla,#{base_dn}/m)
+        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(/dn: uid=thor,ou=People,ou=Valhalla,#{base_dn}/m)
       end
     end
   end
@@ -260,12 +298,11 @@ describe 'simp_openldap class' do
       it 'should have only allowed entries in the database' do
         result = on(host, 'slapcat').output.strip
 
-        expect(result).to match(/ou=Niflheim/m)
         expect(result).to_not match(/ou=Valhalla/m)
       end
 
       it 'should be able to query the local server as the bind user' do
-        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(/dn: cn=mimir,ou=People,ou=Niflheim,#{base_dn}/m)
+        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(/dn: uid=mimir,ou=People,ou=Niflheim,#{base_dn}/m)
       end
     end
   end

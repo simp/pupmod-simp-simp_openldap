@@ -3,15 +3,15 @@
 # Administrative Account
 
 dn: cn=odin,ou=Group,<%= base_dn %>
+cn: odin
 objectClass: posixGroup
 objectClass: top
-cn: odin
 gidNumber: 10000
 description: 'Odin'
 
 dn: uid=odin,ou=People,<%= base_dn %>
-uid: odin
 cn: odin
+uid: odin
 givenName: Odin
 sn: Vanir
 mail: odin@vanir.valhalla
@@ -35,15 +35,15 @@ userPassword: {SSHA}r2GaizHFWY8pcHpIClU0ye7vsO4uHv/y
 # Valhalla Users
 
 dn: cn=freyja,ou=Group,<%= base_dn %>
+cn: freyja
 objectClass: posixGroup
 objectClass: top
-cn: freyja
 gidNumber: 10001
 description: 'Freyja'
 
 dn: uid=freyja,ou=People,<%= base_dn %>
-uid: freyja
 cn: freyja
+uid: freyja
 givenName: Freyja
 sn: Vanir
 mail: freyja@vanir.valhalla
@@ -65,15 +65,15 @@ homeDirectory: /home/freyja
 userPassword: {SSHA}r2GaizHFWY8pcHpIClU0ye7vsO4uHv/y
 
 dn: cn=thor,ou=Group,<%= base_dn %>
+cn: thor
 objectClass: posixGroup
 objectClass: top
-cn: thor
 gidNumber: 10002
 description: 'Thor'
 
 dn: uid=thor,ou=People,<%= base_dn %>
-uid: thor
 cn: thor
+uid: thor
 givenName: Thor
 sn: Aesir
 mail: thor@aesir.valhalla
@@ -95,15 +95,15 @@ homeDirectory: /home/thor
 userPassword: {SSHA}r2GaizHFWY8pcHpIClU0ye7vsO4uHv/y
 
 dn: cn=loki,ou=Group,<%= base_dn %>
+cn: loki
 objectClass: posixGroup
 objectClass: top
-cn: loki
 gidNumber: 10003
 description: 'Loki'
 
 dn: uid=loki,ou=People,<%= base_dn %>
-uid: loki
 cn: loki
+uid: loki
 givenName: Loki
 sn: Aesir
 mail: loki@aesir.valhalla
@@ -127,15 +127,15 @@ userPassword: {SSHA}r2GaizHFWY8pcHpIClU0ye7vsO4uHv/y
 # Jotunn
 
 dn: cn=ymir,ou=Group,<%= base_dn %>
+cn: ymir
 objectClass: posixGroup
 objectClass: top
-cn: ymir
 gidNumber: 20000
 description: 'Ymir'
 
 dn: uid=ymir,ou=People,<%= base_dn %>
-uid: ymir
 cn: ymir
+uid: ymir
 givenName: Ymir
 sn: Jotunn
 mail: ymir@jotunn.niflheim
@@ -157,15 +157,15 @@ homeDirectory: /home/ymir
 userPassword: {SSHA}r2GaizHFWY8pcHpIClU0ye7vsO4uHv/y
 
 dn: cn=thrivaldi,ou=Group,<%= base_dn %>
+cn: thirvaldi
 objectClass: posixGroup
 objectClass: top
-cn: thrivaldi
 gidNumber: 20001
 description: 'Thrivaldi'
 
 dn: uid=thrivaldi,ou=People,<%= base_dn %>
-uid: thrivaldi
 cn: thrivaldi
+uid: thrivaldi
 givenName: Thrivaldi
 sn: Jotunn
 mail: thrivaldi@jotunn.niflheim
@@ -187,15 +187,15 @@ homeDirectory: /home/thrivaldi
 userPassword: {SSHA}r2GaizHFWY8pcHpIClU0ye7vsO4uHv/y
 
 dn: cn=mimir,ou=Group,<%= base_dn %>
+cn: mimir
 objectClass: posixGroup
 objectClass: top
-cn: mimir
 gidNumber: 20002
 description: 'Mimir'
 
 dn: uid=mimir,ou=People,<%= base_dn %>
-uid: mimir
 cn: mimir
+uid: mimir
 givenName: Mimir
 sn: Jotunn
 mail: mimir@jotunn.niflheim
@@ -229,11 +229,13 @@ objectClass: top
 objectClass: organizationalUnit
 
 dn: cn=default,ou=pwpolicies,ou=Valhalla,<%= base_dn %>
+cn: default
 objectClass: alias
 objectClass: extensibleObject
 aliasedObjectname: cn=default,ou=pwpolicies,<%= base_dn %>
 
 dn: cn=noExpire_noLockout,ou=pwpolicies,ou=Valhalla,<%= base_dn %>
+cn: noExpire_noLockout
 objectClass: alias
 objectClass: extensibleObject
 aliasedObjectname: cn=noExpire_noLockout,ou=pwpolicies,<%= base_dn %>
@@ -245,15 +247,15 @@ objectClass: top
 objectClass: organizationalunit
 
 dn: cn=hostAuth,ou=Hosts,ou=Valhalla,<%= base_dn %>
-objectClass: person
 cn: hostAuth
+objectClass: person
 sn: Internal
 pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,ou=Valhalla,<%= base_dn %>
 userPassword: <%= hieradata_overlay['valhalla']['simp_options::ldap::bind_hash'] %>
 
 dn: cn=LDAPSync,ou=Hosts,ou=Valhalla,<%= base_dn %>
-objectClass: person
 cn: LDAPSync
+objectClass: person
 sn: Internal
 pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,ou=Valhalla,<%= base_dn %>
 userPassword: <%= hieradata_overlay['valhalla']['test_sync_hash'] %>
@@ -273,28 +275,46 @@ ou: Group
 objectClass: top
 objectClass: organizationalunit
 
-dn: cn=freyja,ou=People,ou=Valhalla,<%= base_dn %>
+dn: uid=freyja,ou=People,ou=Valhalla,<%= base_dn %>
+cn: freyja
 objectClass: alias
 objectClass: extensibleObject
-uid: freyja
 aliasedObjectname: uid=freyja,ou=People,<%= base_dn %>
 
-dn: cn=thor,ou=People,ou=Valhalla,<%= base_dn %>
+dn: cn=freyja,ou=Group,ou=Valhalla,<%= base_dn %>
+cn: freyja
 objectClass: alias
 objectClass: extensibleObject
-uid: thor
+aliasedObjectname: cn=freyja,ou=Group,<%= base_dn %>
+
+dn: uid=thor,ou=People,ou=Valhalla,<%= base_dn %>
+cn: thor
+objectClass: alias
+objectClass: extensibleObject
 aliasedObjectname: uid=thor,ou=People,<%= base_dn %>
 
-dn: cn=loki,ou=People,ou=Valhalla,<%= base_dn %>
+dn: cn=thor,ou=Group,ou=Valhalla,<%= base_dn %>
+cn: thor
 objectClass: alias
 objectClass: extensibleObject
-uid: loki
+aliasedObjectname: cn=thor,ou=Group,<%= base_dn %>
+
+dn: uid=loki,ou=People,ou=Valhalla,<%= base_dn %>
+cn: loki
+objectClass: alias
+objectClass: extensibleObject
 aliasedObjectname: uid=loki,ou=People,<%= base_dn %>
 
+dn: cn=loki,ou=Group,ou=Valhalla,<%= base_dn %>
+cn: loki
+objectClass: alias
+objectClass: extensibleObject
+aliasedObjectname: cn=loki,ou=Group,<%= base_dn %>
+
 dn: cn=valhalla,ou=Group,ou=Valhalla,<%= base_dn %>
+cn: valhalla
 objectClass: posixGroup
 objectClass: top
-cn: valhalla
 gidNumber: 30000
 description: 'Valhalla Users'
 memberUid: freyja
@@ -314,11 +334,13 @@ objectClass: top
 objectClass: organizationalUnit
 
 dn: cn=default,ou=pwpolicies,ou=Niflheim,<%= base_dn %>
+cn: default
 objectClass: alias
 objectClass: extensibleObject
 aliasedObjectname: cn=default,ou=pwpolicies,<%= base_dn %>
 
 dn: cn=noExpire_noLockout,ou=pwpolicies,ou=Niflheim,<%= base_dn %>
+cn: noExpire_noLockout
 objectClass: alias
 objectClass: extensibleObject
 aliasedObjectname: cn=noExpire_noLockout,ou=pwpolicies,<%= base_dn %>
@@ -330,15 +352,15 @@ objectClass: top
 objectClass: organizationalunit
 
 dn: cn=hostAuth,ou=Hosts,ou=Niflheim,<%= base_dn %>
-objectClass: person
 cn: hostAuth
+objectClass: person
 sn: Internal
 pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,ou=Niflheim,<%= base_dn %>
 userPassword: <%= hieradata_overlay['niflheim']['simp_options::ldap::bind_hash'] %>
 
 dn: cn=LDAPSync,ou=Hosts,ou=Niflheim,<%= base_dn %>
-objectClass: person
 cn: LDAPSync
+objectClass: person
 sn: Internal
 pwdPolicySubentry: cn=noExpire_noLockout,ou=pwpolicies,ou=Niflheim,<%= base_dn %>
 userPassword: <%= hieradata_overlay['niflheim']['test_sync_hash'] %>
@@ -358,28 +380,46 @@ ou: Group
 objectClass: top
 objectClass: organizationalunit
 
-dn: cn=ymir,ou=People,ou=Niflheim,<%= base_dn %>
+dn: uid=ymir,ou=People,ou=Niflheim,<%= base_dn %>
+cn: ymir
 objectClass: alias
 objectClass: extensibleObject
-uid: ymir
 aliasedObjectname: uid=ymir,ou=People,<%= base_dn %>
 
-dn: cn=thrivaldi,ou=People,ou=Niflheim,<%= base_dn %>
+dn: cn=ymir,ou=Group,ou=Niflheim,<%= base_dn %>
+cn: ymir
 objectClass: alias
 objectClass: extensibleObject
-uid: thrivaldi
+aliasedObjectname: cn=ymir,ou=Group,<%= base_dn %>
+
+dn: uid=thrivaldi,ou=People,ou=Niflheim,<%= base_dn %>
+cn: thrivaldi
+objectClass: alias
+objectClass: extensibleObject
 aliasedObjectname: uid=thrivaldi,ou=People,<%= base_dn %>
 
-dn: cn=mimir,ou=People,ou=Niflheim,<%= base_dn %>
+dn: cn=thrivaldi,ou=Group,ou=Niflheim,<%= base_dn %>
+cn: thrivaldi
 objectClass: alias
 objectClass: extensibleObject
-uid: mimir
+aliasedObjectname: cn=thrivaldi,ou=Group,<%= base_dn %>
+
+dn: uid=mimir,ou=People,ou=Niflheim,<%= base_dn %>
+cn: mimir
+objectClass: alias
+objectClass: extensibleObject
 aliasedObjectname: uid=mimir,ou=People,<%= base_dn %>
 
+dn: cn=mimir,ou=Group,ou=Niflheim,<%= base_dn %>
+cn: mimir
+objectClass: alias
+objectClass: extensibleObject
+aliasedObjectname: cn=mimir,ou=Group,<%= base_dn %>
+
 dn: cn=niflheim,ou=Group,ou=Niflheim,<%= base_dn %>
+cn: niflheim
 objectClass: posixGroup
 objectClass: top
-cn: niflheim
 gidNumber: 40000
 description: 'Niflheim Users'
 memberUid: ymir

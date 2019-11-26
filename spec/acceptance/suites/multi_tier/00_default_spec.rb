@@ -133,7 +133,7 @@ describe 'simp_openldap class' do
         simp_openldap::server::access { 'override_userpassword_access':
           what    => 'attrs=userPassword',
           content => "
-            by dn.regex=\\"cn=LDAPSync,(.+,)?ou=Hosts,${_base_dn}\\" read
+            by dn.regex=\\"cn=LDAPSync,ou=Hosts,([^,]+,)?${_base_dn}\\" read
             by dn.exact=\\"${simp_openldap::bind_dn}\\" read
             by anonymous auth
             by self write
@@ -144,7 +144,7 @@ describe 'simp_openldap class' do
         simp_openldap::server::access { 'override_shadowlastchange_access':
           what    => 'attrs=shadowLastChange',
           content => "
-            by dn.regex=\\"cn=LDAPSync,(.+,)?ou=Hosts,${_base_dn}\\" read
+            by dn.regex=\\"cn=LDAPSync,ou=Hosts,([^,]+,)?${_base_dn}\\" read
             by dn.exact=\\"${simp_openldap::bind_dn}\\" read
             by anonymous auth
             by self write

@@ -22,7 +22,7 @@ HOSTS:
         baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
-  server-el6
+  server-el6:
     roles:
       - server
     platform: el-6-x86_64

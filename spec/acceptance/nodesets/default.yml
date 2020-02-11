@@ -14,17 +14,25 @@ HOSTS:
     box: centos/7
     hypervisor: <%= hypervisor %>
     yum_repos:
+      chef-current:
+        baseurl: 'https://packages.chef.io/repos/yum/current/el/7/$basearch'
+        gpgkeys:
+          - https://packages.chef.io/chef.asc
       simp:
         baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
-  server-el6:
+  server-el6
     roles:
       - server
     platform: el-6-x86_64
     box: centos/6
     hypervisor: <%= hypervisor %>
     yum_repos:
+      chef-current:
+        baseurl: 'https://packages.chef.io/repos/yum/current/el/6/$basearch'
+        gpgkeys:
+          - https://packages.chef.io/chef.asc
       simp:
         baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/6/$basearch
         gpgkeys:

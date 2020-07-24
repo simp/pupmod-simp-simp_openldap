@@ -1,3 +1,6 @@
+* Thu Jul 23 2020 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 6.4.2-0
+- update the upper bound of simplib for SIMP 6.5 release
+
 * Tue Sep 24 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.4.1-0
 - Updated README.md
 - Added REFERENCE.md

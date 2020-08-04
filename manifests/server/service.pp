@@ -13,7 +13,7 @@ class simp_openldap::server::service (
   include '::simp_openldap::server::fix_bad_upgrade'
 
   # This is a very crude attempt to not bootstrap if the executing node is a
-  # slave node. Bootstrapping slave nodes causes the ``administrators`` group
+  # consumer node. Bootstrapping consumer nodes causes the ``administrators`` group
   # to become unable to sync if it doesn't start identically to the master
   exec { 'bootstrap_ldap':
     command   => "/sbin/service ${slapd_svc} stop; \

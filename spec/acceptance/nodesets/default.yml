@@ -18,17 +18,6 @@ HOSTS:
         baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
         gpgkeys:
           - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
-  server-el6:
-    roles:
-      - server
-    platform: el-6-x86_64
-    box: centos/6
-    hypervisor: <%= hypervisor %>
-    yum_repos:
-      simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/6/$basearch
-        gpgkeys:
-          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
 CONFIG:
   type: aio
   vagrant_memsize: 256

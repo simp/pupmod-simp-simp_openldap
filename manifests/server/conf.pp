@@ -358,10 +358,10 @@ class simp_openldap::server::conf (
       }
       # Minimum bound of TLSv1.2
       else {
-        $_tls_protocol_min = '3.3'
+        $_tls_protocol_min = 3.3
       }
       # If the minimum TLS bound is > TLSv1, remove weak protocols
-      if !defined('$_tls_cipher_suite') and $_tls_protocol_min >= '3.1' {
+      if !defined('$_tls_cipher_suite') and $_tls_protocol_min >= 3.1 {
         $_tls_cipher_suite = ['HIGH','-TLSv1', '-SSLv3']
       }
     }

@@ -22,21 +22,6 @@ HOSTS:
         mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch'
         gpgkeys:
           - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
-  server-el6:
-    roles:
-      - server
-    platform: el-6-x86_64
-    box: centos/6
-    hypervisor: <%= hypervisor %>
-    yum_repos:
-      simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/6/$basearch
-        gpgkeys:
-          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
-      epel:
-        mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch'
-        gpgkeys:
-          - https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
 CONFIG:
   validate: false
   type: aio

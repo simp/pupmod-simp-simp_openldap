@@ -1,3 +1,8 @@
+* Tue Dec 15 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.5.0
+- Fix comparison of Float with String on `simp_openldap::server::conf::tls_protocol_min`
+- Removed support for EL 6 due to EOL
+- Added support for Puppet 7
+
 * Tue Aug 04 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.4.3-0
 - Align terminology with vendor changes
 

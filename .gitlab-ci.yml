@@ -13,11 +13,10 @@
 # Release       Puppet   Ruby    EOL
 # SIMP 6.4      5.5      2.4.10  TBD
 # PE 2018.1     5.5      2.4.10  2021-01 (LTS overlap)
-# PE 2019.8     6.16     2.5.7   2021-11 (LTS)
+# PE 2019.8     6.18     2.5.7   2021-11 (LTS)
 ---
 
 stages:
-  - 'sanity'
   - 'validation'
   - 'acceptance'
   - 'compliance'
@@ -76,6 +75,9 @@ variables:
     - "{manifests,files,types}/**/*"
     - "templates/*.{erb,epp}"
     - "lib/**/*"
+    - "Gemfile"
+    - "SIMP/**/*"
+    - "data/**/*"
   exists:
     - "spec/{classes,unit,defines,type_aliases,types,hosts}/**/*_spec.rb"
 
@@ -87,6 +89,9 @@ variables:
     - "{manifests,files,types}/**/*"
     - "templates/*.{erb,epp}"
     - "lib/**/*"
+    - "Gemfile"
+    - "SIMP/**/*"
+    - "data/**/*"
   exists:
     - "spec/acceptance/**/*_spec.rb"
 
@@ -194,13 +199,6 @@ variables:
     BEAKER_PUPPET_COLLECTION: 'puppet5'
     MATRIX_RUBY_VERSION: '2.4'
 
-.pup_5_5_20: &pup_5_5_20
-  image: 'ruby:2.4'
-  variables:
-    PUPPET_VERSION: '5.5.20'
-    BEAKER_PUPPET_COLLECTION: 'puppet5'
-    MATRIX_RUBY_VERSION: '2.4'
-
 .pup_6: &pup_6
   image: 'ruby:2.5'
   variables:
@@ -208,11 +206,18 @@ variables:
     BEAKER_PUPPET_COLLECTION: 'puppet6'
     MATRIX_RUBY_VERSION: '2.5'
 
-.pup_6_16_0: &pup_6_16_0
+.pup_6_18_0: &pup_6_18_0
   image: 'ruby:2.5'
   variables:
-    PUPPET_VERSION: '6.16.0'
+    PUPPET_VERSION: '6.18.0'
     BEAKER_PUPPET_COLLECTION: 'puppet6'
+    MATRIX_RUBY_VERSION: '2.5'
+
+.pup_7: &pup_7
+  image: 'ruby:2.5'
+  variables:
+    PUPPET_VERSION: '~> 7.0'
+    BEAKER_PUPPET_COLLECTION: 'puppet7'
     MATRIX_RUBY_VERSION: '2.5'
 
 # Testing Environments
@@ -251,10 +256,10 @@ variables:
 # Pipeline / testing matrix
 #=======================================================================
 
-sanity_checks:
+releng_checks:
   <<: *pup_5
   <<: *setup_bundler_env
-  stage: 'sanity'
+  stage: 'validation'
   tags: ['docker']
   script:
     - 'if `hash apt-get`; then apt-get update; fi'
@@ -283,19 +288,18 @@ pup6-lint:
 pup5-unit:
   <<: *pup_5
   <<: *unit_tests
-  <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
-
-pup5.5.20-unit:
-  <<: *pup_5_5_20
-  <<: *unit_tests
 
 pup6-unit:
   <<: *pup_6
   <<: *unit_tests
   <<: *with_SIMP_SPEC_MATRIX_LEVEL_2
 
-pup6.16.0-unit:
-  <<: *pup_6_16_0
+pup6.18.0-unit:
+  <<: *pup_6_18_0
+  <<: *unit_tests
+
+pup7-unit:
+  <<: *pup_7
   <<: *unit_tests
 
 # ------------------------------------------------------------------------------
@@ -308,36 +312,52 @@ pup6.16.0-unit:
 # Repo-specific content
 # ==============================================================================
 
-pup5.5.20:
-  <<: *pup_5_5_20
+# Pinned
+
+pup6.18.0:
+  <<: *pup_6_18_0
   <<: *acceptance_base
   script:
     - 'bundle exec rake beaker:suites[default]'
 
-pup5.5.20-fips:
-  <<: *pup_5_5_20
+pup6.18.0-fips:
+  <<: *pup_6_18_0
   <<: *acceptance_base
   script:
     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
 
-pup5.5.20-multi_tier:
-  <<: *pup_5_5_20
+pup6.18.0-multi_tier:
+  <<: *pup_6_18_0
   <<: *acceptance_base
   script:
     - 'bundle exec rake beaker:suites[multi_tier]'
 
-pup5.5.20-oel:
-  <<: *pup_5_5_20
+pup6.18.0-oel:
+  <<: *pup_6_18_0
   <<: *acceptance_base
   script:
     - 'bundle exec rake beaker:suites[default,oel]'
 
-pup5.5.20-oel-fips:
-  <<: *pup_5_5_20
+pup6.18.0-oel-fips:
+  <<: *pup_6_18_0
   <<: *acceptance_base
   <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
   script:
     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,oel]'
+
+# Unpinned
+
+pup5:
+  <<: *pup_5
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[default]'
+
+pup5-fips:
+  <<: *pup_5
+  <<: *acceptance_base
+  script:
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
 
 pup6:
   <<: *pup_6
@@ -345,58 +365,14 @@ pup6:
   script:
     - 'bundle exec rake beaker:suites[default]'
 
-pup6-fips:
-  <<: *pup_6
-  <<: *acceptance_base
-  script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
-
-pup6.16.0:
-  <<: *pup_6_16_0
+pup7:
+  <<: *pup_7
   <<: *acceptance_base
   script:
     - 'bundle exec rake beaker:suites[default]'
 
-pup6.16.0-fips:
-  <<: *pup_6_16_0
+pup7-fips:
+  <<: *pup_7
   <<: *acceptance_base
   script:
     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
-
-pup6.16.0-oel:
-  <<: *pup_6_16_0
-  <<: *acceptance_base
-  script:
-    - 'bundle exec rake beaker:suites[default,oel]'
-
-pup6.16.0-oel-fips:
-  <<: *pup_6_16_0
-  <<: *acceptance_base
-  <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
-  script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,oel]'
-
-pup6.16.0:
-  <<: *pup_6_16_0
-  <<: *acceptance_base
-  script:
-    - 'bundle exec rake beaker:suites[default]'
-
-pup6.16.0-fips:
-  <<: *pup_6_16_0
-  <<: *acceptance_base
-  script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
-
-pup6.16.0-oel:
-  <<: *pup_6_16_0
-  <<: *acceptance_base
-  script:
-    - 'bundle exec rake beaker:suites[default,oel]'
-
-pup6.16.0-oel-fips:
-  <<: *pup_6_16_0
-  <<: *acceptance_base
-  <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
-  script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,oel]'

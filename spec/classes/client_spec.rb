@@ -119,17 +119,8 @@ describe 'simp_openldap::client' do
           :tls_cipher_suite      => ['AES256','AES128']
         }}
 
-        if os_facts[:os][:release][:major] < '7'
-          context 'on EL6' do
-            let(:content_option) { :with_strip_128_bit_ciphers }
-            it_should_behave_like "a ldap config generator"
-          end
-        else
-          context 'on EL7' do
-            let(:content_option) { :without_strip_128_bit_ciphers }
-            it_should_behave_like "a ldap config generator"
-          end
-        end
+        let(:content_option) { :without_strip_128_bit_ciphers }
+        it_should_behave_like "a ldap config generator"
       end
 
       context 'Generates files with strip_128_bit_ciphers = false' do

@@ -217,6 +217,8 @@ describe 'simp_openldap class' do
     context "on #{server}" do
       let(:host) { server }
 
+      install_simp_repos(server)
+
       context 'preparing for run' do
         it 'should configure server with no errors' do
           echo_on(server, base_dn)

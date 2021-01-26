@@ -39,6 +39,11 @@ describe 'compliance_markup', type: :class do
             })
           }
 
+          if os_facts.dig(:os,:release,:major) >= '8'
+            it { skip("does not support #{os}") }
+            next
+          end
+
           let(:pre_condition) {%(
             #{expected_classes.map{|c| %{include #{c}}}.join("\n")}
           )}

@@ -57,6 +57,13 @@ class simp_openldap::server (
   Boolean $tcpwrappers   = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })
 ) inherits ::simp_openldap {
 
+  $_os_version = $facts.dig('os','release','major')
+  $_os_name = $facts.dig('os','name')
+
+  if versioncmp($_os_version, '7') > 0 {
+    fail("$_os_name version $_os_version is not supported as an LDAP server")
+  }
+
   include '::simp_openldap::client'
   contain '::simp_openldap::server::install'
 

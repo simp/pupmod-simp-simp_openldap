@@ -14,6 +14,8 @@ describe 'simp_openldap class' do
 
   servers.each do |server|
     context "simp_openldap::server #{server}" do
+      install_simp_repos(server)
+
       let(:server_fqdn) { fact_on(server, 'fqdn') }
       # The if statement below is to test both capitol DC= and lowercase work it has
       # nothing to do with the os release when creating and querying.

@@ -215,6 +215,8 @@ describe 'simp_openldap class' do
 
   hosts.each do |server|
     context "on #{server}" do
+      install_simp_repos(server)
+
       let(:host) { server }
 
       install_simp_repos(server)

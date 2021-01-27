@@ -85,7 +85,7 @@ describe 'simp_openldap::server' do
             it { is_expected.to_not create_class('simp_openldap::slapo::ppolicy') }
           end
 
-          context 'no_tcpwrappers' do
+          context 'tcpwrappers' do
             let(:params){{ :tcpwrappers => true }}
 
             it { is_expected.to create_tcpwrappers__allow('slapd').with_pattern('ALL') }

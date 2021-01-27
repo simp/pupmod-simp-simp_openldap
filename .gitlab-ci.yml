@@ -388,12 +388,6 @@ pup5.x:
   script:
     - 'bundle exec rake beaker:suites[default]'
 
-pup5.x-fips:
-  <<: *pup_5_x
-  <<: *acceptance_base
-  script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
-
 pup6.x:
   <<: *pup_6_x
   <<: *acceptance_base
@@ -405,9 +399,3 @@ pup7.x:
   <<: *acceptance_base
   script:
     - 'bundle exec rake beaker:suites[default]'
-
-pup7.x-fips:
-  <<: *pup_7_x
-  <<: *acceptance_base
-  script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'

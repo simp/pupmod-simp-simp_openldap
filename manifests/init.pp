@@ -72,6 +72,8 @@ class simp_openldap (
   Stdlib::AbsolutePath           $app_pki_ca_dir          = "${app_pki_dir}/cacerts",
   Optional[Stdlib::Absolutepath] $app_pki_crl             = undef,
 ) {
+  simplib::assert_metadata($module_name)
+
   if $ldap_uri {
     $_ldap_uri = $ldap_uri
   }

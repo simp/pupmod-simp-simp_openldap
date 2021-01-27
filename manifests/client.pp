@@ -30,12 +30,7 @@
 #   Path to the CRL file.
 #
 # @param strip_128_bit_ciphers
-#   On EL6 systems, all 128-bit ciphers will be removed from ``tls_cipher_suite``
-#
-#   * This is due to a bug in the LDAP client libraries that does not appear to
-#     honor the order of the SSL ciphers and will attempt to connect with
-#     128-bit ciphers and not use stronger ciphers when those are present. This
-#     breaks connections to securely configured LDAP servers.
+#   * **DEPRECATED**
 #
 # @param openldap_clients_ensure The ensure status of the openldap-clients package
 # @param nss_pam_ldapd_ensure The ensure status of the nss-pam-ldapd package
@@ -52,7 +47,7 @@ class simp_openldap::client (
   Stdlib::Absolutepath                         $app_pki_cert          = $::simp_openldap::app_pki_cert,
   Stdlib::Absolutepath                         $app_pki_key           = $::simp_openldap::app_pki_key,
   Optional[Stdlib::Absolutepath]               $app_pki_crl           = $::simp_openldap::app_pki_crl,
-  Boolean                                      $strip_128_bit_ciphers = true,
+  Optional[Boolean]                            $strip_128_bit_ciphers = undef,
   Array[String[1]]                             $tls_cipher_suite      = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT','!MEDIUM'] }),
   Enum['none','peer','all']                    $tls_crlcheck          = 'none',
   Enum['never','searching','finding','always'] $deref                 = 'never',
@@ -60,22 +55,6 @@ class simp_openldap::client (
   String                                       $openldap_clients_ensure = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
   String                                       $nss_pam_ldapd_ensure    = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ) inherits ::simp_openldap {
-
-  if $strip_128_bit_ciphers {
-    # This is here due to a bug in the LDAP client library on EL6 that will set
-    # the SSF to 128 when connecting over StartTLS if there are *any* 128-bit
-    # ciphers in the list.
-    if versioncmp($facts['os']['release']['major'],'7') < 0 {
-      $_tmp_suite = flatten($tls_cipher_suite.map |$cipher| { split($cipher,':') })
-      $_tls_cipher_suite = $_tmp_suite.filter |$cipher| { $cipher !~ Pattern[/128/] }
-    }
-    else {
-      $_tls_cipher_suite = $tls_cipher_suite
-    }
-  }
-  else {
-    $_tls_cipher_suite = $tls_cipher_suite
-  }
 
   file { '/etc/openldap/ldap.conf':
     owner   => 'root',
@@ -95,8 +74,5 @@ class simp_openldap::client (
 
   package { "openldap-clients.${facts['hardwaremodel']}":
     ensure => $openldap_clients_ensure
-  }
-  package { 'nss-pam-ldapd':
-    ensure => $nss_pam_ldapd_ensure
   }
 }

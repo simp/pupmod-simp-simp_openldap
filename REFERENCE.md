@@ -32,16 +32,29 @@
 
 ## Classes
 
-### `simp_openldap`
+### <a name="simp_openldap"></a>`simp_openldap`
 
 This class provides a common base for both the client and server portions of
 an OpenLDAP-based sysetm
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap` class.
+The following parameters are available in the `simp_openldap` class:
 
-##### `ldap_uri`
+* [`ldap_uri`](#ldap_uri)
+* [`base_dn`](#base_dn)
+* [`bind_dn`](#bind_dn)
+* [`ldap_master`](#ldap_master)
+* [`is_server`](#is_server)
+* [`pki`](#pki)
+* [`app_pki_external_source`](#app_pki_external_source)
+* [`app_pki_dir`](#app_pki_dir)
+* [`app_pki_key`](#app_pki_key)
+* [`app_pki_cert`](#app_pki_cert)
+* [`app_pki_ca_dir`](#app_pki_ca_dir)
+* [`app_pki_crl`](#app_pki_crl)
+
+##### <a name="ldap_uri"></a>`ldap_uri`
 
 Data type: `Array[Simplib::URI]`
 
@@ -51,7 +64,7 @@ It is recommended that you make the master the last entry in this array
 
 Default value: `simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef })`
 
-##### `base_dn`
+##### <a name="base_dn"></a>`base_dn`
 
 Data type: `String`
 
@@ -59,7 +72,7 @@ The base DN of the LDAP entries
 
 Default value: `simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => simplib::ldap::domain_to_dn() })`
 
-##### `bind_dn`
+##### <a name="bind_dn"></a>`bind_dn`
 
 Data type: `String`
 
@@ -67,7 +80,7 @@ The use that should be used to bind to the LDAP server
 
 Default value: `simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', simplib::ldap::domain_to_dn()) })`
 
-##### `ldap_master`
+##### <a name="ldap_master"></a>`ldap_master`
 
 Data type: `String`
 
@@ -77,7 +90,7 @@ The LDAP Master server
 
 Default value: `simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef })`
 
-##### `is_server`
+##### <a name="is_server"></a>`is_server`
 
 Data type: `Boolean`
 
@@ -85,7 +98,7 @@ Set this if you want to create an OpenLDAP server on your node
 
 Default value: ``false``
 
-##### `pki`
+##### <a name="pki"></a>`pki`
 
 Data type: `Variant[Boolean, Enum['simp']]`
 
@@ -103,7 +116,7 @@ Data type: `Variant[Boolean, Enum['simp']]`
 
 Default value: `simplib::lookup('simp_options::pki', { 'default_value' => false })`
 
-##### `app_pki_external_source`
+##### <a name="app_pki_external_source"></a>`app_pki_external_source`
 
 Data type: `String`
 
@@ -114,7 +127,7 @@ Data type: `String`
 
 Default value: `simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' })`
 
-##### `app_pki_dir`
+##### <a name="app_pki_dir"></a>`app_pki_dir`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -124,7 +137,7 @@ It defaults to /etc/pki/simp_apps/openldap/x509.
 
 Default value: `'/etc/pki/simp_apps/openldap/x509'`
 
-##### `app_pki_key`
+##### <a name="app_pki_key"></a>`app_pki_key`
 
 Data type: `Stdlib::AbsolutePath`
 
@@ -132,7 +145,7 @@ Path and name of the private SSL key file.
 
 Default value: `"${app_pki_dir}/private/${facts['fqdn']}.pem"`
 
-##### `app_pki_cert`
+##### <a name="app_pki_cert"></a>`app_pki_cert`
 
 Data type: `Stdlib::AbsolutePath`
 
@@ -140,7 +153,7 @@ Path and name of the public SSL certificate.
 
 Default value: `"${app_pki_dir}/public/${facts['fqdn']}.pub"`
 
-##### `app_pki_ca_dir`
+##### <a name="app_pki_ca_dir"></a>`app_pki_ca_dir`
 
 Data type: `Stdlib::AbsolutePath`
 
@@ -148,7 +161,7 @@ Path to the CA.
 
 Default value: `"${app_pki_dir}/cacerts"`
 
-##### `app_pki_crl`
+##### <a name="app_pki_crl"></a>`app_pki_crl`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -156,7 +169,7 @@ Path to the CRL file.
 
 Default value: ``undef``
 
-### `simp_openldap::client`
+### <a name="simp_openldapclient"></a>`simp_openldap::client`
 
 Set up /etc/openldap/ldap.conf with the global options for accessing the LDAP
 servers.
@@ -176,9 +189,28 @@ connect with TLSv1 if possible.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::client` class.
+The following parameters are available in the `simp_openldap::client` class:
 
-##### `use_tls`
+* [`use_tls`](#use_tls)
+* [`app_pki_key`](#app_pki_key)
+* [`app_pki_cert`](#app_pki_cert)
+* [`app_pki_ca_dir`](#app_pki_ca_dir)
+* [`app_pki_crl`](#app_pki_crl)
+* [`strip_128_bit_ciphers`](#strip_128_bit_ciphers)
+* [`openldap_clients_ensure`](#openldap_clients_ensure)
+* [`nss_pam_ldapd_ensure`](#nss_pam_ldapd_ensure)
+* [`uri`](#uri)
+* [`base_dn`](#base_dn)
+* [`bind_dn`](#bind_dn)
+* [`referrals`](#referrals)
+* [`sizelimit`](#sizelimit)
+* [`timelimit`](#timelimit)
+* [`tls_cipher_suite`](#tls_cipher_suite)
+* [`tls_crlcheck`](#tls_crlcheck)
+* [`deref`](#deref)
+* [`tls_reqcert`](#tls_reqcert)
+
+##### <a name="use_tls"></a>`use_tls`
 
 Data type: `Variant[Enum['simp'],Boolean]`
 
@@ -188,7 +220,7 @@ configurations could vary.
 
 Default value: `$::simp_openldap::pki`
 
-##### `app_pki_key`
+##### <a name="app_pki_key"></a>`app_pki_key`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -196,7 +228,7 @@ Path and name of the private SSL key file
 
 Default value: `$::simp_openldap::app_pki_key`
 
-##### `app_pki_cert`
+##### <a name="app_pki_cert"></a>`app_pki_cert`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -204,7 +236,7 @@ Path and name of the public SSL certificate
 
 Default value: `$::simp_openldap::app_pki_cert`
 
-##### `app_pki_ca_dir`
+##### <a name="app_pki_ca_dir"></a>`app_pki_ca_dir`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -212,7 +244,7 @@ Path to the CA.
 
 Default value: `$::simp_openldap::app_pki_ca_dir`
 
-##### `app_pki_crl`
+##### <a name="app_pki_crl"></a>`app_pki_crl`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -220,20 +252,15 @@ Path to the CRL file.
 
 Default value: `$::simp_openldap::app_pki_crl`
 
-##### `strip_128_bit_ciphers`
+##### <a name="strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
-On EL6 systems, all 128-bit ciphers will be removed from ``tls_cipher_suite``
+* **DEPRECATED**
 
-* This is due to a bug in the LDAP client libraries that does not appear to
-  honor the order of the SSL ciphers and will attempt to connect with
-  128-bit ciphers and not use stronger ciphers when those are present. This
-  breaks connections to securely configured LDAP servers.
+Default value: ``undef``
 
-Default value: ``true``
-
-##### `openldap_clients_ensure`
+##### <a name="openldap_clients_ensure"></a>`openldap_clients_ensure`
 
 Data type: `String`
 
@@ -241,7 +268,7 @@ The ensure status of the openldap-clients package
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-##### `nss_pam_ldapd_ensure`
+##### <a name="nss_pam_ldapd_ensure"></a>`nss_pam_ldapd_ensure`
 
 Data type: `String`
 
@@ -249,7 +276,7 @@ The ensure status of the nss-pam-ldapd package
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-##### `uri`
+##### <a name="uri"></a>`uri`
 
 Data type: `Array[Simplib::URI]`
 
@@ -257,7 +284,7 @@ Data type: `Array[Simplib::URI]`
 
 Default value: `$::simp_openldap::_ldap_uri`
 
-##### `base_dn`
+##### <a name="base_dn"></a>`base_dn`
 
 Data type: `Optional[String]`
 
@@ -265,7 +292,7 @@ Data type: `Optional[String]`
 
 Default value: `$::simp_openldap::base_dn`
 
-##### `bind_dn`
+##### <a name="bind_dn"></a>`bind_dn`
 
 Data type: `String[1]`
 
@@ -273,7 +300,7 @@ Data type: `String[1]`
 
 Default value: `$::simp_openldap::bind_dn`
 
-##### `referrals`
+##### <a name="referrals"></a>`referrals`
 
 Data type: `Enum['on','off']`
 
@@ -281,7 +308,7 @@ Data type: `Enum['on','off']`
 
 Default value: `'on'`
 
-##### `sizelimit`
+##### <a name="sizelimit"></a>`sizelimit`
 
 Data type: `Integer`
 
@@ -289,7 +316,7 @@ Data type: `Integer`
 
 Default value: `0`
 
-##### `timelimit`
+##### <a name="timelimit"></a>`timelimit`
 
 Data type: `Integer`
 
@@ -297,7 +324,7 @@ Data type: `Integer`
 
 Default value: `15`
 
-##### `tls_cipher_suite`
+##### <a name="tls_cipher_suite"></a>`tls_cipher_suite`
 
 Data type: `Array[String[1]]`
 
@@ -305,7 +332,7 @@ Data type: `Array[String[1]]`
 
 Default value: `simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['DEFAULT','!MEDIUM'] })`
 
-##### `tls_crlcheck`
+##### <a name="tls_crlcheck"></a>`tls_crlcheck`
 
 Data type: `Enum['none','peer','all']`
 
@@ -313,7 +340,7 @@ Data type: `Enum['none','peer','all']`
 
 Default value: `'none'`
 
-##### `deref`
+##### <a name="deref"></a>`deref`
 
 Data type: `Enum['never','searching','finding','always']`
 
@@ -321,7 +348,7 @@ Data type: `Enum['never','searching','finding','always']`
 
 Default value: `'never'`
 
-##### `tls_reqcert`
+##### <a name="tls_reqcert"></a>`tls_reqcert`
 
 Data type: `Enum['never','allow','try','demand','hard']`
 
@@ -329,7 +356,7 @@ Data type: `Enum['never','allow','try','demand','hard']`
 
 Default value: `'allow'`
 
-### `simp_openldap::server`
+### <a name="simp_openldapserver"></a>`simp_openldap::server`
 
 Set up an OpenLDAP server
 
@@ -359,9 +386,17 @@ override and/or circumvent them to your site specifications.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server` class.
+The following parameters are available in the `simp_openldap::server` class:
 
-##### `schema_sync`
+* [`schema_sync`](#schema_sync)
+* [`schema_source`](#schema_source)
+* [`allow_sync`](#allow_sync)
+* [`sync_dn`](#sync_dn)
+* [`use_ppolicy`](#use_ppolicy)
+* [`use_tcpwrappers`](#use_tcpwrappers)
+* [`tcpwrappers`](#tcpwrappers)
+
+##### <a name="schema_sync"></a>`schema_sync`
 
 Data type: `Boolean`
 
@@ -369,7 +404,7 @@ Synchronize all schemas from ``$schema_source``
 
 Default value: ``true``
 
-##### `schema_source`
+##### <a name="schema_source"></a>`schema_source`
 
 Data type: `String`
 
@@ -377,7 +412,7 @@ The location from which to download the schemas
 
 Default value: `"puppet:///modules/${module_name}/etc/openldap/schema"`
 
-##### `allow_sync`
+##### <a name="allow_sync"></a>`allow_sync`
 
 Data type: `Boolean`
 
@@ -389,7 +424,7 @@ to this server
 
 Default value: ``true``
 
-##### `sync_dn`
+##### <a name="sync_dn"></a>`sync_dn`
 
 Data type: `String`
 
@@ -397,7 +432,7 @@ The DN that is allowed to synchronize from the LDAP server
 
 Default value: `simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::simp_openldap::base_dn}" })`
 
-##### `use_ppolicy`
+##### <a name="use_ppolicy"></a>`use_ppolicy`
 
 Data type: `Boolean`
 
@@ -405,11 +440,11 @@ Include the default password policy overlay
 
 Default value: ``true``
 
-##### `use_tcpwrappers`
+##### <a name="use_tcpwrappers"></a>`use_tcpwrappers`
 
 If true, enable tcpwrappers for slapd.
 
-##### `tcpwrappers`
+##### <a name="tcpwrappers"></a>`tcpwrappers`
 
 Data type: `Boolean`
 
@@ -417,7 +452,7 @@ Data type: `Boolean`
 
 Default value: `simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })`
 
-### `simp_openldap::server::conf`
+### <a name="simp_openldapserverconf"></a>`simp_openldap::server::conf`
 
 **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 
@@ -440,9 +475,102 @@ TLSv1 if possible.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::conf` class.
+The following parameters are available in the `simp_openldap::server::conf` class:
 
-##### `rootdn`
+* [`rootdn`](#rootdn)
+* [`rootpw`](#rootpw)
+* [`syncdn`](#syncdn)
+* [`syncpw`](#syncpw)
+* [`binddn`](#binddn)
+* [`bindpw`](#bindpw)
+* [`audit_transactions`](#audit_transactions)
+* [`audit_to_syslog`](#audit_to_syslog)
+* [`auditlog`](#auditlog)
+* [`auditlog_rotate`](#auditlog_rotate)
+* [`auditlog_preserve`](#auditlog_preserve)
+* [`authz_policy`](#authz_policy)
+* [`authz_regexp`](#authz_regexp)
+* [`default_schemas`](#default_schemas)
+* [`trusted_nets`](#trusted_nets)
+* [`force_log_quick_kill`](#force_log_quick_kill)
+* [`include_chain_overlay`](#include_chain_overlay)
+* [`master`](#master)
+* [`listen_ldap`](#listen_ldap)
+* [`listen_ldapi`](#listen_ldapi)
+* [`listen_ldaps`](#listen_ldaps)
+* [`custom_options`](#custom_options)
+* [`password_hash`](#password_hash)
+* [`sizelimit`](#sizelimit)
+* [`sizelimit_soft`](#sizelimit_soft)
+* [`sizelimit_hard`](#sizelimit_hard)
+* [`sizelimit_unchecked`](#sizelimit_unchecked)
+* [`slapd_shutdown_timeout`](#slapd_shutdown_timeout)
+* [`threads`](#threads)
+* [`timelimit`](#timelimit)
+* [`timelimit_soft`](#timelimit_soft)
+* [`timelimit_hard`](#timelimit_hard)
+* [`tls_protocol_min`](#tls_protocol_min)
+* [`tls_verify_client`](#tls_verify_client)
+* [`db_cachesize`](#db_cachesize)
+* [`db_log_autoremove`](#db_log_autoremove)
+* [`ulimit_max_open_files`](#ulimit_max_open_files)
+* [`syslog`](#syslog)
+* [`logrotate`](#logrotate)
+* [`log_to_file`](#log_to_file)
+* [`log_file`](#log_file)
+* [`forward_all_logs`](#forward_all_logs)
+* [`firewall`](#firewall)
+* [`use_tls`](#use_tls)
+* [`app_pki_key`](#app_pki_key)
+* [`app_pki_cert`](#app_pki_cert)
+* [`app_pki_ca_dir`](#app_pki_ca_dir)
+* [`app_pki_crl`](#app_pki_crl)
+* [`suffix`](#suffix)
+* [`argsfile`](#argsfile)
+* [`bind_anon`](#bind_anon)
+* [`cachesize`](#cachesize)
+* [`checkpoint`](#checkpoint)
+* [`concurrency`](#concurrency)
+* [`conn_max_pending`](#conn_max_pending)
+* [`conn_max_pending_auth`](#conn_max_pending_auth)
+* [`default_searchbase`](#default_searchbase)
+* [`disallow`](#disallow)
+* [`ditcontentrule`](#ditcontentrule)
+* [`gentlehup`](#gentlehup)
+* [`idletimeout`](#idletimeout)
+* [`index_substr_any_step`](#index_substr_any_step)
+* [`index_substr_any_len`](#index_substr_any_len)
+* [`index_substr_if_maxlen`](#index_substr_if_maxlen)
+* [`index_substr_if_minlen`](#index_substr_if_minlen)
+* [`index_intlen`](#index_intlen)
+* [`slapd_log_level`](#slapd_log_level)
+* [`password_crypt_salt_format`](#password_crypt_salt_format)
+* [`pidfile`](#pidfile)
+* [`reverse_lookup`](#reverse_lookup)
+* [`schemadn`](#schemadn)
+* [`security`](#security)
+* [`sockbuf_max_incoming`](#sockbuf_max_incoming)
+* [`sockbuf_max_incoming_auth`](#sockbuf_max_incoming_auth)
+* [`sortvals`](#sortvals)
+* [`tcp_buffer`](#tcp_buffer)
+* [`writetimeout`](#writetimeout)
+* [`tls_cipher_suite`](#tls_cipher_suite)
+* [`tls_crl_check`](#tls_crl_check)
+* [`database`](#database)
+* [`directory`](#directory)
+* [`db_add_content_acl`](#db_add_content_acl)
+* [`db_lastmod`](#db_lastmod)
+* [`db_maxderefdepth`](#db_maxderefdepth)
+* [`db_mirrormode`](#db_mirrormode)
+* [`db_monitoring`](#db_monitoring)
+* [`db_readonly`](#db_readonly)
+* [`db_max_locks`](#db_max_locks)
+* [`db_max_lock_objects`](#db_max_lock_objects)
+* [`db_max_lock_lockers`](#db_max_lock_lockers)
+* [`db_log_region_max_size`](#db_log_region_max_size)
+* [`db_log_buffer_size`](#db_log_buffer_size)
+
+##### <a name="rootdn"></a>`rootdn`
 
 Data type: `Optional[String[1]]`
 
@@ -450,7 +578,7 @@ The DN of the administrative LDAP user
 
 Default value: `simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "cn=LDAPAdmin,ou=People,${::simp_openldap::base_dn}" })`
 
-##### `rootpw`
+##### <a name="rootpw"></a>`rootpw`
 
 Data type: `Optional[String[1]]`
 
@@ -458,7 +586,7 @@ This is the output of ``slappasswd`` for your LDAP administrative account
 
 Default value: ``undef``
 
-##### `syncdn`
+##### <a name="syncdn"></a>`syncdn`
 
 Data type: `String[1]`
 
@@ -468,7 +596,7 @@ The DN of the LDAP synchronization user
 
 Default value: `simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::simp_openldap::base_dn}" })`
 
-##### `syncpw`
+##### <a name="syncpw"></a>`syncpw`
 
 Data type: `Optional[String[1]]`
 
@@ -476,7 +604,7 @@ This is the output of ``slappasswd`` for your LDAP sync account
 
 Default value: `simplib::lookup('simp_options::ldap::sync_hash', { 'default_value' => undef })`
 
-##### `binddn`
+##### <a name="binddn"></a>`binddn`
 
 Data type: `String[1]`
 
@@ -487,7 +615,7 @@ LDAP system for further authentication
 
 Default value: `simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $::simp_openldap::bind_dn })`
 
-##### `bindpw`
+##### <a name="bindpw"></a>`bindpw`
 
 Data type: `Optional[String[1]]`
 
@@ -495,7 +623,7 @@ This is the output of ``slappasswd`` for your LDAP bind account
 
 Default value: `simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef })`
 
-##### `audit_transactions`
+##### <a name="audit_transactions"></a>`audit_transactions`
 
 Data type: `Boolean`
 
@@ -506,7 +634,7 @@ Set OpenLDAP to audit **all** transactions in the database
 
 Default value: ``true``
 
-##### `audit_to_syslog`
+##### <a name="audit_to_syslog"></a>`audit_to_syslog`
 
 Data type: `Boolean`
 
@@ -516,7 +644,7 @@ Forward all audit logs to syslog
 
 Default value: ``true``
 
-##### `auditlog`
+##### <a name="auditlog"></a>`auditlog`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -526,7 +654,7 @@ The path to the slapd audit log
 
 Default value: `'/var/log/slapd.audit'`
 
-##### `auditlog_rotate`
+##### <a name="auditlog_rotate"></a>`auditlog_rotate`
 
 Data type: `Enum['daily','weekly','monthly','yearly']`
 
@@ -534,7 +662,7 @@ The frequency with which the slapd audit logs should be rotated
 
 Default value: `'daily'`
 
-##### `auditlog_preserve`
+##### <a name="auditlog_preserve"></a>`auditlog_preserve`
 
 Data type: `Integer[0]`
 
@@ -542,7 +670,7 @@ The number of rotated audit logs to preserve
 
 Default value: `7`
 
-##### `authz_policy`
+##### <a name="authz_policy"></a>`authz_policy`
 
 Data type: `Enum['none','from','to','any']`
 
@@ -550,7 +678,7 @@ Set the appropriate ``authz-policy`` entry
 
 Default value: `'to'`
 
-##### `authz_regexp`
+##### <a name="authz_regexp"></a>`authz_regexp`
 
 Data type: `Array[Struct[{
       match   => String[1],
@@ -569,7 +697,7 @@ Default value: `[{
                                                           'replace' => "uid=\$1,ou=People,${::simp_openldap::base_dn}"
                                                         }]`
 
-##### `default_schemas`
+##### <a name="default_schemas"></a>`default_schemas`
 
 Data type: `Array[String[1]]`
 
@@ -585,7 +713,7 @@ The default schemas from ``/etc/openldap/schema`` to include
 
 Default value: `[ 'openssh-lpk', 'freeradius', 'autofs' ]`
 
-##### `trusted_nets`
+##### <a name="trusted_nets"></a>`trusted_nets`
 
 Data type: `Simplib::Netlist`
 
@@ -593,7 +721,7 @@ The networks that should be allowed into the server
 
 Default value: `simplib::lookup('simp_options::trusted_nets', { 'default_value' => ['127.0.0.1'] })`
 
-##### `force_log_quick_kill`
+##### <a name="force_log_quick_kill"></a>`force_log_quick_kill`
 
 Data type: `Boolean`
 
@@ -605,7 +733,7 @@ file written to the log directory
 
 Default value: ``false``
 
-##### `include_chain_overlay`
+##### <a name="include_chain_overlay"></a>`include_chain_overlay`
 
 Data type: `Boolean`
 
@@ -615,7 +743,7 @@ Include a chain overlay to allow for referral chaining
 
 Default value: ``false``
 
-##### `master`
+##### <a name="master"></a>`master`
 
 Data type: `Optional[String[1]]`
 
@@ -624,7 +752,7 @@ will be used for referral chaining
 
 Default value: `$::simp_openldap::_ldap_master`
 
-##### `listen_ldap`
+##### <a name="listen_ldap"></a>`listen_ldap`
 
 Data type: `Boolean`
 
@@ -632,7 +760,7 @@ Listen on the default LDAP port for ``ldap://`` conenctions
 
 Default value: ``true``
 
-##### `listen_ldapi`
+##### <a name="listen_ldapi"></a>`listen_ldapi`
 
 Data type: `Boolean`
 
@@ -640,7 +768,7 @@ Listen on the default LDAP port for ``ldapi://`` conenctions
 
 Default value: ``true``
 
-##### `listen_ldaps`
+##### <a name="listen_ldaps"></a>`listen_ldaps`
 
 Data type: `Boolean`
 
@@ -648,7 +776,7 @@ Listen on the default LDAPS port for ``ldaps://`` conenctions
 
 Default value: ``true``
 
-##### `custom_options`
+##### <a name="custom_options"></a>`custom_options`
 
 Data type: `Array[String]`
 
@@ -659,7 +787,7 @@ file
 
 Default value: `[]`
 
-##### `password_hash`
+##### <a name="password_hash"></a>`password_hash`
 
 Data type: `Enum['SSHA','SHA','SMD5','MD5','CRYPT','CLEARTEXT']`
 
@@ -667,7 +795,7 @@ The hash algorithm to use for passwords
 
 Default value: `'SSHA'`
 
-##### `sizelimit`
+##### <a name="sizelimit"></a>`sizelimit`
 
 Data type: `Variant[Enum['unlimited'], Integer[1]]`
 
@@ -678,7 +806,7 @@ The default size limit for queries
 
 Default value: `500`
 
-##### `sizelimit_soft`
+##### <a name="sizelimit_soft"></a>`sizelimit_soft`
 
 Data type: `Optional[Variant[Enum['unlimited'], Integer[1]]]`
 
@@ -686,7 +814,7 @@ Corresponds to ``size.soft`` in ``slapd.conf``
 
 Default value: ``undef``
 
-##### `sizelimit_hard`
+##### <a name="sizelimit_hard"></a>`sizelimit_hard`
 
 Data type: `Optional[Variant[Enum['unlimited'], Integer[1]]]`
 
@@ -694,7 +822,7 @@ Corresponds to ``size.hard`` in ``slapd.conf``
 
 Default value: ``undef``
 
-##### `sizelimit_unchecked`
+##### <a name="sizelimit_unchecked"></a>`sizelimit_unchecked`
 
 Data type: `Optional[Variant[Enum['unlimited'], Integer[1]]]`
 
@@ -702,7 +830,7 @@ Corresponds to ``size.unchecked`` in ``slapd.conf``
 
 Default value: ``undef``
 
-##### `slapd_shutdown_timeout`
+##### <a name="slapd_shutdown_timeout"></a>`slapd_shutdown_timeout`
 
 Data type: `Integer[0]`
 
@@ -710,7 +838,7 @@ Maximum allowed time to wait for slapd shutdown (in seconds)
 
 Default value: `3`
 
-##### `threads`
+##### <a name="threads"></a>`threads`
 
 Data type: `Variant[Enum['dynamic'],Integer[1]]`
 
@@ -721,7 +849,7 @@ Set the number of threads to run
 
 Default value: `'dynamic'`
 
-##### `timelimit`
+##### <a name="timelimit"></a>`timelimit`
 
 Data type: `Variant[Enum['unlimited'], Integer[1]]`
 
@@ -732,7 +860,7 @@ The default time limit for queries (in seconds)
 
 Default value: `3600`
 
-##### `timelimit_soft`
+##### <a name="timelimit_soft"></a>`timelimit_soft`
 
 Data type: `Optional[Variant[Enum['unlimited'], Integer[1]]]`
 
@@ -740,7 +868,7 @@ Corresponds to ``time.soft`` in ``slapd.conf``
 
 Default value: ``undef``
 
-##### `timelimit_hard`
+##### <a name="timelimit_hard"></a>`timelimit_hard`
 
 Data type: `Optional[Variant[Enum['unlimited'], Integer[1]]]`
 
@@ -748,7 +876,7 @@ Corresponds to ``time.hard`` in ``slapd.conf``
 
 Default value: ``undef``
 
-##### `tls_protocol_min`
+##### <a name="tls_protocol_min"></a>`tls_protocol_min`
 
 Data type: `Optional[Float]`
 
@@ -765,7 +893,7 @@ would require TLS 1.1.
 
 Default value: ``undef``
 
-##### `tls_verify_client`
+##### <a name="tls_verify_client"></a>`tls_verify_client`
 
 Data type: `Enum['never','allow','try','demand','hard','true']`
 
@@ -776,7 +904,7 @@ you are doing and have exensively tested it in your environment
 
 Default value: `'allow'`
 
-##### `db_cachesize`
+##### <a name="db_cachesize"></a>`db_cachesize`
 
 Data type: `Pattern['^\d+\s\d+\s\d+$']`
 
@@ -786,7 +914,7 @@ Set the BDB backend cache size
 
 Default value: `'0 268435456 1'`
 
-##### `db_log_autoremove`
+##### <a name="db_log_autoremove"></a>`db_log_autoremove`
 
 Data type: `Boolean`
 
@@ -798,7 +926,7 @@ recovery log files when possible
 
 Default value: ``true``
 
-##### `ulimit_max_open_files`
+##### <a name="ulimit_max_open_files"></a>`ulimit_max_open_files`
 
 Data type: `Integer[1024]`
 
@@ -806,7 +934,7 @@ Set the number of open file handles that OpenLDAP may use
 
 Default value: `81920`
 
-##### `syslog`
+##### <a name="syslog"></a>`syslog`
 
 Data type: `Boolean`
 
@@ -814,7 +942,7 @@ Enable the SIMP logging infrastructure
 
 Default value: `simplib::lookup('simp_options::syslog', {'default_value' => false })`
 
-##### `logrotate`
+##### <a name="logrotate"></a>`logrotate`
 
 Data type: `Boolean`
 
@@ -822,7 +950,7 @@ Enable the SIMP log rotate infrastructure
 
 Default value: `simplib::lookup('simp_options::logrotate', {'default_value' => false })`
 
-##### `log_to_file`
+##### <a name="log_to_file"></a>`log_to_file`
 
 Data type: `Boolean`
 
@@ -832,7 +960,7 @@ Send the output logs to the file specified in ``$log_file``
 
 Default value: ``false``
 
-##### `log_file`
+##### <a name="log_file"></a>`log_file`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -842,7 +970,7 @@ Output all logs to this file via syslog
 
 Default value: `'/var/log/slapd.log'`
 
-##### `forward_all_logs`
+##### <a name="forward_all_logs"></a>`forward_all_logs`
 
 Data type: `Boolean`
 
@@ -852,7 +980,7 @@ Forward **all** OpenLDAP logs via syslog
 
 Default value: ``false``
 
-##### `firewall`
+##### <a name="firewall"></a>`firewall`
 
 Data type: `Boolean`
 
@@ -860,7 +988,7 @@ Enable the SIMP firewall
 
 Default value: `simplib::lookup('simp_options::firewall', {'default_value' => false })`
 
-##### `use_tls`
+##### <a name="use_tls"></a>`use_tls`
 
 Data type: `Variant[Enum['simp'],Boolean]`
 
@@ -869,7 +997,7 @@ but needs to be distinct as the client and server configurations could vary.
 
 Default value: `$::simp_openldap::pki`
 
-##### `app_pki_key`
+##### <a name="app_pki_key"></a>`app_pki_key`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -877,7 +1005,7 @@ Path and name of the private SSL key file
 
 Default value: `$::simp_openldap::app_pki_key`
 
-##### `app_pki_cert`
+##### <a name="app_pki_cert"></a>`app_pki_cert`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -885,7 +1013,7 @@ Path and name of the public SSL certificate
 
 Default value: `$::simp_openldap::app_pki_cert`
 
-##### `app_pki_ca_dir`
+##### <a name="app_pki_ca_dir"></a>`app_pki_ca_dir`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -893,7 +1021,7 @@ Path to the CA.
 
 Default value: `$::simp_openldap::app_pki_ca_dir`
 
-##### `app_pki_crl`
+##### <a name="app_pki_crl"></a>`app_pki_crl`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -901,7 +1029,7 @@ Path to the CRL file.
 
 Default value: `$::simp_openldap::app_pki_crl`
 
-##### `suffix`
+##### <a name="suffix"></a>`suffix`
 
 Data type: `String[1]`
 
@@ -909,7 +1037,7 @@ Data type: `String[1]`
 
 Default value: `$::simp_openldap::base_dn`
 
-##### `argsfile`
+##### <a name="argsfile"></a>`argsfile`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -917,7 +1045,7 @@ Data type: `Stdlib::Absolutepath`
 
 Default value: `'/var/run/openldap/slapd.args'`
 
-##### `bind_anon`
+##### <a name="bind_anon"></a>`bind_anon`
 
 Data type: `Boolean`
 
@@ -925,7 +1053,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `cachesize`
+##### <a name="cachesize"></a>`cachesize`
 
 Data type: `Integer[1]`
 
@@ -933,7 +1061,7 @@ Data type: `Integer[1]`
 
 Default value: `10000`
 
-##### `checkpoint`
+##### <a name="checkpoint"></a>`checkpoint`
 
 Data type: `Pattern['(^\d+\s\d+$|^$)']`
 
@@ -941,7 +1069,7 @@ Data type: `Pattern['(^\d+\s\d+$|^$)']`
 
 Default value: `'1024 5'`
 
-##### `concurrency`
+##### <a name="concurrency"></a>`concurrency`
 
 Data type: `Optional[Integer[1]]`
 
@@ -949,7 +1077,7 @@ Data type: `Optional[Integer[1]]`
 
 Default value: ``undef``
 
-##### `conn_max_pending`
+##### <a name="conn_max_pending"></a>`conn_max_pending`
 
 Data type: `Integer[1]`
 
@@ -957,7 +1085,7 @@ Data type: `Integer[1]`
 
 Default value: `100`
 
-##### `conn_max_pending_auth`
+##### <a name="conn_max_pending_auth"></a>`conn_max_pending_auth`
 
 Data type: `Integer[1]`
 
@@ -965,7 +1093,7 @@ Data type: `Integer[1]`
 
 Default value: `1000`
 
-##### `default_searchbase`
+##### <a name="default_searchbase"></a>`default_searchbase`
 
 Data type: `Optional[String[1]]`
 
@@ -973,7 +1101,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `disallow`
+##### <a name="disallow"></a>`disallow`
 
 Data type: `Array[Simp_Openldap::SlapdConf::Disallow]`
 
@@ -981,7 +1109,7 @@ Data type: `Array[Simp_Openldap::SlapdConf::Disallow]`
 
 Default value: `['bind_anon','tls_2_anon']`
 
-##### `ditcontentrule`
+##### <a name="ditcontentrule"></a>`ditcontentrule`
 
 Data type: `Optional[String[1]]`
 
@@ -989,7 +1117,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `gentlehup`
+##### <a name="gentlehup"></a>`gentlehup`
 
 Data type: `Boolean`
 
@@ -997,7 +1125,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `idletimeout`
+##### <a name="idletimeout"></a>`idletimeout`
 
 Data type: `Integer[0]`
 
@@ -1005,7 +1133,7 @@ Data type: `Integer[0]`
 
 Default value: `0`
 
-##### `index_substr_any_step`
+##### <a name="index_substr_any_step"></a>`index_substr_any_step`
 
 Data type: `Integer[0]`
 
@@ -1013,7 +1141,7 @@ Data type: `Integer[0]`
 
 Default value: `2`
 
-##### `index_substr_any_len`
+##### <a name="index_substr_any_len"></a>`index_substr_any_len`
 
 Data type: `Integer[0]`
 
@@ -1021,7 +1149,7 @@ Data type: `Integer[0]`
 
 Default value: `4`
 
-##### `index_substr_if_maxlen`
+##### <a name="index_substr_if_maxlen"></a>`index_substr_if_maxlen`
 
 Data type: `Integer[0]`
 
@@ -1029,7 +1157,7 @@ Data type: `Integer[0]`
 
 Default value: `4`
 
-##### `index_substr_if_minlen`
+##### <a name="index_substr_if_minlen"></a>`index_substr_if_minlen`
 
 Data type: `Integer[0]`
 
@@ -1037,7 +1165,7 @@ Data type: `Integer[0]`
 
 Default value: `2`
 
-##### `index_intlen`
+##### <a name="index_intlen"></a>`index_intlen`
 
 Data type: `Integer[0]`
 
@@ -1045,7 +1173,7 @@ Data type: `Integer[0]`
 
 Default value: `4`
 
-##### `slapd_log_level`
+##### <a name="slapd_log_level"></a>`slapd_log_level`
 
 Data type: `Array[Simp_Openldap::LogLevel]`
 
@@ -1053,7 +1181,7 @@ Data type: `Array[Simp_Openldap::LogLevel]`
 
 Default value: `['stats', 'sync']`
 
-##### `password_crypt_salt_format`
+##### <a name="password_crypt_salt_format"></a>`password_crypt_salt_format`
 
 Data type: `String[1]`
 
@@ -1061,7 +1189,7 @@ Data type: `String[1]`
 
 Default value: `'%s'`
 
-##### `pidfile`
+##### <a name="pidfile"></a>`pidfile`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -1069,7 +1197,7 @@ Data type: `Stdlib::Absolutepath`
 
 Default value: `'/var/run/openldap/slapd.pid'`
 
-##### `reverse_lookup`
+##### <a name="reverse_lookup"></a>`reverse_lookup`
 
 Data type: `Boolean`
 
@@ -1077,7 +1205,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `schemadn`
+##### <a name="schemadn"></a>`schemadn`
 
 Data type: `String[1]`
 
@@ -1085,7 +1213,7 @@ Data type: `String[1]`
 
 Default value: `'cn=Subschema'`
 
-##### `security`
+##### <a name="security"></a>`security`
 
 Data type: `Array[String[1]]`
 
@@ -1093,7 +1221,7 @@ Data type: `Array[String[1]]`
 
 Default value: `['ssf=256', 'tls=256', 'update_ssf=256', 'simple_bind=256', 'update_tls=256']`
 
-##### `sockbuf_max_incoming`
+##### <a name="sockbuf_max_incoming"></a>`sockbuf_max_incoming`
 
 Data type: `Integer[1]`
 
@@ -1101,7 +1229,7 @@ Data type: `Integer[1]`
 
 Default value: `262143`
 
-##### `sockbuf_max_incoming_auth`
+##### <a name="sockbuf_max_incoming_auth"></a>`sockbuf_max_incoming_auth`
 
 Data type: `Integer[1]`
 
@@ -1109,7 +1237,7 @@ Data type: `Integer[1]`
 
 Default value: `4194303`
 
-##### `sortvals`
+##### <a name="sortvals"></a>`sortvals`
 
 Data type: `Array[String]`
 
@@ -1117,7 +1245,7 @@ Data type: `Array[String]`
 
 Default value: `[]`
 
-##### `tcp_buffer`
+##### <a name="tcp_buffer"></a>`tcp_buffer`
 
 Data type: `Optional[Integer]`
 
@@ -1125,7 +1253,7 @@ Data type: `Optional[Integer]`
 
 Default value: ``undef``
 
-##### `writetimeout`
+##### <a name="writetimeout"></a>`writetimeout`
 
 Data type: `Integer[0]`
 
@@ -1133,7 +1261,7 @@ Data type: `Integer[0]`
 
 Default value: `0`
 
-##### `tls_cipher_suite`
+##### <a name="tls_cipher_suite"></a>`tls_cipher_suite`
 
 Data type: `Optional[Array[String[1]]]`
 
@@ -1141,7 +1269,7 @@ Data type: `Optional[Array[String[1]]]`
 
 Default value: ``undef``
 
-##### `tls_crl_check`
+##### <a name="tls_crl_check"></a>`tls_crl_check`
 
 Data type: `Enum['none','peer','all']`
 
@@ -1149,7 +1277,7 @@ Data type: `Enum['none','peer','all']`
 
 Default value: `'none'`
 
-##### `database`
+##### <a name="database"></a>`database`
 
 Data type: `String[1]`
 
@@ -1157,7 +1285,7 @@ Data type: `String[1]`
 
 Default value: `'bdb'`
 
-##### `directory`
+##### <a name="directory"></a>`directory`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -1165,7 +1293,7 @@ Data type: `Stdlib::Absolutepath`
 
 Default value: `'/var/lib/ldap'`
 
-##### `db_add_content_acl`
+##### <a name="db_add_content_acl"></a>`db_add_content_acl`
 
 Data type: `Boolean`
 
@@ -1173,7 +1301,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `db_lastmod`
+##### <a name="db_lastmod"></a>`db_lastmod`
 
 Data type: `Boolean`
 
@@ -1181,7 +1309,7 @@ Data type: `Boolean`
 
 Default value: ``true``
 
-##### `db_maxderefdepth`
+##### <a name="db_maxderefdepth"></a>`db_maxderefdepth`
 
 Data type: `Integer[1]`
 
@@ -1189,7 +1317,7 @@ Data type: `Integer[1]`
 
 Default value: `15`
 
-##### `db_mirrormode`
+##### <a name="db_mirrormode"></a>`db_mirrormode`
 
 Data type: `Boolean`
 
@@ -1197,7 +1325,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `db_monitoring`
+##### <a name="db_monitoring"></a>`db_monitoring`
 
 Data type: `Boolean`
 
@@ -1205,7 +1333,7 @@ Data type: `Boolean`
 
 Default value: ``true``
 
-##### `db_readonly`
+##### <a name="db_readonly"></a>`db_readonly`
 
 Data type: `Boolean`
 
@@ -1213,7 +1341,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `db_max_locks`
+##### <a name="db_max_locks"></a>`db_max_locks`
 
 Data type: `Integer[1]`
 
@@ -1221,7 +1349,7 @@ Data type: `Integer[1]`
 
 Default value: `3000`
 
-##### `db_max_lock_objects`
+##### <a name="db_max_lock_objects"></a>`db_max_lock_objects`
 
 Data type: `Integer[1]`
 
@@ -1229,7 +1357,7 @@ Data type: `Integer[1]`
 
 Default value: `1500`
 
-##### `db_max_lock_lockers`
+##### <a name="db_max_lock_lockers"></a>`db_max_lock_lockers`
 
 Data type: `Integer[1]`
 
@@ -1237,7 +1365,7 @@ Data type: `Integer[1]`
 
 Default value: `1500`
 
-##### `db_log_region_max_size`
+##### <a name="db_log_region_max_size"></a>`db_log_region_max_size`
 
 Data type: `Integer[1]`
 
@@ -1245,7 +1373,7 @@ Data type: `Integer[1]`
 
 Default value: `262144`
 
-##### `db_log_buffer_size`
+##### <a name="db_log_buffer_size"></a>`db_log_buffer_size`
 
 Data type: `Integer[1]`
 
@@ -1253,7 +1381,7 @@ Data type: `Integer[1]`
 
 Default value: `2097152`
 
-### `simp_openldap::server::conf::default_ldif`
+### <a name="simp_openldapserverconfdefault_ldif"></a>`simp_openldap::server::conf::default_ldif`
 
 **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 
@@ -1263,9 +1391,26 @@ running LDAP server.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::conf::default_ldif` class.
+The following parameters are available in the `simp_openldap::server::conf::default_ldif` class:
 
-##### `users_group_id`
+* [`users_group_id`](#users_group_id)
+* [`administrators_group_id`](#administrators_group_id)
+* [`ppolicy_pwd_min_age`](#ppolicy_pwd_min_age)
+* [`ppolicy_pwd_max_age`](#ppolicy_pwd_max_age)
+* [`ppolicy_pwd_in_history`](#ppolicy_pwd_in_history)
+* [`ppolicy_pwd_check_quality`](#ppolicy_pwd_check_quality)
+* [`ppolicy_pwd_min_length`](#ppolicy_pwd_min_length)
+* [`ppolicy_pwd_expire_warning`](#ppolicy_pwd_expire_warning)
+* [`ppolicy_pwd_grace_authn_limit`](#ppolicy_pwd_grace_authn_limit)
+* [`ppolicy_pwd_lockout`](#ppolicy_pwd_lockout)
+* [`ppolicy_pwd_lockout_duration`](#ppolicy_pwd_lockout_duration)
+* [`ppolicy_pwd_max_failure`](#ppolicy_pwd_max_failure)
+* [`ppolicy_pwd_failure_count_interval`](#ppolicy_pwd_failure_count_interval)
+* [`ppolicy_pwd_must_change`](#ppolicy_pwd_must_change)
+* [`ppolicy_pwd_allow_user_change`](#ppolicy_pwd_allow_user_change)
+* [`ppolicy_pwd_safe_modify`](#ppolicy_pwd_safe_modify)
+
+##### <a name="users_group_id"></a>`users_group_id`
 
 Data type: `Integer[1]`
 
@@ -1273,7 +1418,7 @@ Data type: `Integer[1]`
 
 Default value: `100`
 
-##### `administrators_group_id`
+##### <a name="administrators_group_id"></a>`administrators_group_id`
 
 Data type: `Integer[500]`
 
@@ -1281,7 +1426,7 @@ Data type: `Integer[500]`
 
 Default value: `700`
 
-##### `ppolicy_pwd_min_age`
+##### <a name="ppolicy_pwd_min_age"></a>`ppolicy_pwd_min_age`
 
 Data type: `Integer[0]`
 
@@ -1289,7 +1434,7 @@ Data type: `Integer[0]`
 
 Default value: `86400`
 
-##### `ppolicy_pwd_max_age`
+##### <a name="ppolicy_pwd_max_age"></a>`ppolicy_pwd_max_age`
 
 Data type: `Integer[1]`
 
@@ -1297,7 +1442,7 @@ Data type: `Integer[1]`
 
 Default value: `15552000`
 
-##### `ppolicy_pwd_in_history`
+##### <a name="ppolicy_pwd_in_history"></a>`ppolicy_pwd_in_history`
 
 Data type: `Integer[0]`
 
@@ -1305,7 +1450,7 @@ Data type: `Integer[0]`
 
 Default value: `24`
 
-##### `ppolicy_pwd_check_quality`
+##### <a name="ppolicy_pwd_check_quality"></a>`ppolicy_pwd_check_quality`
 
 Data type: `Integer[0]`
 
@@ -1313,7 +1458,7 @@ Data type: `Integer[0]`
 
 Default value: `2`
 
-##### `ppolicy_pwd_min_length`
+##### <a name="ppolicy_pwd_min_length"></a>`ppolicy_pwd_min_length`
 
 Data type: `Integer[0]`
 
@@ -1321,7 +1466,7 @@ Data type: `Integer[0]`
 
 Default value: `14`
 
-##### `ppolicy_pwd_expire_warning`
+##### <a name="ppolicy_pwd_expire_warning"></a>`ppolicy_pwd_expire_warning`
 
 Data type: `Integer[0]`
 
@@ -1329,7 +1474,7 @@ Data type: `Integer[0]`
 
 Default value: `1209600`
 
-##### `ppolicy_pwd_grace_authn_limit`
+##### <a name="ppolicy_pwd_grace_authn_limit"></a>`ppolicy_pwd_grace_authn_limit`
 
 Data type: `Integer`
 
@@ -1337,7 +1482,7 @@ Data type: `Integer`
 
 Default value: `-`
 
-##### `ppolicy_pwd_lockout`
+##### <a name="ppolicy_pwd_lockout"></a>`ppolicy_pwd_lockout`
 
 Data type: `Boolean`
 
@@ -1345,7 +1490,7 @@ Data type: `Boolean`
 
 Default value: ``true``
 
-##### `ppolicy_pwd_lockout_duration`
+##### <a name="ppolicy_pwd_lockout_duration"></a>`ppolicy_pwd_lockout_duration`
 
 Data type: `Integer[0]`
 
@@ -1353,7 +1498,7 @@ Data type: `Integer[0]`
 
 Default value: `900`
 
-##### `ppolicy_pwd_max_failure`
+##### <a name="ppolicy_pwd_max_failure"></a>`ppolicy_pwd_max_failure`
 
 Data type: `Integer[0]`
 
@@ -1361,7 +1506,7 @@ Data type: `Integer[0]`
 
 Default value: `5`
 
-##### `ppolicy_pwd_failure_count_interval`
+##### <a name="ppolicy_pwd_failure_count_interval"></a>`ppolicy_pwd_failure_count_interval`
 
 Data type: `Integer[0]`
 
@@ -1369,7 +1514,7 @@ Data type: `Integer[0]`
 
 Default value: `900`
 
-##### `ppolicy_pwd_must_change`
+##### <a name="ppolicy_pwd_must_change"></a>`ppolicy_pwd_must_change`
 
 Data type: `Boolean`
 
@@ -1377,7 +1522,7 @@ Data type: `Boolean`
 
 Default value: ``true``
 
-##### `ppolicy_pwd_allow_user_change`
+##### <a name="ppolicy_pwd_allow_user_change"></a>`ppolicy_pwd_allow_user_change`
 
 Data type: `Boolean`
 
@@ -1385,7 +1530,7 @@ Data type: `Boolean`
 
 Default value: ``true``
 
-##### `ppolicy_pwd_safe_modify`
+##### <a name="ppolicy_pwd_safe_modify"></a>`ppolicy_pwd_safe_modify`
 
 Data type: `Boolean`
 
@@ -1393,7 +1538,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-### `simp_openldap::server::fix_bad_upgrade`
+### <a name="simp_openldapserverfix_bad_upgrade"></a>`simp_openldap::server::fix_bad_upgrade`
 
 **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 
@@ -1406,7 +1551,7 @@ This works around having your system destroyed by that "feature"
 
 This pops up in the RPM updates from time to time
 
-### `simp_openldap::server::install`
+### <a name="simp_openldapserverinstall"></a>`simp_openldap::server::install`
 
 **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 
@@ -1414,9 +1559,11 @@ Install the required packages
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::install` class.
+The following parameters are available in the `simp_openldap::server::install` class:
 
-##### `ensure`
+* [`ensure`](#ensure)
+
+##### <a name="ensure"></a>`ensure`
 
 Data type: `Enum['latest','installed','present']`
 
@@ -1424,7 +1571,7 @@ The state for the packages to be in
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-### `simp_openldap::server::service`
+### <a name="simp_openldapserverservice"></a>`simp_openldap::server::service`
 
 **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
 
@@ -1432,9 +1579,11 @@ Manage the OpenLDAP service
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::service` class.
+The following parameters are available in the `simp_openldap::server::service` class:
 
-##### `slapd_svc`
+* [`slapd_svc`](#slapd_svc)
+
+##### <a name="slapd_svc"></a>`slapd_svc`
 
 Data type: `String[1]`
 
@@ -1442,16 +1591,19 @@ The actual service name
 
 Default value: `'slapd'`
 
-### `simp_openldap::slapo::lastbind`
+### <a name="simp_openldapslapolastbind"></a>`simp_openldap::slapo::lastbind`
 
 This class configures lastbind and set up a dynamic include that defines lastbind.
 See slapo-lastbind(5) for details of the options.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::slapo::lastbind` class.
+The following parameters are available in the `simp_openldap::slapo::lastbind` class:
 
-##### `lastbind_precision`
+* [`lastbind_precision`](#lastbind_precision)
+* [`lastbind_ensure`](#lastbind_ensure)
+
+##### <a name="lastbind_precision"></a>`lastbind_precision`
 
 Data type: `Integer[0]`
 
@@ -1460,7 +1612,7 @@ authTimestamp entry.
 
 Default value: `3600`
 
-##### `lastbind_ensure`
+##### <a name="lastbind_ensure"></a>`lastbind_ensure`
 
 Data type: `String`
 
@@ -1468,7 +1620,7 @@ The ensure status of packages to be managed
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-### `simp_openldap::slapo::ppolicy`
+### <a name="simp_openldapslapoppolicy"></a>`simp_openldap::slapo::ppolicy`
 
 Configure the password policy for a site
 
@@ -1480,9 +1632,22 @@ that's included with SIMP.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::slapo::ppolicy` class.
+The following parameters are available in the `simp_openldap::slapo::ppolicy` class:
 
-##### `suffix`
+* [`suffix`](#suffix)
+* [`min_points`](#min_points)
+* [`use_cracklib`](#use_cracklib)
+* [`min_upper`](#min_upper)
+* [`min_lower`](#min_lower)
+* [`min_digit`](#min_digit)
+* [`min_punct`](#min_punct)
+* [`max_consecutive_per_class`](#max_consecutive_per_class)
+* [`ppolicy_ensure`](#ppolicy_ensure)
+* [`ppolicy_default`](#ppolicy_default)
+* [`ppolicy_hash_cleartext`](#ppolicy_hash_cleartext)
+* [`ppolicy_use_lockout`](#ppolicy_use_lockout)
+
+##### <a name="suffix"></a>`suffix`
 
 Data type: `Optional[String[1]]`
 
@@ -1490,7 +1655,7 @@ The Base DN of the LDAP domain to which you wish to connect.
 
 Default value: `$::simp_openldap::base_dn`
 
-##### `min_points`
+##### <a name="min_points"></a>`min_points`
 
 Data type: `Integer[0]`
 
@@ -1499,7 +1664,7 @@ password for it to succeed.
 
 Default value: `3`
 
-##### `use_cracklib`
+##### <a name="use_cracklib"></a>`use_cracklib`
 
 Data type: `Boolean`
 
@@ -1507,7 +1672,7 @@ If true, use cracklib when checking the password.
 
 Default value: ``true``
 
-##### `min_upper`
+##### <a name="min_upper"></a>`min_upper`
 
 Data type: `Integer[0]`
 
@@ -1516,7 +1681,7 @@ password to be valid.
 
 Default value: `0`
 
-##### `min_lower`
+##### <a name="min_lower"></a>`min_lower`
 
 Data type: `Integer[0]`
 
@@ -1525,7 +1690,7 @@ password to be valid.
 
 Default value: `0`
 
-##### `min_digit`
+##### <a name="min_digit"></a>`min_digit`
 
 Data type: `Integer[0]`
 
@@ -1534,7 +1699,7 @@ password to be valid.
 
 Default value: `0`
 
-##### `min_punct`
+##### <a name="min_punct"></a>`min_punct`
 
 Data type: `Integer[0]`
 
@@ -1543,7 +1708,7 @@ password to be valid.
 
 Default value: `0`
 
-##### `max_consecutive_per_class`
+##### <a name="max_consecutive_per_class"></a>`max_consecutive_per_class`
 
 Data type: `Integer[0]`
 
@@ -1552,7 +1717,7 @@ a row.
 
 Default value: `3`
 
-##### `ppolicy_ensure`
+##### <a name="ppolicy_ensure"></a>`ppolicy_ensure`
 
 Data type: `String`
 
@@ -1561,7 +1726,7 @@ package
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-##### `ppolicy_default`
+##### <a name="ppolicy_default"></a>`ppolicy_default`
 
 Data type: `Optional[String[1]]`
 
@@ -1569,7 +1734,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `ppolicy_hash_cleartext`
+##### <a name="ppolicy_hash_cleartext"></a>`ppolicy_hash_cleartext`
 
 Data type: `Optional[String[1]]`
 
@@ -1577,7 +1742,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `ppolicy_use_lockout`
+##### <a name="ppolicy_use_lockout"></a>`ppolicy_use_lockout`
 
 Data type: `Optional[String[1]]`
 
@@ -1585,7 +1750,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-### `simp_openldap::slapo::syncprov`
+### <a name="simp_openldapslaposyncprov"></a>`simp_openldap::slapo::syncprov`
 
 Allow other LDAP servers to synchronize with this one
 
@@ -1594,9 +1759,18 @@ Allow other LDAP servers to synchronize with this one
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::slapo::syncprov` class.
+The following parameters are available in the `simp_openldap::slapo::syncprov` class:
 
-##### `checkpoint`
+* [`checkpoint`](#checkpoint)
+* [`sessionlog`](#sessionlog)
+* [`nopresent`](#nopresent)
+* [`reloadhint`](#reloadhint)
+* [`sync_size_soft_limit`](#sync_size_soft_limit)
+* [`sync_size_hard_limit`](#sync_size_hard_limit)
+* [`sync_time_soft_limit`](#sync_time_soft_limit)
+* [`sync_time_hard_limit`](#sync_time_hard_limit)
+
+##### <a name="checkpoint"></a>`checkpoint`
 
 Data type: `Optional[Pattern['^\d+\s\d+$']]`
 
@@ -1604,7 +1778,7 @@ Data type: `Optional[Pattern['^\d+\s\d+$']]`
 
 Default value: ``undef``
 
-##### `sessionlog`
+##### <a name="sessionlog"></a>`sessionlog`
 
 Data type: `Optional[String[1]]`
 
@@ -1612,7 +1786,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `nopresent`
+##### <a name="nopresent"></a>`nopresent`
 
 Data type: `Boolean`
 
@@ -1620,7 +1794,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `reloadhint`
+##### <a name="reloadhint"></a>`reloadhint`
 
 Data type: `Boolean`
 
@@ -1628,7 +1802,7 @@ Data type: `Boolean`
 
 Default value: ``false``
 
-##### `sync_size_soft_limit`
+##### <a name="sync_size_soft_limit"></a>`sync_size_soft_limit`
 
 Data type: `Variant[Enum['unlimited'], Integer]`
 
@@ -1636,7 +1810,7 @@ Data type: `Variant[Enum['unlimited'], Integer]`
 
 Default value: `'unlimited'`
 
-##### `sync_size_hard_limit`
+##### <a name="sync_size_hard_limit"></a>`sync_size_hard_limit`
 
 Data type: `Variant[Enum['unlimited'], Integer]`
 
@@ -1644,7 +1818,7 @@ Data type: `Variant[Enum['unlimited'], Integer]`
 
 Default value: `'unlimited'`
 
-##### `sync_time_soft_limit`
+##### <a name="sync_time_soft_limit"></a>`sync_time_soft_limit`
 
 Data type: `Variant[Enum['unlimited'], Integer]`
 
@@ -1652,7 +1826,7 @@ Data type: `Variant[Enum['unlimited'], Integer]`
 
 Default value: `'unlimited'`
 
-##### `sync_time_hard_limit`
+##### <a name="sync_time_hard_limit"></a>`sync_time_hard_limit`
 
 Data type: `Variant[Enum['unlimited'], Integer]`
 
@@ -1662,7 +1836,7 @@ Default value: `'unlimited'`
 
 ## Defined types
 
-### `simp_openldap::server::access`
+### <a name="simp_openldapserveraccess"></a>`simp_openldap::server::access`
 
 Manage access control entries in ``slapd.access``
 
@@ -1674,14 +1848,23 @@ after the ``$order`` parameter is processed.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::access` defined type.
+The following parameters are available in the `simp_openldap::server::access` defined type:
 
-##### `name`
+* [`name`](#name)
+* [`comment`](#comment)
+* [`content`](#content)
+* [`order`](#order)
+* [`what`](#what)
+* [`who`](#who)
+* [`access`](#access)
+* [`control`](#control)
+
+##### <a name="name"></a>`name`
 
 The unique name of the dynamic include. This does become part of the sort
 order so be careful!
 
-##### `comment`
+##### <a name="comment"></a>`comment`
 
 Data type: `Optional[String]`
 
@@ -1691,7 +1874,7 @@ An arbitrary comment that will be included above the entry
 
 Default value: ``undef``
 
-##### `content`
+##### <a name="content"></a>`content`
 
 Data type: `Optional[String]`
 
@@ -1702,7 +1885,7 @@ the **entire* content under ``$what``
 
 Default value: ``undef``
 
-##### `order`
+##### <a name="order"></a>`order`
 
 Data type: `Integer`
 
@@ -1710,13 +1893,13 @@ The default sort order of the entry to be added
 
 Default value: `1000`
 
-##### `what`
+##### <a name="what"></a>`what`
 
 Data type: `String`
 
 
 
-##### `who`
+##### <a name="who"></a>`who`
 
 Data type: `Optional[String]`
 
@@ -1724,7 +1907,7 @@ Data type: `Optional[String]`
 
 Default value: ``undef``
 
-##### `access`
+##### <a name="access"></a>`access`
 
 Data type: `Optional[String]`
 
@@ -1732,7 +1915,7 @@ Data type: `Optional[String]`
 
 Default value: ``undef``
 
-##### `control`
+##### <a name="control"></a>`control`
 
 Data type: `Optional[String]`
 
@@ -1740,21 +1923,24 @@ Data type: `Optional[String]`
 
 Default value: ``undef``
 
-### `simp_openldap::server::dynamic_include`
+### <a name="simp_openldapserverdynamic_include"></a>`simp_openldap::server::dynamic_include`
 
 Add a dynamically included file into the LDAP system.
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::dynamic_include` defined type.
+The following parameters are available in the `simp_openldap::server::dynamic_include` defined type:
 
-##### `content`
+* [`content`](#content)
+* [`order`](#order)
+
+##### <a name="content"></a>`content`
 
 Data type: `String`
 
 The literal content of the dynamic include
 
-##### `order`
+##### <a name="order"></a>`order`
 
 Data type: `Integer`
 
@@ -1762,7 +1948,7 @@ The numeric order of the dynamic include
 
 Default value: `100`
 
-### `simp_openldap::server::limits`
+### <a name="simp_openldapserverlimits"></a>`simp_openldap::server::limits`
 
 This define allows you to manage ``limits`` sections under the **main**
 database
@@ -1772,13 +1958,17 @@ database
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::limits` defined type.
+The following parameters are available in the `simp_openldap::server::limits` defined type:
 
-##### `name`
+* [`name`](#name)
+* [`who`](#who)
+* [`limits`](#limits)
+
+##### <a name="name"></a>`name`
 
 A unique name for the limits entry
 
-##### `who`
+##### <a name="who"></a>`who`
 
 Data type: `String`
 
@@ -1791,13 +1981,13 @@ Any of the following values (not validated)
   * ``dn.<scope-style>=<DN>``      Users within scope of a DN
   * ``group[/oc[/at]]=<pattern>``  Members of a group
 
-##### `limits`
+##### <a name="limits"></a>`limits`
 
 Data type: `Variant[Array[String],String]`
 
 A list of limits to apply to ``$who`` per ``slapd.conf(5)``
 
-### `simp_openldap::server::syncrepl`
+### <a name="simp_openldapserversyncrepl"></a>`simp_openldap::server::syncrepl`
 
 This define configures the sycnrepl functionality of OpenLDAP which allows
 for directory synchronization pulls from a master server.
@@ -1810,9 +2000,35 @@ $name should be the 'rid' of the syncrepl instance and must be between 0 and
 
 #### Parameters
 
-The following parameters are available in the `simp_openldap::server::syncrepl` defined type.
+The following parameters are available in the `simp_openldap::server::syncrepl` defined type:
 
-##### `syncrepl_retry`
+* [`syncrepl_retry`](#syncrepl_retry)
+* [`provider`](#provider)
+* [`searchbase`](#searchbase)
+* [`syncrepl_type`](#syncrepl_type)
+* [`interval`](#interval)
+* [`filter`](#filter)
+* [`syncrepl_scope`](#syncrepl_scope)
+* [`attrs`](#attrs)
+* [`attrsonly`](#attrsonly)
+* [`sizelimit`](#sizelimit)
+* [`timelimit`](#timelimit)
+* [`schemachecking`](#schemachecking)
+* [`starttls`](#starttls)
+* [`bindmethod`](#bindmethod)
+* [`binddn`](#binddn)
+* [`saslmech`](#saslmech)
+* [`authcid`](#authcid)
+* [`authzid`](#authzid)
+* [`credentials`](#credentials)
+* [`realm`](#realm)
+* [`secprops`](#secprops)
+* [`logbase`](#logbase)
+* [`logfilter`](#logfilter)
+* [`syncdata`](#syncdata)
+* [`updateref`](#updateref)
+
+##### <a name="syncrepl_retry"></a>`syncrepl_retry`
 
 Data type: `String[1]`
 
@@ -1820,7 +2036,7 @@ Data type: `String[1]`
 
 Default value: `'60 10 600 +'`
 
-##### `provider`
+##### <a name="provider"></a>`provider`
 
 Data type: `Optional[String[1]]`
 
@@ -1828,7 +2044,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef })`
 
-##### `searchbase`
+##### <a name="searchbase"></a>`searchbase`
 
 Data type: `Optional[String[1]]`
 
@@ -1836,7 +2052,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef })`
 
-##### `syncrepl_type`
+##### <a name="syncrepl_type"></a>`syncrepl_type`
 
 Data type: `Enum['refreshOnly','refreshAndPersist']`
 
@@ -1844,7 +2060,7 @@ Data type: `Enum['refreshOnly','refreshAndPersist']`
 
 Default value: `'refreshAndPersist'`
 
-##### `interval`
+##### <a name="interval"></a>`interval`
 
 Data type: `Optional[String[1]]`
 
@@ -1852,7 +2068,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `filter`
+##### <a name="filter"></a>`filter`
 
 Data type: `Optional[String[1]]`
 
@@ -1860,7 +2076,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `syncrepl_scope`
+##### <a name="syncrepl_scope"></a>`syncrepl_scope`
 
 Data type: `String[1]`
 
@@ -1868,7 +2084,7 @@ Data type: `String[1]`
 
 Default value: `'sub'`
 
-##### `attrs`
+##### <a name="attrs"></a>`attrs`
 
 Data type: `String[1]`
 
@@ -1876,7 +2092,7 @@ Data type: `String[1]`
 
 Default value: `'*,+'`
 
-##### `attrsonly`
+##### <a name="attrsonly"></a>`attrsonly`
 
 Data type: `Optional[String[1]]`
 
@@ -1884,7 +2100,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `sizelimit`
+##### <a name="sizelimit"></a>`sizelimit`
 
 Data type: `Variant[Enum['unlimited'], Integer[0]]`
 
@@ -1892,7 +2108,7 @@ Data type: `Variant[Enum['unlimited'], Integer[0]]`
 
 Default value: `'unlimited'`
 
-##### `timelimit`
+##### <a name="timelimit"></a>`timelimit`
 
 Data type: `Variant[Enum['unlimited'], Integer[0]]`
 
@@ -1900,7 +2116,7 @@ Data type: `Variant[Enum['unlimited'], Integer[0]]`
 
 Default value: `'unlimited'`
 
-##### `schemachecking`
+##### <a name="schemachecking"></a>`schemachecking`
 
 Data type: `Enum['on','off']`
 
@@ -1908,7 +2124,7 @@ Data type: `Enum['on','off']`
 
 Default value: `'off'`
 
-##### `starttls`
+##### <a name="starttls"></a>`starttls`
 
 Data type: `Variant[Enum['critical'], Boolean]`
 
@@ -1916,7 +2132,7 @@ Data type: `Variant[Enum['critical'], Boolean]`
 
 Default value: `'critical'`
 
-##### `bindmethod`
+##### <a name="bindmethod"></a>`bindmethod`
 
 Data type: `Enum['simple','sasl']`
 
@@ -1924,7 +2140,7 @@ Data type: `Enum['simple','sasl']`
 
 Default value: `'simple'`
 
-##### `binddn`
+##### <a name="binddn"></a>`binddn`
 
 Data type: `Optional[String[1]]`
 
@@ -1932,7 +2148,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::sync_dn', {'default_value'  => undef })`
 
-##### `saslmech`
+##### <a name="saslmech"></a>`saslmech`
 
 Data type: `Optional[String[1]]`
 
@@ -1940,7 +2156,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `authcid`
+##### <a name="authcid"></a>`authcid`
 
 Data type: `Optional[String[1]]`
 
@@ -1948,7 +2164,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `authzid`
+##### <a name="authzid"></a>`authzid`
 
 Data type: `Optional[String[1]]`
 
@@ -1956,7 +2172,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `credentials`
+##### <a name="credentials"></a>`credentials`
 
 Data type: `Optional[String[1]]`
 
@@ -1964,7 +2180,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::sync_pw', { 'default_value' => undef })`
 
-##### `realm`
+##### <a name="realm"></a>`realm`
 
 Data type: `Optional[String[1]]`
 
@@ -1972,7 +2188,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `secprops`
+##### <a name="secprops"></a>`secprops`
 
 Data type: `Optional[String[1]]`
 
@@ -1980,7 +2196,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `logbase`
+##### <a name="logbase"></a>`logbase`
 
 Data type: `Optional[String[1]]`
 
@@ -1988,7 +2204,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `logfilter`
+##### <a name="logfilter"></a>`logfilter`
 
 Data type: `Optional[String[1]]`
 
@@ -1996,7 +2212,7 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
-##### `syncdata`
+##### <a name="syncdata"></a>`syncdata`
 
 Data type: `Enum['default','accesslog']`
 
@@ -2004,7 +2220,7 @@ Data type: `Enum['default','accesslog']`
 
 Default value: `'default'`
 
-##### `updateref`
+##### <a name="updateref"></a>`updateref`
 
 Data type: `Optional[String[1]]`
 
@@ -2014,11 +2230,14 @@ Default value: ``undef``
 
 ## Data types
 
-### `Simp_Openldap::LogLevel`
+### <a name="simp_openldaploglevel"></a>`Simp_Openldap::LogLevel`
 
 OpenLDAP Log Levels
 
-Alias of `Variant[Integer[-1,65535], Enum[
+Alias of
+
+```puppet
+Variant[Integer[-1,65535], Enum[
   'any',
   '-',
   'trace',
@@ -2039,11 +2258,16 @@ Alias of `Variant[Integer[-1,65535], Enum[
   'index',
   'sync',
   'none'
-]]`
+]]
+```
 
-### `Simp_Openldap::SlapdConf::Disallow`
+### <a name="simp_openldapslapdconfdisallow"></a>`Simp_Openldap::SlapdConf::Disallow`
 
 OpenLDAP slapd.conf disallow
 
-Alias of `Enum['bind_anon', 'bind_simple', 'tls_2_anon', 'tls_authc', 'proxy_authz_non_critical', 'dontusecopy_non_critical']`
+Alias of
+
+```puppet
+Enum['bind_anon', 'bind_simple', 'tls_2_anon', 'tls_authc', 'proxy_authz_non_critical', 'dontusecopy_non_critical']
+```
 

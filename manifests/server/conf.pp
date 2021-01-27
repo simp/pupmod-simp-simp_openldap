@@ -395,23 +395,12 @@ class simp_openldap::server::conf (
     content => template("${module_name}/etc/openldap/DB_CONFIG.erb"),
   }
 
-  if versioncmp($facts['os']['release']['major'], '6') > 0 {
-    file { '/etc/sysconfig/slapd':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0640',
-      content => template("${module_name}/etc/sysconfig/slapd.erb"),
-    }
-  }
-  else {
-    file { '/etc/sysconfig/ldap':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0640',
-      content => template("${module_name}/etc/sysconfig/ldap.erb"),
-    }
+  file { '/etc/sysconfig/slapd':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    content => template("${module_name}/etc/sysconfig/slapd.erb"),
   }
 
   if $firewall {

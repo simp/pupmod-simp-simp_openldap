@@ -1,169 +1,174 @@
 require 'spec_helper'
 
-slapd_content_nopki = <<EOM
-include   /etc/openldap/schema/core.schema
-include   /etc/openldap/schema/cosine.schema
-include   /etc/openldap/schema/inetorgperson.schema
-include   /etc/openldap/schema/nis.schema
-include  /etc/openldap/schema/openssh-lpk.schema
-include  /etc/openldap/schema/freeradius.schema
-include  /etc/openldap/schema/autofs.schema
-
-threads   8
-pidfile   /var/run/openldap/slapd.pid
-argsfile  /var/run/openldap/slapd.args
-
-
-authz-policy to
-authz-regexp
-    "^uid=([^,]+),.*"
-    "uid=$1,ou=People,DC=host,DC=net"
-
-
-
-disallow bind_anon
-conn_max_pending 100
-conn_max_pending_auth 1000
-disallow bind_anon tls_2_anon
-idletimeout 0
-
-sizelimit 500
-timelimit 3600
-writetimeout 0
-
-sockbuf_max_incoming 262143
-sockbuf_max_incoming_auth 4194303
-
-loglevel stats sync
-
-reverse-lookup off
-
-database  bdb
-suffix    "DC=host,DC=net"
-rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
-
-rootpw    {SSHA}foobarbaz!!!!
-
-directory /var/lib/ldap
-checkpoint 1024 5
-cachesize 10000
-lastmod on
-maxderefdepth 15
-monitoring on
-readonly off
-
-index_substr_any_step 2
-index_substr_any_len 4
-index_substr_if_maxlen 4
-index_substr_if_minlen 2
-index_intlen 4
-
-index objectClass                       eq,pres
-index ou,cn,mail,surname,givenname      eq,pres,sub
-index uidNumber,gidNumber,loginShell    eq,pres
-index uid,memberUid                     eq,pres,sub
-index nisMapName,nisMapEntry            eq,pres,sub
-
-include /etc/openldap/slapd.access
-include /etc/openldap/dynamic_includes
-EOM
-
 describe 'simp_openldap::server::conf' do
   context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
+    on_supported_os.each do |os, os_facts|
       context "on #{os}" do
         let(:facts) do
-          facts[:slapd_version] = '2.4.40'
-          facts
+          os_facts.merge({
+            :slapd_version => '2.4.40'
+          })
         end
 
-        let(:slapd_content_pki) {
-%(include   /etc/openldap/schema/core.schema
-include   /etc/openldap/schema/cosine.schema
-include   /etc/openldap/schema/inetorgperson.schema
-include   /etc/openldap/schema/nis.schema
-include  /etc/openldap/schema/openssh-lpk.schema
-include  /etc/openldap/schema/freeradius.schema
-include  /etc/openldap/schema/autofs.schema
+        if os_facts.dig(:os,:release,:major) >= '8'
+          it { skip("does not support #{os}") }
+          next
+        end
 
-threads   8
-pidfile   /var/run/openldap/slapd.pid
-argsfile  /var/run/openldap/slapd.args
+        slapd_content_nopki = <<~EOM
+          include   /etc/openldap/schema/core.schema
+          include   /etc/openldap/schema/cosine.schema
+          include   /etc/openldap/schema/inetorgperson.schema
+          include   /etc/openldap/schema/nis.schema
+          include  /etc/openldap/schema/openssh-lpk.schema
+          include  /etc/openldap/schema/freeradius.schema
+          include  /etc/openldap/schema/autofs.schema
+
+          threads   8
+          pidfile   /var/run/openldap/slapd.pid
+          argsfile  /var/run/openldap/slapd.args
 
 
-authz-policy to
-authz-regexp
-    "^uid=([^,]+),.*"
-    "uid=$1,ou=People,DC=host,DC=net"
+          authz-policy to
+          authz-regexp
+              "^uid=([^,]+),.*"
+              "uid=$1,ou=People,DC=host,DC=net"
 
 
-TLSCertificateFile /etc/pki/simp_apps/openldap/x509/public/#{facts[:fqdn]}.pub
-TLSCertificateKeyFile /etc/pki/simp_apps/openldap/x509/private/#{facts[:fqdn]}.pem
-TLSProtocolMin 3.3
-TLSCipherSuite HIGH:-TLSv1:-SSLv3
-TLSVerifyClient allow
-TLSCRLCheck none
-TLSCACertificatePath /etc/pki/simp_apps/openldap/x509/cacerts
 
-security ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256
-password-hash {SSHA}
+          disallow bind_anon
+          conn_max_pending 100
+          conn_max_pending_auth 1000
+          disallow bind_anon tls_2_anon
+          idletimeout 0
 
-disallow bind_anon
-conn_max_pending 100
-conn_max_pending_auth 1000
-disallow bind_anon tls_2_anon
-idletimeout 0
+          sizelimit 500
+          timelimit 3600
+          writetimeout 0
 
-sizelimit 500
-timelimit 3600
-writetimeout 0
+          sockbuf_max_incoming 262143
+          sockbuf_max_incoming_auth 4194303
 
-sockbuf_max_incoming 262143
-sockbuf_max_incoming_auth 4194303
+          loglevel stats sync
 
-loglevel stats sync
+          reverse-lookup off
 
-reverse-lookup off
+          database  bdb
+          suffix    "DC=host,DC=net"
+          rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
 
-database  bdb
-suffix    "DC=host,DC=net"
-rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
+          rootpw    {SSHA}foobarbaz!!!!
 
-rootpw    {SSHA}foobarbaz!!!!
+          directory /var/lib/ldap
+          checkpoint 1024 5
+          cachesize 10000
+          lastmod on
+          maxderefdepth 15
+          monitoring on
+          readonly off
 
-directory /var/lib/ldap
-checkpoint 1024 5
-cachesize 10000
-lastmod on
-maxderefdepth 15
-monitoring on
-readonly off
+          index_substr_any_step 2
+          index_substr_any_len 4
+          index_substr_if_maxlen 4
+          index_substr_if_minlen 2
+          index_intlen 4
 
-index_substr_any_step 2
-index_substr_any_len 4
-index_substr_if_maxlen 4
-index_substr_if_minlen 2
-index_intlen 4
+          index objectClass                       eq,pres
+          index ou,cn,mail,surname,givenname      eq,pres,sub
+          index uidNumber,gidNumber,loginShell    eq,pres
+          index uid,memberUid                     eq,pres,sub
+          index nisMapName,nisMapEntry            eq,pres,sub
 
-index objectClass                       eq,pres
-index ou,cn,mail,surname,givenname      eq,pres,sub
-index uidNumber,gidNumber,loginShell    eq,pres
-index uid,memberUid                     eq,pres,sub
-index nisMapName,nisMapEntry            eq,pres,sub
+          include /etc/openldap/slapd.access
+          include /etc/openldap/dynamic_includes
+          EOM
 
-include /etc/openldap/slapd.access
-include /etc/openldap/dynamic_includes
-)
-}
+        let(:slapd_content_pki) do <<~EOM
+          include   /etc/openldap/schema/core.schema
+          include   /etc/openldap/schema/cosine.schema
+          include   /etc/openldap/schema/inetorgperson.schema
+          include   /etc/openldap/schema/nis.schema
+          include  /etc/openldap/schema/openssh-lpk.schema
+          include  /etc/openldap/schema/freeradius.schema
+          include  /etc/openldap/schema/autofs.schema
 
-        let(:pre_condition) {
-          %(
+          threads   8
+          pidfile   /var/run/openldap/slapd.pid
+          argsfile  /var/run/openldap/slapd.args
+
+
+          authz-policy to
+          authz-regexp
+              "^uid=([^,]+),.*"
+              "uid=$1,ou=People,DC=host,DC=net"
+
+
+          TLSCertificateFile /etc/pki/simp_apps/openldap/x509/public/#{facts[:fqdn]}.pub
+          TLSCertificateKeyFile /etc/pki/simp_apps/openldap/x509/private/#{facts[:fqdn]}.pem
+          TLSProtocolMin 3.3
+          TLSCipherSuite HIGH:-TLSv1:-SSLv3
+          TLSVerifyClient allow
+          TLSCRLCheck none
+          TLSCACertificatePath /etc/pki/simp_apps/openldap/x509/cacerts
+
+          security ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256
+          password-hash {SSHA}
+
+          disallow bind_anon
+          conn_max_pending 100
+          conn_max_pending_auth 1000
+          disallow bind_anon tls_2_anon
+          idletimeout 0
+
+          sizelimit 500
+          timelimit 3600
+          writetimeout 0
+
+          sockbuf_max_incoming 262143
+          sockbuf_max_incoming_auth 4194303
+
+          loglevel stats sync
+
+          reverse-lookup off
+
+          database  bdb
+          suffix    "DC=host,DC=net"
+          rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
+
+          rootpw    {SSHA}foobarbaz!!!!
+
+          directory /var/lib/ldap
+          checkpoint 1024 5
+          cachesize 10000
+          lastmod on
+          maxderefdepth 15
+          monitoring on
+          readonly off
+
+          index_substr_any_step 2
+          index_substr_any_len 4
+          index_substr_if_maxlen 4
+          index_substr_if_minlen 2
+          index_intlen 4
+
+          index objectClass                       eq,pres
+          index ou,cn,mail,surname,givenname      eq,pres,sub
+          index uidNumber,gidNumber,loginShell    eq,pres
+          index uid,memberUid                     eq,pres,sub
+          index nisMapName,nisMapEntry            eq,pres,sub
+
+          include /etc/openldap/slapd.access
+          include /etc/openldap/dynamic_includes
+          EOM
+        end
+
+        let(:pre_condition) do <<~EOM
             class { "::simp_openldap":
               base_dn   => "DC=host,DC=net",
               is_server => true
             }
-          )
-        }
+            EOM
+        end
 
         context 'with default parameters' do
           it { is_expected.to create_class('simp_openldap::server') }
@@ -179,13 +184,7 @@ include /etc/openldap/dynamic_includes
 
           # Administrators
           it { is_expected.to create_file('/etc/openldap/default.ldif').with_content(/gidNumber: 700/) }
-          it {
-            if facts[:operatingsystemmajrelease] < "7"
-              is_expected.to create_file('/etc/sysconfig/ldap').with_content(/SLAPD_OPTIONS.*slapd.conf/)
-            else
-              is_expected.to create_file('/etc/sysconfig/slapd').with_content(/SLAPD_URLS.*ldap.*:\/\//)
-            end
-          }
+          it { is_expected.to create_file('/etc/sysconfig/slapd').with_content(/SLAPD_URLS.*ldap.*:\/\//) }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(slapd_content_nopki)}
         end
 
@@ -208,9 +207,11 @@ include /etc/openldap/dynamic_includes
 
         context 'with pki = true and openldap-servers < 2.4.40' do
           let(:facts) do
-            facts[:slapd_version] = '2.3.0'
-            facts
+            os_facts.merge ({
+              :slapd_version => '2.3.0'
+            })
           end
+
           let(:hieradata) { 'pki_true' }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSProtocolMin/)}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/TLSCipherSuite DEFAULT:!MEDIUM/)}
@@ -218,8 +219,9 @@ include /etc/openldap/dynamic_includes
 
         context 'with pki = true and slapd_version = nil' do
           let(:facts) do
-            facts
+            os_facts
           end
+
           let(:hieradata) { 'pki_true' }
           it { is_expected.to create_file('/etc/openldap/slapd.conf').without_content(/TLSProtocolMin/)}
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/TLSCipherSuite DEFAULT:!MEDIUM/)}
@@ -383,9 +385,10 @@ include /etc/openldap/dynamic_includes
         context 'threads_is_dynamic' do
           let(:pre_condition) { "include 'simp_openldap'" }
           let(:facts){
-            facts[:slapd_version] = '2.4.40'
-            facts[:processorcount] = 4
-            facts
+            os_facts.merge({
+              :slapd_version => '2.4.40',
+              :processorcount => 4
+            })
           }
 
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(/threads   16/) }

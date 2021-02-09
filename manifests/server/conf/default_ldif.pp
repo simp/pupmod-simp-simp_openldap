@@ -1,10 +1,27 @@
-# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
+# @summary Allows for the modification of the default LDIF entries in
+# /etc/openldap/default.ldif.
 #
-# This allows for the modification of the default LDIF entries in
-# /etc/openldap/default.ldif. It will **not** modify any active values in a
-# running LDAP server.
+# It will **not** modify any active values in a running LDAP server.
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @param users_group_id
+# @param administrators_group_id
+# @param ppolicy_pwd_min_age
+# @param ppolicy_pwd_max_age
+# @param ppolicy_pwd_in_history
+# @param ppolicy_pwd_check_quality
+# @param ppolicy_pwd_min_length
+# @param ppolicy_pwd_expire_warning
+# @param ppolicy_pwd_grace_authn_limit
+# @param ppolicy_pwd_lockout
+# @param ppolicy_pwd_lockout_duration
+# @param ppolicy_pwd_max_failure
+# @param ppolicy_pwd_failure_count_interval
+# @param ppolicy_pwd_must_change
+# @param ppolicy_pwd_allow_user_change
+# @param ppolicy_pwd_safe_modify
+#
+# @api private
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::server::conf::default_ldif (
   Integer[1]   $users_group_id                     = 100,
@@ -27,18 +44,18 @@ class simp_openldap::server::conf::default_ldif (
 
   assert_private()
 
-  $_suffix = $::simp_openldap::server::conf::suffix
-  $_rootdn = $::simp_openldap::server::conf::rootdn
-  $_syncdn = $::simp_openldap::server::conf::syncdn
-  $_syncpw = $::simp_openldap::server::conf::syncpw
-  $_binddn = $::simp_openldap::server::conf::binddn
-  $_bindpw = $::simp_openldap::server::conf::bindpw
+  $_suffix = $simp_openldap::server::conf::suffix
+  $_rootdn = $simp_openldap::server::conf::rootdn
+  $_syncdn = $simp_openldap::server::conf::syncdn
+  $_syncpw = $simp_openldap::server::conf::syncpw
+  $_binddn = $simp_openldap::server::conf::binddn
+  $_bindpw = $simp_openldap::server::conf::bindpw
 
   if (
-    defined('$::simp_openldap::slapo::ppolicy::_check_password') and
-    getvar('::simp_openldap::slapo::ppolicy::_check_password')
+    defined('$simp_openldap::slapo::ppolicy::_check_password') and
+    getvar('simp_openldap::slapo::ppolicy::_check_password')
   ) {
-    $_simp_ppolicy_check_password = getvar('::simp_openldap::slapo::ppolicy::_check_password')
+    $_simp_ppolicy_check_password = getvar('simp_openldap::slapo::ppolicy::_check_password')
   }
   else {
     $_simp_ppolicy_check_password = undef

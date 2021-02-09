@@ -1,21 +1,23 @@
-# This class provides a common base for both the client and server portions of
-# an OpenLDAP-based sysetm
+# @summary Provides the base configuration necessary for an OpenLDAP client or server.
+#
+# Further configuration can be made via the simp_openldap::client and
+# simp_openldap::server classes.
 #
 # @param ldap_uri
 #   It is recommended that you make the master the last entry in this array
-#
-#   * Will default to ``["ldap://${server_facts['servername']}"]`` if not set
 #
 # @param base_dn
 #   The base DN of the LDAP entries
 #
 # @param bind_dn
-#   The use that should be used to bind to the LDAP server
+#   The user that should be used to bind to the LDAP server
 #
 # @param ldap_master
 #   The LDAP Master server
 #
 #   * Will default to the **last** entry in ``ldap_uri`` if not set
+#   * Only applicable for LDAP server configuration when chain overlay is
+#     enabled
 #
 # @param is_server
 #   Set this if you want to create an OpenLDAP server on your node
@@ -56,13 +58,13 @@
 # @param app_pki_crl
 #   Path to the CRL file.
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap (
   Array[Simplib::URI]            $ldap_uri                = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
   String                         $base_dn                 = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => simplib::ldap::domain_to_dn() }),
   String                         $bind_dn                 = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => sprintf('cn=hostAuth,ou=Hosts,%s', simplib::ldap::domain_to_dn()) }),
-  String                         $ldap_master             = simplib::lookup('simp_options::ldap::master', { 'default_value'  => undef }),
+  Simplib::URI                   $ldap_master             = simplib::lookup('simp_options::ldap::master', { 'default_value'  => $ldap_uri[-1] }),
   Boolean                        $is_server               = false,
   Variant[Boolean, Enum['simp']] $pki                     = simplib::lookup('simp_options::pki', { 'default_value' => false }),
   String                         $app_pki_external_source = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
@@ -74,34 +76,28 @@ class simp_openldap (
 ) {
   simplib::assert_metadata($module_name)
 
-  if $ldap_uri {
-    $_ldap_uri = $ldap_uri
-  }
-  elsif $server_facts {
-    $_ldap_uri = ["ldap://${server_facts['servername']}"]
-  }
-  else {
-    fail('You must provide a value for `$ldap_uri`')
-  }
-
-  if $ldap_master {
-    $_ldap_master = $ldap_master
-  }
-  else {
-    $_ldap_master = $_ldap_uri[-1]
-  }
-
   if $is_server {
-    contain '::simp_openldap::server'
+    include 'simp_openldap::server'
   }
 
-  contain '::simp_openldap::client'
+  include 'simp_openldap::client'
 
   if $pki {
+    # The 'ldap' group needs to be used for the pki:copy for the LDAP server,
+    # so that its daemon (slapd) can access the certs. If simp_openldap::server
+    # was included in a manifest directly, $is_server may not be true. So, need
+    # to check if the simp_openldap::server resource is available, instead.
+    if defined(Class['simp_openldap::server']) {
+      $_ldap_group = 'ldap'
+    }
+    else {
+      $_ldap_group = 'root'
+    }
+
     pki::copy { 'openldap':
       source => $app_pki_external_source,
       pki    => $pki,
-      group  => 'ldap'
+      group  => $_ldap_group
     }
   }
 }

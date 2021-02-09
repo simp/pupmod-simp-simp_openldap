@@ -1,4 +1,4 @@
-# Configure the password policy for a site
+# @summary Configure the password policy for a site
 #
 # @see slapo-ppolicy(5)
 #
@@ -38,10 +38,14 @@
 # @param ppolicy_ensure The ensure status of the simp-ppolicy-check-password
 #   package
 #
+# @param ppolicy_default
+# @param ppolicy_hash_cleartext
+# @param ppolicy_use_lockout
+#
 # @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::slapo::ppolicy (
-  Optional[String[1]] $suffix                    = $::simp_openldap::base_dn,
+  Optional[String[1]] $suffix                    = $simp_openldap::base_dn,
   Optional[String[1]] $ppolicy_default           = undef,
   Optional[String[1]] $ppolicy_hash_cleartext    = undef,
   Optional[String[1]] $ppolicy_use_lockout       = undef,

@@ -1,4 +1,4 @@
-# Manage access control entries in ``slapd.access``
+# @summary Manage access control entries in ``slapd.access``
 #
 # Remember that **order matters**! Entries will be listed in alphanumeric order
 # after the ``$order`` parameter is processed.
@@ -9,10 +9,22 @@
 #   The unique name of the dynamic include. This does become part of the sort
 #   order so be careful!
 #
+# @param what
+#   The entity this access control directive applies to.
+#
 # @param comment
 #   An arbitrary comment that will be included above the entry
 #
 #   * You do not need to include the leading `#`
+#
+# @param who
+#   Whom this access rule applies to.
+#
+# @param access
+#   The access level or the specific access privileges the ``who`` field will have
+#
+# @param control
+#  The control of the flow of access rule application to be applied
 #
 # @param content
 #   the **entire* content under ``$what``
@@ -23,7 +35,7 @@
 # @param order
 #   The default sort order of the entry to be added
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 define simp_openldap::server::access (
   String           $what,

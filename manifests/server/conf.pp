@@ -1,6 +1,4 @@
-# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
-#
-# This class configures the brunt of the ``/etc/openldap`` configuration files
+# @summary Configures the brunt of the ``/etc/openldap`` configuration files
 #
 # Regarding: POODLE - CVE-2014-3566
 #
@@ -103,13 +101,13 @@
 #   will be used for referral chaining
 #
 # @param listen_ldap
-#   Listen on the default LDAP port for ``ldap://`` conenctions
+#   Listen on the default LDAP port for ``ldap://`` connections
 #
 # @param listen_ldapi
-#   Listen on the default LDAP port for ``ldapi://`` conenctions
+#   Listen on the default LDAP port for ``ldapi://`` connections
 #
 # @param listen_ldaps
-#   Listen on the default LDAPS port for ``ldaps://`` conenctions
+#   Listen on the default LDAPS port for ``ldaps://`` connections
 #
 # @param custom_options
 #   Command line options that will be placed into the openldap configuration
@@ -229,16 +227,62 @@
 # @param app_pki_crl
 #   Path to the CRL file.
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @param suffix
+# @param argsfile
+# @param bind_anon
+# @param cachesize
+# @param checkpoint
+# @param concurrency
+# @param conn_max_pending
+# @param conn_max_pending_auth
+# @param default_searchbase
+# @param disallow
+# @param ditcontentrule
+# @param gentlehup
+# @param idletimeout
+# @param index_substr_any_step
+# @param index_substr_any_len
+# @param index_substr_if_maxlen
+# @param index_substr_if_minlen
+# @param index_intlen
+# @param slapd_log_level
+# @param password_crypt_salt_format
+# @param pidfile
+# @param reverse_lookup
+# @param schemadn
+# @param security
+# @param sockbuf_max_incoming
+# @param sockbuf_max_incoming_auth
+# @param sortvals
+# @param tcp_buffer
+# @param writetimeout
+# @param tls_cipher_suite
+# @param tls_crl_check
+# @param database
+# @param directory
+# @param db_add_content_acl
+# @param db_lastmod
+# @param db_maxderefdepth
+# @param db_mirrormode
+# @param db_monitoring
+# @param db_readonly
+# @param db_max_locks
+# @param db_max_lock_objects
+# @param db_max_lock_lockers
+# @param db_log_region_max_size
+# @param db_log_buffer_size
+#
+# @api private
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::server::conf (
   Optional[String[1]]                                 $rootpw                     = undef,
   Optional[String[1]]                                 $syncpw                     = simplib::lookup('simp_options::ldap::sync_hash', { 'default_value' => undef }),
   Optional[String[1]]                                 $bindpw                     = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
   String[1]                                           $syncdn                     = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::simp_openldap::base_dn}" }),
-  String[1]                                           $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $::simp_openldap::bind_dn }),
+  String[1]                                           $binddn                     = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => $simp_openldap::bind_dn }),
   Optional[String[1]]                                 $rootdn                     = simplib::lookup('simp_options::ldap::root_dn', { 'default_value' => "cn=LDAPAdmin,ou=People,${::simp_openldap::base_dn}" }),
-  String[1]                                           $suffix                     = $::simp_openldap::base_dn,
+  String[1]                                           $suffix                     = $simp_openldap::base_dn,
   Stdlib::Absolutepath                                $argsfile                   = '/var/run/openldap/slapd.args',
   Boolean                                             $audit_transactions         = true,
   Boolean                                             $audit_to_syslog            = true,
@@ -268,7 +312,7 @@ class simp_openldap::server::conf (
   Boolean                                             $gentlehup                  = false,
   Integer[0]                                          $idletimeout                = 0,
   Boolean                                             $include_chain_overlay      = false,
-  Optional[String[1]]                                 $master                     = $::simp_openldap::_ldap_master,
+  String[1]                                           $master                     = $simp_openldap::ldap_master,
   Integer[0]                                          $index_substr_any_step      = 2,
   Integer[0]                                          $index_substr_any_len       = 4,
   Integer[0]                                          $index_substr_if_maxlen     = 4,
@@ -299,11 +343,11 @@ class simp_openldap::server::conf (
   Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_soft             = undef,
   Optional[Variant[Enum['unlimited'], Integer[1]]]    $timelimit_hard             = undef,
   Integer[0]                                          $writetimeout               = 0,
-  Variant[Enum['simp'],Boolean]                       $use_tls                    = $::simp_openldap::pki,
-  Stdlib::Absolutepath                                $app_pki_ca_dir             = $::simp_openldap::app_pki_ca_dir,
-  Stdlib::Absolutepath                                $app_pki_cert               = $::simp_openldap::app_pki_cert,
-  Stdlib::Absolutepath                                $app_pki_key                = $::simp_openldap::app_pki_key,
-  Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $::simp_openldap::app_pki_crl,
+  Variant[Enum['simp'],Boolean]                       $use_tls                    = $simp_openldap::pki,
+  Stdlib::Absolutepath                                $app_pki_ca_dir             = $simp_openldap::app_pki_ca_dir,
+  Stdlib::Absolutepath                                $app_pki_cert               = $simp_openldap::app_pki_cert,
+  Stdlib::Absolutepath                                $app_pki_key                = $simp_openldap::app_pki_key,
+  Optional[Stdlib::Absolutepath]                      $app_pki_crl                = $simp_openldap::app_pki_crl,
   Optional[Array[String[1]]]                          $tls_cipher_suite           = undef,
   Optional[Float]                                     $tls_protocol_min           = undef,
   Enum['none','peer','all']                           $tls_crl_check              = 'none',
@@ -334,10 +378,10 @@ class simp_openldap::server::conf (
   Boolean                                             $firewall                   = simplib::lookup('simp_options::firewall', {'default_value' => false }),
 ) inherits ::simp_openldap {
 
-  include '::simp_openldap::server::conf::default_ldif'
+  include 'simp_openldap::server::conf::default_ldif'
 
   if $force_log_quick_kill {
-    include '::incron'
+    include 'incron'
 
     incron::system_table { 'nuke_openldap_log_files':
       path    => "${directory}/logs",
@@ -404,7 +448,7 @@ class simp_openldap::server::conf (
   }
 
   if $firewall {
-    include '::iptables'
+    include 'iptables'
 
     if $listen_ldap or $listen_ldaps {
       iptables::listen::tcp_stateful { 'allow_ldap':
@@ -423,10 +467,10 @@ class simp_openldap::server::conf (
   }
 
   if $syslog {
-    include '::rsyslog'
+    include 'rsyslog'
 
     if $audit_transactions {
-      include '::logrotate'
+      include 'logrotate'
 
       file { $auditlog:
         ensure => 'present',
@@ -469,7 +513,7 @@ class simp_openldap::server::conf (
     }
 
     if $log_to_file {
-      include '::logrotate'
+      include 'logrotate'
 
       # These are quite heavyweight so we're moving them up in the stack.
       rsyslog::rule::local { '05_openldap_local':

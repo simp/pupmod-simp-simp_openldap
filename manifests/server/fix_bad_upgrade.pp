@@ -1,4 +1,4 @@
-# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
+# @summary Workaround upgrade issues
 #
 # We're not ready for using slapd.d
 #
@@ -8,6 +8,8 @@
 # This works around having your system destroyed by that "feature"
 #
 # This pops up in the RPM updates from time to time
+#
+# @api private
 #
 class simp_openldap::server::fix_bad_upgrade {
   assert_private()

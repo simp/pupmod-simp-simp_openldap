@@ -1,4 +1,4 @@
-# Add a dynamically included file into the LDAP system.
+# @summary Add a dynamically included file into the LDAP system.
 #
 # @attr name [String]
 #   A unique name for the resource
@@ -9,7 +9,7 @@
 # @param order
 #   The numeric order of the dynamic include
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 define simp_openldap::server::dynamic_include (
   String  $content,

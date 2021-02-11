@@ -1,5 +1,6 @@
-# This class configures lastbind and set up a dynamic include that defines lastbind.
-# See slapo-lastbind(5) for details of the options.
+# @summary Configures lastbind and set up a dynamic include that defines lastbind.
+#
+# @see slapo-lastbind(5) for details of the options.
 #
 # @param lastbind_precision
 #   Determines the amount of time, in seconds, after which to update the

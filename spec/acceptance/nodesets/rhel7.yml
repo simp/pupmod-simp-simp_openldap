@@ -6,13 +6,28 @@
   end
 -%>
 HOSTS:
-  server-el7:
+  server-rhel7:
     roles:
       - default
       - server
     platform: el-7-x86_64
     box: generic/rhel7
     hypervisor: <%= hypervisor %>
+
+  client-rhel7:
+    roles:
+      - client
+    platform: el-7-x86_64
+    box: generic/rhel7
+    hypervisor: <%= hypervisor %>
+
+  client-rhel8:
+    roles:
+      - client
+    platform: el-8-x86_64
+    box: generic/rhel8
+    hypervisor: <%= hypervisor %>
+
 
 CONFIG:
   validate: false

@@ -1,10 +1,36 @@
-# This define configures the sycnrepl functionality of OpenLDAP which allows
+# @summary Configures the syncrepl functionality of OpenLDAP which allows
 # for directory synchronization pulls from a master server.
 #
 # @see slapd.conf(5)
 #
 # $name should be the 'rid' of the syncrepl instance and must be between 0 and
 # 1000, non-inclusive.
+#
+# @param syncrepl_retry
+# @param provider
+# @param searchbase
+# @param syncrepl_type
+# @param interval
+# @param filter
+# @param syncrepl_scope
+# @param attrs
+# @param attrsonly
+# @param sizelimit
+# @param timelimit
+# @param schemachecking
+# @param starttls
+# @param bindmethod
+# @param binddn
+# @param saslmech
+# @param authcid
+# @param authzid
+# @param credentials
+# @param realm
+# @param secprops
+# @param logbase
+# @param logfilter
+# @param syncdata
+# @param updateref
 #
 # @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #

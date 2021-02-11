@@ -1,9 +1,16 @@
-* Wed Feb 03 2021 Liz Nemsick <lnemsick.simp@gmail.com> - 6.5.0
+* Mon Feb 08 2021 Liz Nemsick <lnemsick.simp@gmail.com> - 6.5.0
+- Fixed bug where the pki:copy resource could no longer be created for
+  OpenLDAP clients.
+  - The 'ldap' group is no longer created by any of the installed OpenLDAP
+    client packages.
 - Expanded simp/rsyslog dependendency range to < 9.0.0.
 
 * Tue Dec 15 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.5.0
 - Fix comparison of Float with String on `simp_openldap::server::conf::tls_protocol_min`
 - Removed support for EL 6 due to EOL
+- Deprecated parameters only applicable to EL 6:
+  - simp_openldap::client::strip_128_bit_ciphers
+  - simp_openldap::client::nss_pam_ldapd_ensure
 - Added support for Puppet 7
 
 * Tue Aug 04 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.4.3-0

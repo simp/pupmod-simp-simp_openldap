@@ -66,6 +66,15 @@ it can be used independently:
   legacy TLS and STARTTLS
 * Provides access control capabilities
 
+**NOTE**: As a convenience, this module will configure ``/root/.ldaprc`` with
+global variables that facilitate LDAP client communication, *only if* the file
+does not already exist. This behavior prevents the module from modifying any
+custom configuration you have created, but also means the file will not be
+updated when you make module configuration changes that would result in
+different ``/root/.ldaprc`` content (e.g., enable/disable use of TLS, change the
+TLS certificate filenames, or change the root directory for TLS certificates).
+You must remove ``/root/.ldaprc`` and run puppet to pick up the changes.
+
 ## Using simp_openldap
 
 ### As a client
@@ -81,7 +90,6 @@ include 'simp_openldap'
 To use the module to configure an LDAP server, include the following:
 
 ```puppet
-include 'simp_openldap'
 include 'simp_openldap::server'
 ```
 

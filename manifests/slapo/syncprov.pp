@@ -1,8 +1,17 @@
-# Allow other LDAP servers to synchronize with this one
+# @summary Allow other LDAP servers to synchronize with this one
 #
 # @see slapo-syncprov(5)
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @param checkpoint
+# @param sessionlog
+# @param nopresent
+# @param reloadhint
+# @param sync_size_soft_limit
+# @param sync_size_hard_limit
+# @param sync_time_soft_limit
+# @param sync_time_hard_limit
+#
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::slapo::syncprov (
   Optional[Pattern['^\d+\s\d+$']]     $checkpoint           = undef,
@@ -14,7 +23,7 @@ class simp_openldap::slapo::syncprov (
   Variant[Enum['unlimited'], Integer] $sync_time_soft_limit = 'unlimited',
   Variant[Enum['unlimited'], Integer] $sync_time_hard_limit = 'unlimited'
 ) {
-  include '::simp_openldap::server'
+  include 'simp_openldap::server'
 
   simp_openldap::server::dynamic_include { 'syncprov':
     order   => 1000,
@@ -22,7 +31,7 @@ class simp_openldap::slapo::syncprov (
   }
 
   simp_openldap::server::limits { 'Allow Sync User Unlimited':
-    who    => $::simp_openldap::server::sync_dn,
+    who    => $simp_openldap::server::sync_dn,
     limits => [
       "size.soft=${sync_size_soft_limit}",
       "size.hard=${sync_size_hard_limit}",

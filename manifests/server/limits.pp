@@ -1,5 +1,4 @@
-# This define allows you to manage ``limits`` sections under the **main**
-# database
+# @summary Manage ``limits`` sections under the **main** database
 #
 # @see slapd.conf(5)
 #
@@ -19,7 +18,7 @@
 # @param limits
 #   A list of limits to apply to ``$who`` per ``slapd.conf(5)``
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 define simp_openldap::server::limits (
   String                        $who,

@@ -8,39 +8,21 @@ describe 'simp-ppolicy-check-password update' do
 
   servers.each do |server|
     context "on server #{server}" do
-      let(:slapd_svc){
-        require 'yaml'
-
-        svc_name = 'slapd'
-
-        # Some call it 'slapd', others 'ldap'
-        svcs = YAML.load(on(server, 'puppet resource service --to_yaml').stdout)['service'].keys.map{|x| x.chomp('.service')}
-
-        if svcs.include?('ldap')
-          svc_name = 'ldap'
-        end
-
-        svc_name
-      }
-
       let(:server_fqdn) { fact_on(server, 'fqdn') }
-      if fact_on(server,'operatingsystemmajrelease') == '7'
-        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "DC=#{d}" }.join(',') }
-      else
-        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
-      end
+      let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+
       # The ldif format always comes out in lowercase when quering the openldap server
       let(:results_base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
 
       context 'on the clean server' do
         it 'should be running openldap' do
-          on(server, "puppet resource service #{slapd_svc} ensure=running")
+          on(server, "puppet resource service slapd ensure=running")
         end
 
         it 'should be using the latest simp-ppolicy-check-password package' do
           on(server, 'puppet resource package simp-ppolicy-check-password ensure=latest')
-          on(server, "puppet resource service #{slapd_svc} ensure=stopped")
-          on(server, "puppet resource service #{slapd_svc} ensure=running")
+          on(server, "puppet resource service slapd ensure=stopped")
+          on(server, "puppet resource service slapd ensure=running")
         end
 
         it 'should have a test user from a previous test' do
@@ -56,7 +38,7 @@ describe 'simp-ppolicy-check-password update' do
         end
 
         it 'should be running openldap' do
-          on(server, "puppet resource service #{slapd_svc} ensure=running")
+          on(server, "puppet resource service slapd ensure=running")
         end
 
         it 'should be able to access the test user' do

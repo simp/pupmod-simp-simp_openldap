@@ -1,10 +1,10 @@
-# Set up an OpenLDAP server
+# @summary Set up an OpenLDAP server
 #
 # It installs the server if not already installed and bootstraps it if
 # necessary.
 #
 # You can quickly reset the entire server by removing all files from
-# ``/var/lib/ldap/db/*`` and then re-runing puppet. Note that this will erase
+# ``/var/lib/ldap/db/*`` and then re-running puppet. Note that this will erase
 # the contents of your database, so you will want to use ``slapcat`` to save
 # any data that you may require later for restoration.
 #
@@ -43,19 +43,19 @@
 # @param use_ppolicy
 #   Include the default password policy overlay
 #
-# @param use_tcpwrappers
+# @param tcpwrappers
 #   If true, enable tcpwrappers for slapd.
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-simp_openldap/graphs/contributors
 #
 class simp_openldap::server (
   Boolean $schema_sync   = true,
   String  $schema_source = "puppet:///modules/${module_name}/etc/openldap/schema",
   Boolean $allow_sync    = true,
-  String  $sync_dn       = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${::simp_openldap::base_dn}" }),
+  String  $sync_dn       = simplib::lookup('simp_options::ldap::sync_dn', { 'default_value' => "cn=LDAPSync,ou=Hosts,${simp_openldap::base_dn}" }),
   Boolean $use_ppolicy   = true,
   Boolean $tcpwrappers   = simplib::lookup('simp_options::tcpwrappers', { 'default_value' => false })
-) inherits ::simp_openldap {
+) inherits simp_openldap {
 
   $_os_version = $facts.dig('os','release','major')
   $_os_name = $facts.dig('os','name')
@@ -64,24 +64,23 @@ class simp_openldap::server (
     fail("$_os_name version $_os_version is not supported as an LDAP server")
   }
 
-  include '::simp_openldap::client'
-  contain '::simp_openldap::server::install'
+  contain 'simp_openldap::server::install'
 
   if $allow_sync {
-    contain '::simp_openldap::slapo::syncprov'
+    contain 'simp_openldap::slapo::syncprov'
 
     Class['simp_openldap::server::install'] -> Class['simp_openldap::slapo::syncprov']
   }
 
   if $use_ppolicy {
-    contain '::simp_openldap::slapo::ppolicy'
+    contain 'simp_openldap::slapo::ppolicy'
 
     Class['simp_openldap::server::install'] -> Class['simp_openldap::slapo::ppolicy']
   }
 
   # This needs to come after ppolicy and syncprov since some templates
   # use the values.
-  contain '::simp_openldap::server::conf'
+  contain 'simp_openldap::server::conf'
 
   Class['simp_openldap::server::install'] ~> Class['simp_openldap::server::service']
   Class['simp_openldap::server::conf'] ~> Class['simp_openldap::server::service']
@@ -177,7 +176,7 @@ class simp_openldap::server (
     what    =>  'attrs=userPassword',
     content => "
       by dn.exact=\"${sync_dn}\" read
-      by dn.exact=\"${::simp_openldap::bind_dn}\" auth
+      by dn.exact=\"${simp_openldap::bind_dn}\" auth
       by anonymous auth
       by self write
       by * none",
@@ -193,7 +192,7 @@ class simp_openldap::server (
     what    => 'attrs=shadowLastChange',
     content => "
       by dn.exact=\"${sync_dn}\" read
-      by dn.exact=\"${::simp_openldap::bind_dn}\" read
+      by dn.exact=\"${simp_openldap::bind_dn}\" read
       by anonymous auth
       by self write
       by * none",
@@ -229,7 +228,7 @@ class simp_openldap::server (
   # for host use. Make sure that all entries are available to that
   # user.
   simp_openldap::server::limits { 'hostAuth':
-    who    => $::simp_openldap::bind_dn,
+    who    => $simp_openldap::bind_dn,
     limits => [
       'size.soft=unlimited',
       'size.hard=unlimited',
@@ -238,7 +237,7 @@ class simp_openldap::server (
   }
 
   if $tcpwrappers {
-    include '::tcpwrappers'
+    include 'tcpwrappers'
 
     tcpwrappers::allow { 'slapd':
       pattern => 'ALL',
@@ -246,9 +245,9 @@ class simp_openldap::server (
     }
   }
 
-  contain '::simp_openldap::server::service'
+  contain 'simp_openldap::server::service'
 
-  if $::simp_openldap::pki {
+  if $simp_openldap::pki {
     Pki::Copy['openldap'] ~> Class['simp_openldap::server::service']
   }
 }

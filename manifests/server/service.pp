@@ -1,16 +1,16 @@
-# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
-#
-# Manage the OpenLDAP service
+# @summary Manage the OpenLDAP service
 #
 # @param slapd_svc
 #   The actual service name
+#
+# @api private
 #
 class simp_openldap::server::service (
   String[1] $slapd_svc = 'slapd'
 ){
   assert_private()
 
-  include '::simp_openldap::server::fix_bad_upgrade'
+  include 'simp_openldap::server::fix_bad_upgrade'
 
   # This is a very crude attempt to not bootstrap if the executing node is a
   # consumer node. Bootstrapping consumer nodes causes the ``administrators`` group

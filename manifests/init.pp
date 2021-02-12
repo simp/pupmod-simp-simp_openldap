@@ -83,21 +83,9 @@ class simp_openldap (
   include 'simp_openldap::client'
 
   if $pki {
-    # The 'ldap' group needs to be used for the pki:copy for the LDAP server,
-    # so that its daemon (slapd) can access the certs. If simp_openldap::server
-    # was included in a manifest directly, $is_server may not be true. So, need
-    # to check if the simp_openldap::server resource is available, instead.
-    if defined(Class['simp_openldap::server']) {
-      $_ldap_group = 'ldap'
-    }
-    else {
-      $_ldap_group = 'root'
-    }
-
     pki::copy { 'openldap':
       source => $app_pki_external_source,
-      pki    => $pki,
-      group  => $_ldap_group
+      pki    => $pki
     }
   }
 }

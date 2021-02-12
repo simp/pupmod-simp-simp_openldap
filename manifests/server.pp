@@ -248,6 +248,15 @@ class simp_openldap::server (
   contain 'simp_openldap::server::service'
 
   if $simp_openldap::pki {
+
+    # The 'ldap' group needs to be used for the pki:copy for the LDAP server,
+    # so that its daemon (slapd) can access the certs. Because of the way
+    # the module is structured, cannot reliably determine this when the
+    # resource is first declared.
+    Pki::Copy <| title == 'openldap' |> {
+      group => 'ldap'
+    }
+
     Pki::Copy['openldap'] ~> Class['simp_openldap::server::service']
   }
 }

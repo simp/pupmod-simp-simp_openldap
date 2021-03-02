@@ -102,7 +102,7 @@ To configure the password policy, you will also need to include the
 Once the LDAP server has been configured, it will not update any data inside of
 the LDAP server itself, only the surrounding configuration.
 
-For additional information, please see the [SIMP Documentation](https://simp.readthedos.io/en/stable).
+For additional information, please see the [SIMP Documentation](https://simp.readthedocs.io/en/stable).
 
 ## Advanced configuration
 

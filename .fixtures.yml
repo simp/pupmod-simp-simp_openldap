@@ -1,24 +1,24 @@
 ---
 fixtures:
   repositories:
-    auditd: https://github.com/simp/pupmod-simp-auditd
+    auditd: https://github.com/simp/pupmod-simp-auditd.git
     augeas_core:
       repo: https://github.com/simp/pupmod-puppetlabs-augeas_core.git
       puppet_version: ">= 6.0.0"
-    augeasproviders_core: https://github.com/simp/augeasproviders_core
-    augeasproviders_grub: https://github.com/simp/augeasproviders_grub
-    compliance_markup: https://github.com/simp/pupmod-simp-compliance_markup
-    concat: https://github.com/simp/puppetlabs-concat
-    incron: https://github.com/simp/pupmod-simp-incron
-    iptables: https://github.com/simp/pupmod-simp-iptables
-    logrotate: https://github.com/simp/pupmod-simp-logrotate
-    pki: https://github.com/simp/pupmod-simp-pki
-    rsyslog: https://github.com/simp/pupmod-simp-rsyslog
-    simp_options: https://github.com/simp/pupmod-simp-simp_options
-    simplib: https://github.com/simp/pupmod-simp-simplib
-    sssd: https://github.com/simp/pupmod-simp-sssd
-    stdlib: https://github.com/simp/puppetlabs-stdlib
-    systemd: https://github.com/simp/puppet-systemd
-    tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers
+    augeasproviders_core: https://github.com/simp/augeasproviders_core.git
+    augeasproviders_grub: https://github.com/simp/augeasproviders_grub.git
+    compliance_markup: https://github.com/simp/pupmod-simp-compliance_markup.git
+    concat: https://github.com/simp/puppetlabs-concat.git
+    incron: https://github.com/simp/pupmod-simp-incron.git
+    iptables: https://github.com/simp/pupmod-simp-iptables.git
+    logrotate: https://github.com/simp/pupmod-simp-logrotate.git
+    pki: https://github.com/simp/pupmod-simp-pki.git
+    rsyslog: https://github.com/simp/pupmod-simp-rsyslog.git
+    simp_options: https://github.com/simp/pupmod-simp-simp_options.git
+    simplib: https://github.com/simp/pupmod-simp-simplib.git
+    sssd: https://github.com/simp/pupmod-simp-sssd.git
+    stdlib: https://github.com/simp/puppetlabs-stdlib.git
+    systemd: https://github.com/simp/puppet-systemd.git
+    tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers.git
   symlinks:
     simp_openldap: "#{source_dir}"

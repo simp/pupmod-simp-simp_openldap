@@ -1,3 +1,7 @@
+* Thu Jun 17 2021 Chris Tessmer <chris.tessmer@onyxpoint.com> - 6.6.0
+- Removed support for Puppet 5
+- Ensured support for Puppet 7 in requirements and stdlib
+
 * Mon Feb 08 2021 Liz Nemsick <lnemsick.simp@gmail.com> - 6.5.0
 - Fixed bug where the pki:copy resource could no longer be created for
   OpenLDAP clients.

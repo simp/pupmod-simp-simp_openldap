@@ -12,6 +12,13 @@ describe 'simp_openldap::server class' do
     EOS
   }
 
+  hosts.each do |host|
+    it 'should disable the firewall' do
+      on(host, 'puppet resource service firewalld ensure=stopped')
+      on(host, 'puppet resource service iptables ensure=stopped')
+    end
+  end
+
   servers.each do |server|
     context "yum repo prep on #{server}" do
       it 'should install SIMP internet repos' do

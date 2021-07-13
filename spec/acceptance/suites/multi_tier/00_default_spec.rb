@@ -213,6 +213,13 @@ describe 'simp_openldap class' do
     template_data
   }
 
+  hosts.each do |host|
+    it 'should disable the firewall' do
+      on(host, 'puppet resource service firewalld ensure=stopped')
+      on(host, 'puppet resource service iptables ensure=stopped')
+    end
+  end
+
   hosts.each do |server|
     context "on #{server}" do
       install_simp_repos(server)

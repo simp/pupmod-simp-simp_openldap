@@ -1,41 +1,35 @@
-<%
-  if ENV['BEAKER_HYPERVISOR']
-    hypervisor = ENV['BEAKER_HYPERVISOR']
-  else
-    hypervisor = 'vagrant'
-  end
--%>
+---
 HOSTS:
-  # NOTE: Node names are used in the tests
   yggdrasil:
     roles:
-      - default
-      - ldap_root
+    - default
+    - ldap_root
     platform: el-7-x86_64
     box: centos/7
-    hypervisor: <%= hypervisor %>
-
+    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
+    family: centos-cloud/centos-7
+    gce_machine_type: n1-standard-2
   valhalla:
     roles:
-      - ldap_replica
-      - valhalla
+    - ldap_replica
+    - valhalla
     platform: el-7-x86_64
     box: centos/7
-    hypervisor: <%= hypervisor %>
-
+    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
+    family: centos-cloud/centos-7
+    gce_machine_type: n1-standard-2
   niflheim:
     roles:
-      - ldap_replica
-      - niflheim
+    - ldap_replica
+    - niflheim
     platform: el-7-x86_64
     box: centos/7
-    hypervisor: <%= hypervisor %>
-
+    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
+    family: centos-cloud/centos-7
+    gce_machine_type: n1-standard-2
 CONFIG:
   type: aio
   vagrant_memsize: 256
   log_level: verbose
   synced_folder: disabled
-<% if ENV['BEAKER_PUPPET_COLLECTION'] -%>
-  puppet_collection: <%= ENV['BEAKER_PUPPET_COLLECTION'] %>
-<% end -%>
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet7') %>"

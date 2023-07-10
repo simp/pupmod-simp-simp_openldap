@@ -61,7 +61,7 @@ class simp_openldap::server (
   $_os_name = $facts.dig('os','name')
 
   if versioncmp($_os_version, '7') > 0 {
-    fail("$_os_name version $_os_version is not supported as an LDAP server")
+    fail("${_os_name} version ${_os_version} is not supported as an LDAP server")
   }
 
   contain 'simp_openldap::server::install'

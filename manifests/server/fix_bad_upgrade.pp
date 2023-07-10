@@ -19,7 +19,7 @@ class simp_openldap::server::fix_bad_upgrade {
       if [ -f /etc/openldap/slapd.conf.bak ]; then \
         /bin/mv /etc/openldap/slapd.conf.bak /etc/openldap.slapd.conf; \
       fi',
-    require => Package["openldap-servers.${facts['hardwaremodel']}"],
+    require => Package["openldap-servers.${facts['os']['hardware']}"],
     notify  => File['/var/lib/ldap/DB_CONFIG'],
     onlyif  => '/usr/bin/test -d /etc/openldap/slapd.d',
     before  => [

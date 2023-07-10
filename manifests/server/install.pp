@@ -12,7 +12,7 @@ class simp_openldap::server::install (
   package { 'openldap':
     ensure => $ensure
   }
-  package { "openldap-servers.${facts['hardwaremodel']}":
+  package { "openldap-servers.${facts['os']['hardware']}":
     ensure => $ensure
   }
 }

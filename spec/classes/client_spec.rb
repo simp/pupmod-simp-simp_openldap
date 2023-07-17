@@ -6,6 +6,7 @@ describe 'simp_openldap::client' do
       let(:facts) {
         facts = os_facts.dup
         facts[:fqdn]   = 'myserver.test.local'
+        facts[:networking][:fqdn]   = 'myserver.test.local'
         facts[:domain] = 'host.net'
         facts
       }

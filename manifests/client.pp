@@ -97,7 +97,7 @@ class simp_openldap::client (
     content => template("${module_name}/ldaprc.erb")
   }
 
-  package { "openldap-clients.${facts['hardwaremodel']}":
+  package { "openldap-clients.${facts['os']['hardware']}":
     ensure => $openldap_clients_ensure
   }
 }

@@ -8,6 +8,7 @@ describe 'simp_openldap::client' do
         facts[:fqdn]   = 'myserver.test.local'
         facts[:networking][:fqdn]   = 'myserver.test.local'
         facts[:domain] = 'host.net'
+        facts[:networking][:domain] = 'host.net'
         facts
       }
 

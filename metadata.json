@@ -1,6 +1,6 @@
 {
   "name": "simp-simp_openldap",
-  "version": "6.7.1",
+  "version": "6.8.0",
   "author": "SIMP Team",
   "summary": "Manages OpenLDAP and related security bindings",
   "license": "Apache-2.0",
@@ -51,23 +51,32 @@
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "7"
+        "7",
+        "8"
       ]
     },
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
-        "7"
+        "7",
+        "8"
       ]
     },
     {
       "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
-        "7"
+        "7",
+        "8"
       ]
     },
     {
       "operatingsystem": "Rocky",
+      "operatingsystemrelease": [
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "AlmaLinux",
       "operatingsystemrelease": [
         "8"
       ]

@@ -1,3 +1,6 @@
+* Thu Sep 28 2023 Steven Pritchard <steve@sicura.us> - 6.8.0
+- Add AlmaLinux 8 support
+
 * Tue Sep 26 2023 Steven Pritchard <steve@sicura.us> - 6.7.1
 - Fix rspec tests
 

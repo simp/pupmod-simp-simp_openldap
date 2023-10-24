@@ -1,3 +1,6 @@
+* Mon Oct 23 2023 Steven Pritchard <steve@sicura.us> - 6.10.0
+- [puppetsync] Add EL9 support
+
 * Wed Oct 18 2023 Steven Pritchard <steve@sicura.us> - 6.9.1
 - Replace call to `FileTest.exists?` with `FileTest.exist?` for compatibility
   with Ruby 3

@@ -1,6 +1,6 @@
 {
   "name": "simp-simp_openldap",
-  "version": "6.10.0",
+  "version": "6.11.0",
   "author": "SIMP Team",
   "summary": "Manages OpenLDAP and related security bindings",
   "license": "Apache-2.0",
@@ -24,7 +24,7 @@
     },
     {
       "name": "simp/iptables",
-      "version_requirement": ">= 6.5.3 < 7.0.0"
+      "version_requirement": ">= 6.5.3 < 8.0.0"
     },
     {
       "name": "simp/logrotate",

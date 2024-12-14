@@ -1,6 +1,5 @@
 require 'spec_helper'
 describe 'slapd_version' do
-
   before :each do
     Facter.clear
   end
@@ -8,7 +7,7 @@ describe 'slapd_version' do
   context 'slapd command exists' do
     it 'returns the correct version of slapd' do
       allow(Facter::Core::Execution).to receive(:which).with('slapd').and_return('/sbin/slapd')
-      allow(Facter::Core::Execution).to receive(:execute).with('/sbin/slapd -VV 2>&1').and_return("@(#) $OpenLDAP: slapd 2.4.40 (Nov  6 2016 01:21:28) $")
+      allow(Facter::Core::Execution).to receive(:execute).with('/sbin/slapd -VV 2>&1').and_return('@(#) $OpenLDAP: slapd 2.4.40 (Nov  6 2016 01:21:28) $')
       expect(Facter.fact(:slapd_version).value).to eq('2.4.40')
     end
   end

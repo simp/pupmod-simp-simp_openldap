@@ -4,75 +4,77 @@ require 'erb'
 test_name 'simp_openldap tiering'
 
 describe 'simp_openldap class' do
-  let(:base_dn) { fact_on(host, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+  let(:base_dn) { fact_on(host, 'domain').split('.').map { |d| "dc=#{d}" }.join(',') }
 
   # These entries match the node names in the nodeset so don't change them
   # randomly!
-  let(:hieradata_overlay){{
-    'yggdrasil' => {
-      # Only for the tests
-      'test_admin_pass'                     => 'suP3rP@ssw0r!',
-      # End only for the tests
-      'simp_options::ldap::bind_pw'         => 'foobarbaz',
-      'simp_options::ldap::bind_hash'       => '{SSHA}ioOP+/DQKe6sl1pt5yX6KvxNHFeyHQ1A',
-      'simp_openldap::server::conf::rootpw' => '{SSHA}wcRAktSgNQo+uyMEsmYfqvcCP8Aad3oI'
-    },
-    'valhalla'  => {
-      # Only for the tests
-      'test_admin_pass'                     => 'suP3rP@ssw0r!!',
-      'test_sync_pass'                      => 'valhalla sync',
-      'test_sync_hash'                      => '{SSHA}P6lPXkL9Q4/lIiqgFE/bMuCndhe7gftT',
-      # End only for the tests
-      'simp_options::ldap::base_dn'         => "ou=Valhalla,#{base_dn}",
-      'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn}",
-      'simp_options::ldap::bind_pw'         => 'foobarbaz1',
-      'simp_options::ldap::bind_hash'       => '{SSHA}xas+n3P2Qa827CSP+IHNtYAkwSIHsAja',
-      # This is needed for full stack replication from the top level directory
-      'simp_openldap::server::conf::suffix' => base_dn,
-      'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Valhalla,#{base_dn}",
-      'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr'
-    },
-    'niflheim'  => {
-      # Only for the tests
-      'test_admin_pass'                     => 'suP3rP@ssw0r!!!',
-      'test_sync_pass'                      => 'niflheim sync',
-      'test_sync_hash'                      => '{SSHA}UN5mMFLfjrjcWbufKUH1r4o5XI+FyNWW',
-      # End only for the tests
-      'simp_options::ldap::base_dn'         => "ou=Niflheim,#{base_dn}",
-      'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn}",
-      'simp_options::ldap::bind_pw'         => 'foobarbaz2',
-      'simp_options::ldap::bind_hash'       => '{SSHA}UoKntkxjUv/LIitnLJudT30lNDXMAtpM',
-      # This is needed for full stack replication from the top level directory
-      'simp_openldap::server::conf::suffix' => base_dn,
-      'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Niflheim,#{base_dn}",
-      'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH'
+  let(:hieradata_overlay) do
+    {
+      'yggdrasil' => {
+        # Only for the tests
+        'test_admin_pass'                     => 'suP3rP@ssw0r!',
+        # End only for the tests
+        'simp_options::ldap::bind_pw'         => 'foobarbaz',
+        'simp_options::ldap::bind_hash'       => '{SSHA}ioOP+/DQKe6sl1pt5yX6KvxNHFeyHQ1A',
+        'simp_openldap::server::conf::rootpw' => '{SSHA}wcRAktSgNQo+uyMEsmYfqvcCP8Aad3oI'
+      },
+   'valhalla' => {
+     # Only for the tests
+     'test_admin_pass'                     => 'suP3rP@ssw0r!!',
+     'test_sync_pass'                      => 'valhalla sync',
+     'test_sync_hash'                      => '{SSHA}P6lPXkL9Q4/lIiqgFE/bMuCndhe7gftT',
+     # End only for the tests
+     'simp_options::ldap::base_dn'         => "ou=Valhalla,#{base_dn}",
+     'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn}",
+     'simp_options::ldap::bind_pw'         => 'foobarbaz1',
+     'simp_options::ldap::bind_hash'       => '{SSHA}xas+n3P2Qa827CSP+IHNtYAkwSIHsAja',
+     # This is needed for full stack replication from the top level directory
+     'simp_openldap::server::conf::suffix' => base_dn,
+     'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Valhalla,#{base_dn}",
+     'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr'
+   },
+   'niflheim' => {
+     # Only for the tests
+     'test_admin_pass'                     => 'suP3rP@ssw0r!!!',
+     'test_sync_pass'                      => 'niflheim sync',
+     'test_sync_hash'                      => '{SSHA}UN5mMFLfjrjcWbufKUH1r4o5XI+FyNWW',
+     # End only for the tests
+     'simp_options::ldap::base_dn'         => "ou=Niflheim,#{base_dn}",
+     'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn}",
+     'simp_options::ldap::bind_pw'         => 'foobarbaz2',
+     'simp_options::ldap::bind_hash'       => '{SSHA}UoKntkxjUv/LIitnLJudT30lNDXMAtpM',
+     # This is needed for full stack replication from the top level directory
+     'simp_openldap::server::conf::suffix' => base_dn,
+     'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Niflheim,#{base_dn}",
+     'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH'
+   }
     }
-  }}
+  end
 
   let(:server_fqdn) { fact_on(host, 'fqdn') }
   let(:server_domain) { fact_on(host, 'domain') }
 
-  let(:admin_pw) {
+  let(:admin_pw) do
     if hieradata_overlay[host.name]
       hieradata_overlay[host.name]['test_admin_pass']
     end
-  }
+  end
 
-  let(:bind_pw) {
+  let(:bind_pw) do
     if hieradata_overlay[host.name]
       hieradata_overlay[host.name]['simp_options::ldap::bind_pw']
     end
-  }
+  end
 
-  let(:sync_pw) {
+  let(:sync_pw) do
     if hieradata_overlay[host.name]
       hieradata_overlay[host.name]['test_sync_pass']
     end
-  }
+  end
 
-  let(:server_manifest) {
-    if host[:roles].include?('ldap_root')
-      manifest = <<-EOS
+  let(:server_manifest) do
+    manifest = if host[:roles].include?('ldap_root')
+                 <<-EOS
         include 'simp_openldap::server'
 
         include 'simp_openldap::server'
@@ -153,8 +155,8 @@ describe 'simp_openldap class' do
         }
 
       EOS
-    elsif host.name == 'valhalla'
-      manifest = <<-EOS
+               elsif host.name == 'valhalla'
+                 <<-EOS
         include simp_openldap::server
         include simp_openldap::slapo::ppolicy
         include simp_openldap::slapo::syncprov
@@ -173,8 +175,8 @@ describe 'simp_openldap class' do
           limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
         }
       EOS
-    else
-      manifest = <<-EOS
+               else
+                 <<-EOS
         include simp_openldap::server
         include simp_openldap::slapo::ppolicy
         include simp_openldap::slapo::syncprov
@@ -193,17 +195,17 @@ describe 'simp_openldap class' do
           limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
         }
       EOS
-    end
+               end
 
     manifest
-  }
+  end
 
   let(:user_data) { File.read(File.expand_path('templates/root_node/add_data.ldif.erb', __dir__)) }
   let(:admin_data) { File.read(File.expand_path('templates/root_node/update_admin_group.ldif.erb', __dir__)) }
 
-  let(:server_hieradata) {
-    template_data = YAML.load(
-      ERB.new(File.read(File.expand_path('templates/root_node/server_hieradata.yaml.erb', __dir__))).result(binding)
+  let(:server_hieradata) do
+    template_data = YAML.safe_load(
+      ERB.new(File.read(File.expand_path('templates/root_node/server_hieradata.yaml.erb', __dir__))).result(binding),
     )
 
     if hieradata_overlay[host.name]
@@ -211,10 +213,10 @@ describe 'simp_openldap class' do
     end
 
     template_data
-  }
+  end
 
   hosts.each do |host|
-    it 'should disable the firewall' do
+    it 'disables the firewall' do
       on(host, 'puppet resource service firewalld ensure=stopped')
       on(host, 'puppet resource service iptables ensure=stopped')
     end
@@ -227,20 +229,20 @@ describe 'simp_openldap class' do
       let(:host) { server }
 
       context 'preparing for run' do
-        it 'should configure server with no errors' do
+        it 'configures server with no errors' do
           echo_on(server, base_dn)
 
           on(server, 'mkdir -p /usr/local/sbin/simp')
 
           set_hieradata_on(server, server_hieradata)
-          apply_manifest_on(server, server_manifest, :catch_failures => true)
+          apply_manifest_on(server, server_manifest, catch_failures: true)
           on(server, 'slapcat')
 
-          apply_manifest_on(server, server_manifest, :catch_failures => true)
+          apply_manifest_on(server, server_manifest, catch_failures: true)
         end
 
         xit 'should be idempotent' do
-          apply_manifest(server_manifest, {:catch_changes => true})
+          apply_manifest(server_manifest, { catch_changes: true })
         end
       end
     end
@@ -250,11 +252,11 @@ describe 'simp_openldap class' do
     context "on #{server}" do
       let(:host) { server }
 
-      it 'should be able to connect and use ldapsearch' do
+      it 'is able to connect and use ldapsearch' do
         on(server, "ldapsearch -ZZ -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w '#{admin_pw}'")
       end
 
-      it 'should be able to add user data' do
+      it 'is able to add user data' do
         create_remote_file(server, '/tmp/user_data.ldif', ERB.new(user_data).result(binding))
 
         on(server, "ldapadd -ZZ -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w '#{admin_pw}' -x -f /tmp/user_data.ldif")
@@ -263,7 +265,7 @@ describe 'simp_openldap class' do
         expect(result.stdout).to include("dn: uid=odin,ou=People,#{base_dn}")
       end
 
-      it 'should add users to the admin group' do
+      it 'adds users to the admin group' do
         create_remote_file(server, '/tmp/admin_data.ldif', ERB.new(admin_data).result(binding))
 
         on(server, "ldapmodify -ZZ -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w '#{admin_pw}' -x -f /tmp/admin_data.ldif")
@@ -278,19 +280,20 @@ describe 'simp_openldap class' do
     context "on Valhalla #{server}" do
       let(:host) { server }
 
-      it 'should restart the service to trigger a sync' do
+      it 'restarts the service to trigger a sync' do
         on(host, 'puppet resource service slapd ensure=stopped')
         on(host, 'puppet resource service slapd ensure=running')
       end
 
-      it 'should have only allowed entries in the database' do
+      it 'has only allowed entries in the database' do
         result = on(host, 'slapcat').output.strip
 
-        expect(result).to_not match(/ou=Niflheim/m)
+        expect(result).not_to match(%r{ou=Niflheim}m)
       end
 
-      it 'should be able to query the local server as the bind user' do
-        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(/dn: uid=thor,ou=People,ou=Valhalla,#{base_dn}/m)
+      it 'is able to query the local server as the bind user' do
+        expect(on(server,
+"ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(%r{dn: uid=thor,ou=People,ou=Valhalla,#{base_dn}}m)
       end
     end
   end
@@ -299,19 +302,20 @@ describe 'simp_openldap class' do
     context "on Niflheim #{server}" do
       let(:host) { server }
 
-      it 'should restart the service to trigger a sync' do
+      it 'restarts the service to trigger a sync' do
         on(host, 'puppet resource service slapd ensure=stopped')
         on(host, 'puppet resource service slapd ensure=running')
       end
 
-      it 'should have only allowed entries in the database' do
+      it 'has only allowed entries in the database' do
         result = on(host, 'slapcat').output.strip
 
-        expect(result).to_not match(/ou=Valhalla/m)
+        expect(result).not_to match(%r{ou=Valhalla}m)
       end
 
-      it 'should be able to query the local server as the bind user' do
-        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(/dn: uid=mimir,ou=People,ou=Niflheim,#{base_dn}/m)
+      it 'is able to query the local server as the bind user' do
+        expect(on(server,
+"ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(%r{dn: uid=mimir,ou=People,ou=Niflheim,#{base_dn}}m)
       end
     end
   end

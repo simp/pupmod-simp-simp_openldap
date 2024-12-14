@@ -7,21 +7,24 @@ describe 'simp_openldap::slapo::lastbind' do
         let(:facts) do
           os_facts
         end
+        let(:params) { { lastbind_precision: 3600 } }
 
-        if os_facts.dig(:os,:release,:major) >= '8'
+        if os_facts.dig(:os, :release, :major) >= '8'
           it { skip("does not support #{os}") }
           next
         end
 
-        let(:params) {{ :lastbind_precision => 3600 }}
+        it {
+          is_expected.to create_file('/etc/openldap/lastbind.conf').with_content(
+          "lastbind-precision #{params[:lastbind_precision]}\n",
+        )
+        }
 
-        it { is_expected.to create_file('/etc/openldap/lastbind.conf').with_content(
-          "lastbind-precision #{params[:lastbind_precision]}\n"
-        )}
-
-        it { is_expected.to create_simp_openldap__server__dynamic_include('lastbind').that_requires(
-          'Package[simp-lastbind]'
-        )}
+        it {
+          is_expected.to create_simp_openldap__server__dynamic_include('lastbind').that_requires(
+          'Package[simp-lastbind]',
+        )
+        }
 
         it { is_expected.to create_package('simp-lastbind') }
       end

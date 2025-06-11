@@ -43,6 +43,7 @@ describe 'compliance_markup', type: :class do
           )
           end
           let(:hieradata) { 'compliance-engine' }
+          # rubocop:disable RSpec/InstanceVariable
           let(:compliance_report) do
             @compliance_report ||= JSON.parse(
                 catalogue.resource("File[#{facts[:puppet_vardir]}/compliance_report.json]")[:content],
@@ -55,6 +56,7 @@ describe 'compliance_markup', type: :class do
 
             @compliance_profile_data
           end
+          # rubocop:enable RSpec/InstanceVariable
 
           if os_facts.dig(:os, :release, :major) >= '8'
             it { skip("does not support #{os}") }

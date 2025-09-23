@@ -29,7 +29,7 @@ describe 'simp_openldap::server' do
                                                                      'Exec[bootstrap_ldap]',
                                                                      'File[/etc/openldap/slapd.conf]',
                                                                    ],
-                notify: 'File[/var/lib/ldap/DB_CONFIG]'
+                notify: 'File[/var/lib/ldap/DB_CONFIG]',
                                                                  })
             }
 
@@ -55,7 +55,7 @@ describe 'simp_openldap::server' do
                                                                                              'File[/etc/openldap/slapd.conf]',
                                                                                              'File[/etc/openldap/default.ldif]',
                                                                                              'File[/etc/openldap/schema]',
-                                                                                           ]
+                                                                                           ],
                                                                                          })
             }
 
@@ -67,7 +67,7 @@ describe 'simp_openldap::server' do
             it {
               is_expected.to create_user('ldap').with({
                                                         require: 'Class[Simp_openldap::Server::Install]',
-                notify: 'Class[Simp_openldap::Server::Service]'
+                notify: 'Class[Simp_openldap::Server::Service]',
                                                       })
             }
 
@@ -106,7 +106,7 @@ describe 'simp_openldap::server' do
               is_expected.to create_pki__copy('openldap').with({
                                                                  source: '/etc/pki/simp-testing/pki',
               pki: true,
-              group: 'ldap'
+              group: 'ldap',
                                                                })
             }
           end

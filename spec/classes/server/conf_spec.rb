@@ -6,86 +6,86 @@ describe 'simp_openldap::server::conf' do
       context "on #{os}" do
         let(:facts) do
           os_facts.merge({
-                           slapd_version: '2.4.40'
+                           slapd_version: '2.4.40',
                          })
         end
         let(:slapd_content_pki) do
           <<~EOM
-          include   /etc/openldap/schema/core.schema
-          include   /etc/openldap/schema/cosine.schema
-          include   /etc/openldap/schema/inetorgperson.schema
-          include   /etc/openldap/schema/nis.schema
-          include  /etc/openldap/schema/openssh-lpk.schema
-          include  /etc/openldap/schema/freeradius.schema
-          include  /etc/openldap/schema/autofs.schema
+            include   /etc/openldap/schema/core.schema
+            include   /etc/openldap/schema/cosine.schema
+            include   /etc/openldap/schema/inetorgperson.schema
+            include   /etc/openldap/schema/nis.schema
+            include  /etc/openldap/schema/openssh-lpk.schema
+            include  /etc/openldap/schema/freeradius.schema
+            include  /etc/openldap/schema/autofs.schema
 
-          threads   8
-          pidfile   /var/run/openldap/slapd.pid
-          argsfile  /var/run/openldap/slapd.args
-
-
-          authz-policy to
-          authz-regexp
-              "^uid=([^,]+),.*"
-              "uid=$1,ou=People,DC=host,DC=net"
+            threads   8
+            pidfile   /var/run/openldap/slapd.pid
+            argsfile  /var/run/openldap/slapd.args
 
 
-          TLSCertificateFile /etc/pki/simp_apps/openldap/x509/public/#{facts[:fqdn]}.pub
-          TLSCertificateKeyFile /etc/pki/simp_apps/openldap/x509/private/#{facts[:fqdn]}.pem
-          TLSProtocolMin 3.3
-          TLSCipherSuite HIGH:-TLSv1:-SSLv3
-          TLSVerifyClient allow
-          TLSCRLCheck none
-          TLSCACertificatePath /etc/pki/simp_apps/openldap/x509/cacerts
+            authz-policy to
+            authz-regexp
+                "^uid=([^,]+),.*"
+                "uid=$1,ou=People,DC=host,DC=net"
 
-          security ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256
-          password-hash {SSHA}
 
-          disallow bind_anon
-          conn_max_pending 100
-          conn_max_pending_auth 1000
-          disallow bind_anon tls_2_anon
-          idletimeout 0
+            TLSCertificateFile /etc/pki/simp_apps/openldap/x509/public/#{facts[:fqdn]}.pub
+            TLSCertificateKeyFile /etc/pki/simp_apps/openldap/x509/private/#{facts[:fqdn]}.pem
+            TLSProtocolMin 3.3
+            TLSCipherSuite HIGH:-TLSv1:-SSLv3
+            TLSVerifyClient allow
+            TLSCRLCheck none
+            TLSCACertificatePath /etc/pki/simp_apps/openldap/x509/cacerts
 
-          sizelimit 500
-          timelimit 3600
-          writetimeout 0
+            security ssf=256 tls=256 update_ssf=256 simple_bind=256 update_tls=256
+            password-hash {SSHA}
 
-          sockbuf_max_incoming 262143
-          sockbuf_max_incoming_auth 4194303
+            disallow bind_anon
+            conn_max_pending 100
+            conn_max_pending_auth 1000
+            disallow bind_anon tls_2_anon
+            idletimeout 0
 
-          loglevel stats sync
+            sizelimit 500
+            timelimit 3600
+            writetimeout 0
 
-          reverse-lookup off
+            sockbuf_max_incoming 262143
+            sockbuf_max_incoming_auth 4194303
 
-          database  bdb
-          suffix    "DC=host,DC=net"
-          rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
+            loglevel stats sync
 
-          rootpw    {SSHA}foobarbaz!!!!
+            reverse-lookup off
 
-          directory /var/lib/ldap
-          checkpoint 1024 5
-          cachesize 10000
-          lastmod on
-          maxderefdepth 15
-          monitoring on
-          readonly off
+            database  bdb
+            suffix    "DC=host,DC=net"
+            rootdn    "cn=LDAPAdmin,ou=People,DC=host,DC=net"
 
-          index_substr_any_step 2
-          index_substr_any_len 4
-          index_substr_if_maxlen 4
-          index_substr_if_minlen 2
-          index_intlen 4
+            rootpw    {SSHA}foobarbaz!!!!
 
-          index objectClass                       eq,pres
-          index ou,cn,mail,surname,givenname      eq,pres,sub
-          index uidNumber,gidNumber,loginShell    eq,pres
-          index uid,memberUid                     eq,pres,sub
-          index nisMapName,nisMapEntry            eq,pres,sub
+            directory /var/lib/ldap
+            checkpoint 1024 5
+            cachesize 10000
+            lastmod on
+            maxderefdepth 15
+            monitoring on
+            readonly off
 
-          include /etc/openldap/slapd.access
-          include /etc/openldap/dynamic_includes
+            index_substr_any_step 2
+            index_substr_any_len 4
+            index_substr_if_maxlen 4
+            index_substr_if_minlen 2
+            index_intlen 4
+
+            index objectClass                       eq,pres
+            index ou,cn,mail,surname,givenname      eq,pres,sub
+            index uidNumber,gidNumber,loginShell    eq,pres
+            index uid,memberUid                     eq,pres,sub
+            index nisMapName,nisMapEntry            eq,pres,sub
+
+            include /etc/openldap/slapd.access
+            include /etc/openldap/dynamic_includes
           EOM
         end
         let(:pre_condition) do
@@ -210,7 +210,7 @@ describe 'simp_openldap::server::conf' do
         context 'with pki = true and openldap-servers < 2.4.40' do
           let(:facts) do
             os_facts.merge({
-                             slapd_version: '2.3.0'
+                             slapd_version: '2.3.0',
                            })
           end
 
@@ -271,7 +271,7 @@ describe 'simp_openldap::server::conf' do
           let(:params) do
             {
               listen_ldaps: false,
-           firewall: true
+           firewall: true,
             }
           end
 
@@ -286,7 +286,7 @@ describe 'simp_openldap::server::conf' do
             {
               listen_ldap: false,
            listen_ldaps: false,
-           firewall: true
+           firewall: true,
             }
           end
 
@@ -304,7 +304,7 @@ describe 'simp_openldap::server::conf' do
            auditlog_preserve: 7,
            syslog: true,
            logrotate: true,
-           log_to_file: true
+           log_to_file: true,
             }
           end
 
@@ -317,7 +317,7 @@ describe 'simp_openldap::server::conf' do
                                                                             log_files: [params[:auditlog]],
               create: '0640 ldap ldap',
               rotate_period: params[:auditlog_rotate],
-              rotate: params[:auditlog_preserve]
+              rotate: params[:auditlog_preserve],
                                                                           })
           }
           it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(%r{auditlog #{params[:auditlog]}}) }
@@ -329,7 +329,7 @@ describe 'simp_openldap::server::conf' do
             is_expected.to create_logrotate__rule('slapd').with({
                                                                   log_files: [ '/var/log/slapd.log' ],
               missingok: true,
-              lastaction_restart_logger: true
+              lastaction_restart_logger: true,
                                                                 })
           }
         end
@@ -344,7 +344,7 @@ describe 'simp_openldap::server::conf' do
            audit_to_syslog: false,
            syslog: true,
            logrotate: true,
-           log_to_file: true
+           log_to_file: true,
             }
           end
 
@@ -356,7 +356,7 @@ describe 'simp_openldap::server::conf' do
                                                                             log_files: [params[:auditlog]],
               create: '0640 ldap ldap',
               rotate_period: params[:auditlog_rotate],
-              rotate: params[:auditlog_preserve]
+              rotate: params[:auditlog_preserve],
                                                                           })
           }
           it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(%r{auditlog #{params[:auditlog]}}) }
@@ -368,7 +368,7 @@ describe 'simp_openldap::server::conf' do
             is_expected.to create_logrotate__rule('slapd').with({
                                                                   log_files: [ '/var/log/slapd.log' ],
               missingok: true,
-              lastaction_restart_logger: true
+              lastaction_restart_logger: true,
                                                                 })
           }
         end
@@ -380,7 +380,7 @@ describe 'simp_openldap::server::conf' do
               syslog: true,
            log_to_file: true,
            log_file: '/foo/bar',
-           logrotate: true
+           logrotate: true,
             }
           end
 
@@ -392,7 +392,7 @@ describe 'simp_openldap::server::conf' do
             is_expected.to create_logrotate__rule('slapd').with({
                                                                   log_files: [params[:log_file]],
               missingok: true,
-              lastaction_restart_logger: true
+              lastaction_restart_logger: true,
                                                                 })
           }
         end
@@ -410,7 +410,7 @@ describe 'simp_openldap::server::conf' do
           let(:facts) do
             os_facts.merge({
                              slapd_version: '2.4.40',
-              processorcount: 4
+              processorcount: 4,
                            })
           end
 

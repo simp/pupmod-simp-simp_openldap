@@ -11,7 +11,7 @@ describe 'simp_openldap::server::dynamic_include' do
         let(:params) do
           {
             content: 'foo',
-         order: 100
+         order: 100,
           }
         end
 

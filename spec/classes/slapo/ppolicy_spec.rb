@@ -10,7 +10,7 @@ describe 'simp_openldap::slapo::ppolicy' do
         let(:params) do
           {
             suffix: 'dn=host,dn=net',
-         use_cracklib: true
+         use_cracklib: true,
           }
         end
 
@@ -33,7 +33,7 @@ describe 'simp_openldap::slapo::ppolicy' do
           is_expected.to create_file("/etc/openldap/#{conf_name}").with({
                                                                           group: 'ldap',
             mode: '0640',
-            content: %r{use_cracklib 1}
+            content: %r{use_cracklib 1},
                                                                         })
         }
       end

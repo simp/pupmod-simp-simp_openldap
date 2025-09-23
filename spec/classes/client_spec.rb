@@ -68,7 +68,7 @@ describe 'simp_openldap::client' do
                                "REFERRALS           on\n" \
                                "SIZELIMIT           0\n" \
                                "TIMELIMIT           15\n" \
-                               "DEREF               never\n"
+                               "DEREF               never\n",
       }
 
       ldaprc_content = {
@@ -88,7 +88,7 @@ describe 'simp_openldap::client' do
                                 "TLS_CERT /etc/pki/simp_apps/openldap/x509/public/myserver.test.local.pub\n" \
                                 "TLS_KEY /etc/pki/simp_apps/openldap/x509/private/myserver.test.local.pem\n",
 
-        without_tls: ''
+        without_tls: '',
       }
 
       shared_examples_for 'a ldap config generator' do
@@ -111,7 +111,7 @@ describe 'simp_openldap::client' do
         let(:params) do
           {
             strip_128_bit_ciphers: true,
-         tls_cipher_suite: ['AES256', 'AES128']
+         tls_cipher_suite: ['AES256', 'AES128'],
           }
         end
 
@@ -125,7 +125,7 @@ describe 'simp_openldap::client' do
         let(:params) do
           {
             strip_128_bit_ciphers: false,
-         tls_cipher_suite: ['AES256', 'AES128']
+         tls_cipher_suite: ['AES256', 'AES128'],
           }
         end
 
@@ -153,7 +153,7 @@ describe 'simp_openldap::client' do
         let(:params) do
           {
             app_pki_crl: '/some/path/my_crlfile',
-         use_tls: true
+         use_tls: true,
           }
         end
 

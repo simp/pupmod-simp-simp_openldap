@@ -12,7 +12,7 @@ describe 'simp_openldap::server::access' do
           {
             what: 'on_second',
          who: 'on_first',
-         order: 50
+         order: 50,
           }
         end
 
@@ -38,7 +38,7 @@ describe 'simp_openldap::server::access' do
         context 'no_who_no_content' do
           let(:params) do
             {
-              what: 'on_second'
+              what: 'on_second',
             }
           end
 

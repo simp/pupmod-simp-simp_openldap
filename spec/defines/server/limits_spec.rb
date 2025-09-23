@@ -11,7 +11,7 @@ describe 'simp_openldap::server::limits' do
         let(:params) do
           {
             who: 'on_first',
-         limits: ['foo', 'bar', 'baz']
+         limits: ['foo', 'bar', 'baz'],
           }
         end
 

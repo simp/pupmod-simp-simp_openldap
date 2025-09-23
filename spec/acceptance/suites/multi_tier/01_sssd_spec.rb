@@ -9,7 +9,7 @@ describe 'simp_openldap with sssd' do
       'sssd::domains' => ['LDAP'],
     'sssd::services'             => ['nss', 'pam'],
     # If you leave purging on, slapd certs will be removed
-    'pki::copy::apps_dir::purge' => false
+    'pki::copy::apps_dir::purge' => false,
     }
   end
 
@@ -57,7 +57,7 @@ describe 'simp_openldap with sssd' do
             'ymir'      => '20000',
             'thrivaldi' => '20001',
             'mimir'     => '20002',
-            'nfsnobody' => '65534'
+            'nfsnobody' => '65534',
           }
         end
 
@@ -69,7 +69,7 @@ describe 'simp_openldap with sssd' do
             'freyja'    => '10001',
             'thor'      => '10002',
             'loki'      => '10003',
-            'nfsnobody' => '65534'
+            'nfsnobody' => '65534',
           }
         end
 
@@ -81,7 +81,7 @@ describe 'simp_openldap with sssd' do
             'ymir'      => '20000',
             'thrivaldi' => '20001',
             'mimir'     => '20002',
-            'nfsnobody' => '65534'
+            'nfsnobody' => '65534',
           }
         end
 

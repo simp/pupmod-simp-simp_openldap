@@ -24,7 +24,7 @@ describe 'simp_openldap' do
             is_expected.to create_pki__copy('openldap').with({
                                                                source: '/etc/pki/simp/x509',
             pki: 'simp',
-            group: 'root'
+            group: 'root',
                                                              })
           }
         end
@@ -52,7 +52,7 @@ describe 'simp_openldap' do
               is_expected.to create_pki__copy('openldap').with({
                                                                  source: '/etc/pki/simp/x509',
               pki: true,
-              group: 'ldap'
+              group: 'ldap',
                                                                })
             }
           end

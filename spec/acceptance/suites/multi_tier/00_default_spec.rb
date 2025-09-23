@@ -16,7 +16,7 @@ describe 'simp_openldap class' do
         # End only for the tests
         'simp_options::ldap::bind_pw'         => 'foobarbaz',
         'simp_options::ldap::bind_hash'       => '{SSHA}ioOP+/DQKe6sl1pt5yX6KvxNHFeyHQ1A',
-        'simp_openldap::server::conf::rootpw' => '{SSHA}wcRAktSgNQo+uyMEsmYfqvcCP8Aad3oI'
+        'simp_openldap::server::conf::rootpw' => '{SSHA}wcRAktSgNQo+uyMEsmYfqvcCP8Aad3oI',
       },
    'valhalla' => {
      # Only for the tests
@@ -31,7 +31,7 @@ describe 'simp_openldap class' do
      # This is needed for full stack replication from the top level directory
      'simp_openldap::server::conf::suffix' => base_dn,
      'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Valhalla,#{base_dn}",
-     'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr'
+     'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr',
    },
    'niflheim' => {
      # Only for the tests
@@ -46,8 +46,8 @@ describe 'simp_openldap class' do
      # This is needed for full stack replication from the top level directory
      'simp_openldap::server::conf::suffix' => base_dn,
      'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Niflheim,#{base_dn}",
-     'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH'
-   }
+     'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH',
+   },
     }
   end
 

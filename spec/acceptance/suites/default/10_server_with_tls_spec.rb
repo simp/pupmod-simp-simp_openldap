@@ -7,7 +7,7 @@ describe 'simp_openldap::server with tls' do
   servers = hosts_with_role(hosts, 'server')
 
   let(:server_manifest) do
-    <<-EOS
+    <<~EOS
       include 'simp_openldap::server'
     EOS
   end

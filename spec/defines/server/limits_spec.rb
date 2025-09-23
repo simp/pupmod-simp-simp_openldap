@@ -11,7 +11,7 @@ describe 'simp_openldap::server::limits' do
         let(:params) do
           {
             who: 'on_first',
-         limits: ['foo', 'bar', 'baz'],
+            limits: ['foo', 'bar', 'baz'],
           }
         end
 
@@ -28,8 +28,8 @@ describe 'simp_openldap::server::limits' do
 
         it {
           is_expected.to create_simp_openldap__server__dynamic_include("limit_#{title}").with_content(
-          %r{limits #{params[:who]} #{params[:limits].join(' ')}},
-        )
+            %r{limits #{params[:who]} #{params[:limits].join(' ')}},
+          )
         }
       end
     end

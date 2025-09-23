@@ -24,13 +24,13 @@ describe 'simp_openldap::server' do
             }
             it { is_expected.to create_exec('fixperms').that_notifies('Service[slapd]') }
             it {
-              is_expected.to create_exec('fix_bad_upgrade').with({
-                                                                   before: [
-                                                                     'Exec[bootstrap_ldap]',
-                                                                     'File[/etc/openldap/slapd.conf]',
-                                                                   ],
+              is_expected.to create_exec('fix_bad_upgrade').with(
+                before: [
+                  'Exec[bootstrap_ldap]',
+                  'File[/etc/openldap/slapd.conf]',
+                ],
                 notify: 'File[/var/lib/ldap/DB_CONFIG]',
-                                                                 })
+              )
             }
 
             [
@@ -47,16 +47,16 @@ describe 'simp_openldap::server' do
             end
 
             it {
-              is_expected.to create_file('/usr/local/sbin/ldap_bootstrap_check.sh').with({
-                                                                                           require: [
-                                                                                             'File[/var/lib/ldap/DB_CONFIG]',
-                                                                                             'File[/var/lib/ldap/db]',
-                                                                                             'File[/var/lib/ldap/logs]',
-                                                                                             'File[/etc/openldap/slapd.conf]',
-                                                                                             'File[/etc/openldap/default.ldif]',
-                                                                                             'File[/etc/openldap/schema]',
-                                                                                           ],
-                                                                                         })
+              is_expected.to create_file('/usr/local/sbin/ldap_bootstrap_check.sh').with(
+                require: [
+                  'File[/var/lib/ldap/DB_CONFIG]',
+                  'File[/var/lib/ldap/db]',
+                  'File[/var/lib/ldap/logs]',
+                  'File[/etc/openldap/slapd.conf]',
+                  'File[/etc/openldap/default.ldif]',
+                  'File[/etc/openldap/schema]',
+                ],
+              )
             }
 
             it { is_expected.to create_group('ldap').that_requires('Class[Simp_openldap::Server::Install]') }
@@ -65,10 +65,10 @@ describe 'simp_openldap::server' do
             it { is_expected.to create_package("openldap-servers.#{facts[:hardwaremodel]}") }
 
             it {
-              is_expected.to create_user('ldap').with({
-                                                        require: 'Class[Simp_openldap::Server::Install]',
+              is_expected.to create_user('ldap').with(
+                require: 'Class[Simp_openldap::Server::Install]',
                 notify: 'Class[Simp_openldap::Server::Service]',
-                                                      })
+              )
             }
 
             it { is_expected.to create_class('simp_openldap::slapo::syncprov') }
@@ -103,11 +103,11 @@ describe 'simp_openldap::server' do
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to create_pki__copy('openldap').with({
-                                                                 source: '/etc/pki/simp-testing/pki',
-              pki: true,
-              group: 'ldap',
-                                                               })
+              is_expected.to create_pki__copy('openldap').with(
+                source: '/etc/pki/simp-testing/pki',
+                pki: true,
+                group: 'ldap',
+              )
             }
           end
         end

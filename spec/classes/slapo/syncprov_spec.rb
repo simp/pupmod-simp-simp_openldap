@@ -14,17 +14,19 @@ describe 'simp_openldap::slapo::syncprov' do
 
       it {
         is_expected.to create_simp_openldap__server__dynamic_include('syncprov').with_content(
-        %r{syncprov-nopresent FALSE},
-      )
+          %r{syncprov-nopresent FALSE},
+        )
       }
 
       it {
-        is_expected.to create_simp_openldap__server__limits('Allow Sync User Unlimited').with_limits([
-                                                                                                       'size.soft=unlimited',
-                                                                                                       'size.hard=unlimited',
-                                                                                                       'time.soft=unlimited',
-                                                                                                       'time.hard=unlimited',
-                                                                                                     ])
+        is_expected.to create_simp_openldap__server__limits('Allow Sync User Unlimited').with_limits(
+          [
+            'size.soft=unlimited',
+            'size.hard=unlimited',
+            'time.soft=unlimited',
+            'time.hard=unlimited',
+          ],
+        )
       }
 
       context 'validate_checkpoint' do

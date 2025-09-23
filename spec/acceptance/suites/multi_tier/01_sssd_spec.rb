@@ -6,15 +6,15 @@ test_name 'simp_openldap tiering sssd validation'
 describe 'simp_openldap with sssd' do
   let(:hieradata) do
     {
-      'sssd::domains' => ['LDAP'],
-    'sssd::services'             => ['nss', 'pam'],
-    # If you leave purging on, slapd certs will be removed
-    'pki::copy::apps_dir::purge' => false,
+      'sssd::domains'                                        => ['LDAP'],
+      'sssd::services'                                       => ['nss', 'pam'],
+      # If you leave purging on, slapd certs will be removed
+      'pki::copy::apps_dir::purge'                           => false,
     }
   end
 
   let(:manifest) do
-    <<-HEREDOC
+    <<~HEREDOC
       include sssd
       include sssd::service::nss
       include sssd::service::pam
@@ -28,7 +28,7 @@ describe 'simp_openldap with sssd' do
         min_id                    => 1000,
         use_fully_qualified_names => false,
         # Just for the tests
-        enumerate                 => true
+        enumerate                 => true,
       }
 
       $pki_key_root = simplib::lookup('simp_options::pki::source')
@@ -40,7 +40,7 @@ describe 'simp_openldap with sssd' do
         ldap_id_mapping => false,
         app_pki_ca_dir  => "${pki_key_root}/cacerts",
         app_pki_key     => "${pki_key_root}/private/${facts['fqdn']}.pem",
-        app_pki_cert    => "${pki_key_root}/public/${facts['fqdn']}.pub"
+        app_pki_cert    => "${pki_key_root}/public/${facts['fqdn']}.pub",
       }
     HEREDOC
   end

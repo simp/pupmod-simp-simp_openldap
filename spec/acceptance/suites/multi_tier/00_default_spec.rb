@@ -18,36 +18,36 @@ describe 'simp_openldap class' do
         'simp_options::ldap::bind_hash'       => '{SSHA}ioOP+/DQKe6sl1pt5yX6KvxNHFeyHQ1A',
         'simp_openldap::server::conf::rootpw' => '{SSHA}wcRAktSgNQo+uyMEsmYfqvcCP8Aad3oI',
       },
-   'valhalla' => {
-     # Only for the tests
-     'test_admin_pass'                     => 'suP3rP@ssw0r!!',
-     'test_sync_pass'                      => 'valhalla sync',
-     'test_sync_hash'                      => '{SSHA}P6lPXkL9Q4/lIiqgFE/bMuCndhe7gftT',
-     # End only for the tests
-     'simp_options::ldap::base_dn'         => "ou=Valhalla,#{base_dn}",
-     'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn}",
-     'simp_options::ldap::bind_pw'         => 'foobarbaz1',
-     'simp_options::ldap::bind_hash'       => '{SSHA}xas+n3P2Qa827CSP+IHNtYAkwSIHsAja',
-     # This is needed for full stack replication from the top level directory
-     'simp_openldap::server::conf::suffix' => base_dn,
-     'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Valhalla,#{base_dn}",
-     'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr',
-   },
-   'niflheim' => {
-     # Only for the tests
-     'test_admin_pass'                     => 'suP3rP@ssw0r!!!',
-     'test_sync_pass'                      => 'niflheim sync',
-     'test_sync_hash'                      => '{SSHA}UN5mMFLfjrjcWbufKUH1r4o5XI+FyNWW',
-     # End only for the tests
-     'simp_options::ldap::base_dn'         => "ou=Niflheim,#{base_dn}",
-     'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn}",
-     'simp_options::ldap::bind_pw'         => 'foobarbaz2',
-     'simp_options::ldap::bind_hash'       => '{SSHA}UoKntkxjUv/LIitnLJudT30lNDXMAtpM',
-     # This is needed for full stack replication from the top level directory
-     'simp_openldap::server::conf::suffix' => base_dn,
-     'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Niflheim,#{base_dn}",
-     'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH',
-   },
+      'valhalla' => {
+        # Only for the tests
+        'test_admin_pass'                     => 'suP3rP@ssw0r!!',
+        'test_sync_pass'                      => 'valhalla sync',
+        'test_sync_hash'                      => '{SSHA}P6lPXkL9Q4/lIiqgFE/bMuCndhe7gftT',
+        # End only for the tests
+        'simp_options::ldap::base_dn'         => "ou=Valhalla,#{base_dn}",
+        'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn}",
+        'simp_options::ldap::bind_pw'         => 'foobarbaz1',
+        'simp_options::ldap::bind_hash'       => '{SSHA}xas+n3P2Qa827CSP+IHNtYAkwSIHsAja',
+        # This is needed for full stack replication from the top level directory
+        'simp_openldap::server::conf::suffix' => base_dn,
+        'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Valhalla,#{base_dn}",
+        'simp_openldap::server::conf::rootpw' => '{SSHA}xjDEC/doD94vevJ9sFwI9gbqvVe69MJr',
+      },
+      'niflheim' => {
+        # Only for the tests
+        'test_admin_pass'                     => 'suP3rP@ssw0r!!!',
+        'test_sync_pass'                      => 'niflheim sync',
+        'test_sync_hash'                      => '{SSHA}UN5mMFLfjrjcWbufKUH1r4o5XI+FyNWW',
+        # End only for the tests
+        'simp_options::ldap::base_dn'         => "ou=Niflheim,#{base_dn}",
+        'simp_options::ldap::bind_dn'         => "cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn}",
+        'simp_options::ldap::bind_pw'         => 'foobarbaz2',
+        'simp_options::ldap::bind_hash'       => '{SSHA}UoKntkxjUv/LIitnLJudT30lNDXMAtpM',
+        # This is needed for full stack replication from the top level directory
+        'simp_openldap::server::conf::suffix' => base_dn,
+        'simp_openldap::server::conf::rootdn' => "cn=LDAPAdmin,ou=People,ou=Niflheim,#{base_dn}",
+        'simp_openldap::server::conf::rootpw' => '{SSHA}PZ2g82WSOC1pG251UdLVLQIkPRyEHeVH',
+      },
     }
   end
 
@@ -73,8 +73,8 @@ describe 'simp_openldap class' do
   end
 
   let(:server_manifest) do
-    manifest = if host[:roles].include?('ldap_root')
-                 <<-EOS
+    if host[:roles].include?('ldap_root')
+      <<~EOS
         include 'simp_openldap::server'
 
         include 'simp_openldap::server'
@@ -91,41 +91,41 @@ describe 'simp_openldap class' do
 
         simp_openldap::server::limits { 'Host_Bind_DN_Unlimited_Query':
           who    => simplib::lookup('simp_options::ldap::bind_dn'),
-          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
+          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited'],
         }
 
         simp_openldap::server::limits { 'LDAP_Sync_Valhalla_Unlimited_Query':
           who    => $valhalla_sync_dn,
-          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
+          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited'],
         }
 
         simp_openldap::server::limits { 'LDAP_Sync_Niflheim_Unlimited_Query':
           who    => $niflheim_sync_dn,
-          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
+          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited'],
         }
 
         simp_openldap::server::access { 'LDAP_Auth_Sync_Valhalla':
           what    => "dn.exact=\\"cn=LDAPSync,ou=Hosts,ou=Valhalla,${_base_dn}\\" attrs=\\"userPassword\\"",
           content => "by anonymous auth",
-          order   => 10
+          order   => 10,
         }
 
         simp_openldap::server::access { 'LDAP_Sync_Valhalla':
           what    => "dn.subtree=\\"ou=Valhalla,${_base_dn}\\"",
           content => "by dn.exact=\\"${valhalla_sync_dn}\\" read",
-          order   => 10
+          order   => 10,
         }
 
         simp_openldap::server::access { 'LDAP_Auth_Sync_Niflheim':
           what    => "dn.exact=\\"cn=LDAPSync,ou=Hosts,ou=Niflheim,${_base_dn}\\" attrs=\\"userPassword\\"",
           content => "by anonymous auth",
-          order   => 10
+          order   => 10,
         }
 
         simp_openldap::server::access { 'LDAP_Sync_Niflheim':
           what    => "dn.subtree=\\"ou=Niflheim,${_base_dn}\\"",
           content => "by dn.exact=\\"${niflheim_sync_dn}\\" read",
-          order   => 10
+          order   => 10,
         }
 
         # These override the settings in simp_openldap::server to allow a regexp
@@ -140,7 +140,7 @@ describe 'simp_openldap class' do
             by anonymous auth
             by self write
             by * none",
-          order   => 100
+          order   => 100,
         }
 
         simp_openldap::server::access { 'override_shadowlastchange_access':
@@ -151,12 +151,11 @@ describe 'simp_openldap class' do
             by anonymous auth
             by self write
             by * none",
-          order   => 100
+          order   => 100,
         }
-
       EOS
-               elsif host.name == 'valhalla'
-                 <<-EOS
+    elsif host.name == 'valhalla'
+      <<~EOS
         include simp_openldap::server
         include simp_openldap::slapo::ppolicy
         include simp_openldap::slapo::syncprov
@@ -167,16 +166,16 @@ describe 'simp_openldap class' do
           binddn      => "cn=LDAPSync,ou=Hosts,${_base_dn}",
           credentials => '#{sync_pw}',
           # This needs to be the top level so that all of the account aliases work
-          searchbase  => '#{base_dn}'
+          searchbase  => '#{base_dn}',
         }
 
         simp_openldap::server::limits { 'Host_Bind_DN_Unlimited_Query':
           who    => simplib::lookup('simp_options::ldap::bind_dn'),
-          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
+          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited'],
         }
       EOS
-               else
-                 <<-EOS
+    else
+      <<~EOS
         include simp_openldap::server
         include simp_openldap::slapo::ppolicy
         include simp_openldap::slapo::syncprov
@@ -187,17 +186,15 @@ describe 'simp_openldap class' do
           binddn      => "cn=LDAPSync,ou=Hosts,${_base_dn}",
           credentials => '#{sync_pw}',
           # This needs to be the top level so that all of the account aliases work
-          searchbase  => '#{base_dn}'
+          searchbase  => '#{base_dn}',
         }
 
         simp_openldap::server::limits { 'Host_Bind_DN_Unlimited_Query':
           who    => simplib::lookup('simp_options::ldap::bind_dn'),
-          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited']
+          limits => ['size.soft=unlimited','size.hard=unlimited','size.prtotal=unlimited'],
         }
       EOS
-               end
-
-    manifest
+    end
   end
 
   let(:user_data) { File.read(File.expand_path('templates/root_node/add_data.ldif.erb', __dir__)) }
@@ -292,8 +289,8 @@ describe 'simp_openldap class' do
       end
 
       it 'is able to query the local server as the bind user' do
-        expect(on(server,
-"ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(%r{dn: uid=thor,ou=People,ou=Valhalla,#{base_dn}}m)
+        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Valhalla,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout)
+          .to match(%r{dn: uid=thor,ou=People,ou=Valhalla,#{base_dn}}m)
       end
     end
   end
@@ -314,8 +311,8 @@ describe 'simp_openldap class' do
       end
 
       it 'is able to query the local server as the bind user' do
-        expect(on(server,
-"ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout).to match(%r{dn: uid=mimir,ou=People,ou=Niflheim,#{base_dn}}m)
+        expect(on(server, "ldapsearch -ZZ -LLL -D cn=hostAuth,ou=Hosts,ou=Niflheim,#{base_dn} -H ldap://#{server_fqdn} -w '#{bind_pw}'").stdout)
+          .to match(%r{dn: uid=mimir,ou=People,ou=Niflheim,#{base_dn}}m)
       end
     end
   end

@@ -11,8 +11,8 @@ describe 'simp_openldap::server::access' do
         let(:params) do
           {
             what: 'on_second',
-         who: 'on_first',
-         order: 50,
+            who: 'on_first',
+            order: 50,
           }
         end
 

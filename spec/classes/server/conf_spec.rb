@@ -5,9 +5,7 @@ describe 'simp_openldap::server::conf' do
     on_supported_os.each do |os, os_facts|
       context "on #{os}" do
         let(:facts) do
-          os_facts.merge({
-                           slapd_version: '2.4.40',
-                         })
+          os_facts.merge(slapd_version: '2.4.40')
         end
         let(:slapd_content_pki) do
           <<~EOM
@@ -90,11 +88,11 @@ describe 'simp_openldap::server::conf' do
         end
         let(:pre_condition) do
           <<~EOM
-            class { "::simp_openldap":
+            class { "simp_openldap":
               base_dn   => "DC=host,DC=net",
-              is_server => true
+              is_server => true,
             }
-            EOM
+          EOM
         end
 
         if os_facts.dig(:os, :release, :major) >= '8'
@@ -168,7 +166,7 @@ describe 'simp_openldap::server::conf' do
 
           include /etc/openldap/slapd.access
           include /etc/openldap/dynamic_includes
-          EOM
+        EOM
 
         context 'with default parameters' do
           it { is_expected.to create_class('simp_openldap::server') }
@@ -209,9 +207,7 @@ describe 'simp_openldap::server::conf' do
 
         context 'with pki = true and openldap-servers < 2.4.40' do
           let(:facts) do
-            os_facts.merge({
-                             slapd_version: '2.3.0',
-                           })
+            os_facts.merge(slapd_version: '2.3.0')
           end
 
           let(:hieradata) { 'pki_true' }
@@ -271,7 +267,7 @@ describe 'simp_openldap::server::conf' do
           let(:params) do
             {
               listen_ldaps: false,
-           firewall: true,
+              firewall: true,
             }
           end
 
@@ -285,8 +281,8 @@ describe 'simp_openldap::server::conf' do
           let(:params) do
             {
               listen_ldap: false,
-           listen_ldaps: false,
-           firewall: true,
+              listen_ldaps: false,
+              firewall: true,
             }
           end
 
@@ -300,11 +296,11 @@ describe 'simp_openldap::server::conf' do
           let(:params) do
             {
               auditlog: '/var/log/ldap_audit.log',
-           auditlog_rotate: 'daily',
-           auditlog_preserve: 7,
-           syslog: true,
-           logrotate: true,
-           log_to_file: true,
+              auditlog_rotate: 'daily',
+              auditlog_preserve: 7,
+              syslog: true,
+              logrotate: true,
+              log_to_file: true,
             }
           end
 
@@ -313,12 +309,12 @@ describe 'simp_openldap::server::conf' do
 
           it { is_expected.to create_file(params[:auditlog]) }
           it {
-            is_expected.to create_logrotate__rule('slapd_audit_log').with({
-                                                                            log_files: [params[:auditlog]],
+            is_expected.to create_logrotate__rule('slapd_audit_log').with(
+              log_files: [params[:auditlog]],
               create: '0640 ldap ldap',
               rotate_period: params[:auditlog_rotate],
               rotate: params[:auditlog_preserve],
-                                                                          })
+            )
           }
           it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(%r{auditlog #{params[:auditlog]}}) }
           it { is_expected.to create_rsyslog__rule__data_source('openldap_audit').with_rule(%r{File="#{params[:auditlog]}"}) }
@@ -326,11 +322,11 @@ describe 'simp_openldap::server::conf' do
 
           it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule("prifilt('local4.*')") }
           it {
-            is_expected.to create_logrotate__rule('slapd').with({
-                                                                  log_files: [ '/var/log/slapd.log' ],
+            is_expected.to create_logrotate__rule('slapd').with(
+              log_files: [ '/var/log/slapd.log' ],
               missingok: true,
               lastaction_restart_logger: true,
-                                                                })
+            )
           }
         end
 
@@ -339,12 +335,12 @@ describe 'simp_openldap::server::conf' do
           let(:params) do
             {
               auditlog: '/var/log/ldap_audit.log',
-           auditlog_rotate: 'daily',
-           auditlog_preserve: 7,
-           audit_to_syslog: false,
-           syslog: true,
-           logrotate: true,
-           log_to_file: true,
+              auditlog_rotate: 'daily',
+              auditlog_preserve: 7,
+              audit_to_syslog: false,
+              syslog: true,
+              logrotate: true,
+              log_to_file: true,
             }
           end
 
@@ -352,12 +348,12 @@ describe 'simp_openldap::server::conf' do
 
           it { is_expected.to create_file(params[:auditlog]) }
           it {
-            is_expected.to create_logrotate__rule('slapd_audit_log').with({
-                                                                            log_files: [params[:auditlog]],
+            is_expected.to create_logrotate__rule('slapd_audit_log').with(
+              log_files: [params[:auditlog]],
               create: '0640 ldap ldap',
               rotate_period: params[:auditlog_rotate],
               rotate: params[:auditlog_preserve],
-                                                                          })
+            )
           }
           it { is_expected.to create_simp_openldap__server__dynamic_include('auditlog').with_content(%r{auditlog #{params[:auditlog]}}) }
           it { is_expected.not_to create_rsyslog__add_conf('openldap_audit') }
@@ -365,11 +361,11 @@ describe 'simp_openldap::server::conf' do
 
           it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule("prifilt('local4.*')") }
           it {
-            is_expected.to create_logrotate__rule('slapd').with({
-                                                                  log_files: [ '/var/log/slapd.log' ],
+            is_expected.to create_logrotate__rule('slapd').with(
+              log_files: [ '/var/log/slapd.log' ],
               missingok: true,
               lastaction_restart_logger: true,
-                                                                })
+            )
           }
         end
 
@@ -378,9 +374,9 @@ describe 'simp_openldap::server::conf' do
           let(:params) do
             {
               syslog: true,
-           log_to_file: true,
-           log_file: '/foo/bar',
-           logrotate: true,
+              log_to_file: true,
+              log_file: '/foo/bar',
+              logrotate: true,
             }
           end
 
@@ -389,11 +385,11 @@ describe 'simp_openldap::server::conf' do
 
           it { is_expected.to create_rsyslog__rule__local('05_openldap_local').with_rule("prifilt('local4.*')") }
           it {
-            is_expected.to create_logrotate__rule('slapd').with({
-                                                                  log_files: [params[:log_file]],
+            is_expected.to create_logrotate__rule('slapd').with(
+              log_files: [params[:log_file]],
               missingok: true,
               lastaction_restart_logger: true,
-                                                                })
+            )
           }
         end
 
@@ -408,10 +404,10 @@ describe 'simp_openldap::server::conf' do
         context 'threads_is_dynamic' do
           let(:pre_condition) { "include 'simp_openldap'" }
           let(:facts) do
-            os_facts.merge({
-                             slapd_version: '2.4.40',
+            os_facts.merge(
+              slapd_version: '2.4.40',
               processorcount: 4,
-                           })
+            )
           end
 
           it { is_expected.to create_file('/etc/openldap/slapd.conf').with_content(%r{threads   16}) }

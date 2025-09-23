@@ -111,7 +111,7 @@ describe 'simp_openldap::client' do
         let(:params) do
           {
             strip_128_bit_ciphers: true,
-         tls_cipher_suite: ['AES256', 'AES128'],
+            tls_cipher_suite: ['AES256', 'AES128'],
           }
         end
 
@@ -125,7 +125,7 @@ describe 'simp_openldap::client' do
         let(:params) do
           {
             strip_128_bit_ciphers: false,
-         tls_cipher_suite: ['AES256', 'AES128'],
+            tls_cipher_suite: ['AES256', 'AES128'],
           }
         end
 
@@ -153,7 +153,7 @@ describe 'simp_openldap::client' do
         let(:params) do
           {
             app_pki_crl: '/some/path/my_crlfile',
-         use_tls: true,
+            use_tls: true,
           }
         end
 

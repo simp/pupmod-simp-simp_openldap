@@ -21,11 +21,11 @@ describe 'simp_openldap' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to create_pki__copy('openldap').with({
-                                                               source: '/etc/pki/simp/x509',
-            pki: 'simp',
-            group: 'root',
-                                                             })
+            is_expected.to create_pki__copy('openldap').with(
+              source: '/etc/pki/simp/x509',
+              pki: 'simp',
+              group: 'root',
+            )
           }
         end
 
@@ -49,11 +49,11 @@ describe 'simp_openldap' do
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to create_class('simp_openldap::server') }
             it {
-              is_expected.to create_pki__copy('openldap').with({
-                                                                 source: '/etc/pki/simp/x509',
-              pki: true,
-              group: 'ldap',
-                                                               })
+              is_expected.to create_pki__copy('openldap').with(
+                source: '/etc/pki/simp/x509',
+                pki: true,
+                group: 'ldap',
+              )
             }
           end
         end

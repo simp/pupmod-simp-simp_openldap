@@ -12,45 +12,49 @@ describe 'simp_openldap' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('simp_openldap') }
           it { is_expected.to create_class('simp_openldap::client') }
-          it { is_expected.to_not create_class('simp_openldap::server') }
-          it { is_expected.to_not create_pki__copy('openldap') }
+          it { is_expected.not_to create_class('simp_openldap::server') }
+          it { is_expected.not_to create_pki__copy('openldap') }
         end
 
         context 'with pki enabled' do
-          let(:params) {{ :pki => 'simp' }}
+          let(:params) { { pki: 'simp' } }
 
           it { is_expected.to compile.with_all_deps }
-          it { is_expected.to create_pki__copy('openldap').with( {
-            :source => '/etc/pki/simp/x509',
-            :pki    => 'simp',
-            :group  => 'root'
-          } ) }
+          it {
+            is_expected.to create_pki__copy('openldap').with(
+              source: '/etc/pki/simp/x509',
+              pki: 'simp',
+              group: 'root',
+            )
+          }
         end
 
         context 'is_server' do
-          if os_facts.dig(:os,:release,:major) >= '8'
+          if os_facts.dig(:os, :release, :major) >= '8'
             it { skip("does not support #{os}") }
             next
           end
 
           context 'without pki' do
-            let(:params) {{ :is_server => true }}
+            let(:params) { { is_server: true } }
 
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to create_class('simp_openldap::server') }
-            it { is_expected.to_not create_pki__copy('openldap') }
+            it { is_expected.not_to create_pki__copy('openldap') }
           end
 
           context 'with pki' do
-            let(:params) {{ :is_server => true, :pki => true }}
+            let(:params) { { is_server: true, pki: true } }
 
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to create_class('simp_openldap::server') }
-            it { is_expected.to create_pki__copy('openldap').with( {
-              :source => '/etc/pki/simp/x509',
-              :pki    => true,
-              :group  => 'ldap'
-            } ) }
+            it {
+              is_expected.to create_pki__copy('openldap').with(
+                source: '/etc/pki/simp/x509',
+                pki: true,
+                group: 'ldap',
+              )
+            }
           end
         end
       end

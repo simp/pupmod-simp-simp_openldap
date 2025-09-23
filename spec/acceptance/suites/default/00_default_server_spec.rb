@@ -6,14 +6,14 @@ test_name 'simp_openldap::server class'
 describe 'simp_openldap::server class' do
   servers = hosts_with_role(hosts, 'server')
 
-  let(:server_manifest) {
+  let(:server_manifest) do
     <<~EOS
       include 'simp_openldap::server'
     EOS
-  }
+  end
 
   hosts.each do |host|
-    it 'should disable the firewall' do
+    it 'disables the firewall' do
       on(host, 'puppet resource service firewalld ensure=stopped')
       on(host, 'puppet resource service iptables ensure=stopped')
     end
@@ -21,7 +21,7 @@ describe 'simp_openldap::server class' do
 
   servers.each do |server|
     context "yum repo prep on #{server}" do
-      it 'should install SIMP internet repos' do
+      it 'installs SIMP internet repos' do
         install_simp_repos(server)
       end
     end
@@ -32,26 +32,25 @@ describe 'simp_openldap::server class' do
     domain_components = [ 'DC', 'dc']
     domain_components.each do |domain_component|
       context "simp_openldap::server #{server} for LDAP domains with '#{domain_component}'" do
-
         let(:server_fqdn) { fact_on(server, 'fqdn') }
-        let(:base_dn) { fact_on(server, 'domain').split('.').map{ |d| "#{domain_component}=#{d}" }.join(',') }
+        let(:base_dn) { fact_on(server, 'domain').split('.').map { |d| "#{domain_component}=#{d}" }.join(',') }
 
         # It appears when you query ldap it is returning lowercase values for the
         # ldif formats (dn, ou, cn etc) so when the output from a query is checked
         # the lower case format is needed.
-        let(:results_base_dn) { fact_on(server, 'domain').split('.').map{ |d| "dc=#{d}" }.join(',') }
+        let(:results_base_dn) { fact_on(server, 'domain').split('.').map { |d| "dc=#{d}" }.join(',') }
 
         let(:add_testuser)          { File.read(File.expand_path('templates/add_testuser.ldif.erb', File.dirname(__FILE__))) }
         let(:add_testuser_to_admin) { File.read(File.expand_path('templates/add_testuser_to_admin.ldif.erb', File.dirname(__FILE__))) }
 
         if domain_component != domain_components.first
           context 'ensure clean LDAP environment' do
-            it 'should ensure LDAP server configuration is bootstrapped' do
+            it 'ensures LDAP server configuration is bootstrapped' do
               on(server, 'rm -rf /var/lib/ldap/db/*')
               on(server, 'rm -f /etc/openldap/puppet_bootstrapped.lock')
             end
 
-            it 'should clear out existing LDAP client config that will not regenerate otherwise' do
+            it 'clears out existing LDAP client config that will not regenerate otherwise' do
               on(server, 'rm -f /root/.ldaprc')
             end
           end
@@ -61,26 +60,26 @@ describe 'simp_openldap::server class' do
           let(:hieradata)      { ERB.new(File.read(File.expand_path('templates/hieradata.yaml.erb', File.dirname(__FILE__)))).result(binding) }
 
           context 'LDAP server configuration' do
-            it 'should configure server with tls disabled and with no errors' do
+            it 'configures server with tls disabled and with no errors' do
               echo_on(server, base_dn)
 
               on(server, 'mkdir -p /usr/local/sbin/simp')
 
               set_hieradata_on(server, hieradata)
-              apply_manifest_on(server, server_manifest, :catch_failures => true)
+              apply_manifest_on(server, server_manifest, catch_failures: true)
             end
 
-            it 'should be idempotent' do
-              apply_manifest_on(server, server_manifest, :catch_changes => true)
+            it 'is idempotent' do
+              apply_manifest_on(server, server_manifest, catch_changes: true)
             end
           end
 
           context 'user management on LDAP server' do
-            it 'should be able to connect and use ldapsearch' do
+            it 'is able to connect and use ldapsearch' do
               on(server, "ldapsearch -LLL -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r!")
             end
 
-            it 'should be able to add a user' do
+            it 'is able to add a user' do
               create_remote_file(server, '/tmp/add_testuser.ldif', ERB.new(add_testuser).result(binding))
 
               on(server, "ldapadd -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x -f /tmp/add_testuser.ldif")
@@ -89,7 +88,7 @@ describe 'simp_openldap::server class' do
               expect(result.stdout).to include("dn: uid=test.user,ou=People,#{results_base_dn}")
             end
 
-            it 'should be able to add user to group' do
+            it 'is able to add user to group' do
               create_remote_file(server, '/tmp/add_testuser_to_admin.ldif', ERB.new(add_testuser_to_admin).result(binding))
 
               on(server, "ldapmodify -D cn=LDAPAdmin,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w suP3rP@ssw0r! -x -f /tmp/add_testuser_to_admin.ldif")
@@ -104,28 +103,28 @@ describe 'simp_openldap::server class' do
                 'SupErpAssW0rD', # not enough character classes
                 'SupRrpassW0rd', # too many character classes in a row
               ]
-              password_list.each_with_index do |pass,i|
-                it "should reject bad password #{pass}" do
+              password_list.each_with_index do |pass, _i|
+                it "rejects bad password #{pass}" do
                   sleep(5)
-                  result = on(server, "ldappasswd -D uid=test.user,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w 'suP3rP@ssw0r!' -a 'suP3rP@ssw0r!' -s '#{pass}'", :acceptable_exit_codes => [1])
-                  expect(result.stdout).to include("Result: Constraint violation (19)")
+                  result = on(server, "ldappasswd -D uid=test.user,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w 'suP3rP@ssw0r!' -a 'suP3rP@ssw0r!' -s '#{pass}'", acceptable_exit_codes: [1])
+                  expect(result.stdout).to include('Result: Constraint violation (19)')
                 end
               end
 
               # this one should work
               pass = '6q!Bqr3ek^K!9b'
-              it "should accept good password #{pass}" do
+              it "accepts good password #{pass}" do
                 sleep(5)
                 on(server, "ldappasswd -D uid=test.user,ou=People,#{base_dn} -H ldap://#{server_fqdn} -w 'suP3rP@ssw0r!' -a 'suP3rP@ssw0r!' -s '#{pass}'")
               end
             end
 
-            it 'should be able to expire user passwords using ppolicy' do
-             # set clock forward to expire test.user
-             # should error out with a password expired message
-             on(server, "date --set='next year'; ldapwhoami -D uid=test.user,ou=People,#{base_dn} -H ldap://#{server_fqdn} -x -w suP3rP@ssw0r! -e ppolicy", :acceptable_exit_codes => [49])
+            it 'is able to expire user passwords using ppolicy' do
+              # set clock forward to expire test.user
+              # should error out with a password expired message
+              on(server, "date --set='next year'; ldapwhoami -D uid=test.user,ou=People,#{base_dn} -H ldap://#{server_fqdn} -x -w suP3rP@ssw0r! -e ppolicy", acceptable_exit_codes: [49])
 
-             on(server, "date --set='last year'")
+              on(server, "date --set='last year'")
             end
           end
         end
